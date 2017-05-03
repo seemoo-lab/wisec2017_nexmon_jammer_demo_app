@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_menu">
+    <item android:id="@+id/amp_phase"
+        android:title="Amp\nPhase"
+        app:showAsAction="ifRoom">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android">
+            <group android:id="@+id/group_amp_phase" android:checkableBehavior="single">
+                <item android:id="@+id/amp" android:title="Amplitude"/>
+                <item android:id="@+id/phase" android:title="Phase"/>
+                <item android:id="@+id/plot" android:title="Plot"/>
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/preset"
+        android:title="Preset"
+        app:showAsAction="ifRoom">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android">
+            <group android:id="@+id/group_preset" android:checkableBehavior="single">
+                <item android:id="@+id/pre_20" android:title="20 MHz Pilots" />
+
+                <item android:id="@+id/pre_40" android:title="40 MHz Pilots" />
+                <item android:id="@+id/pre_20in40" android:title="20in40 MHz Pilots" />
+
+                <item android:id="@+id/pre_80" android:title="80 MHz Pilots" />
+                <item android:id="@+id/pre_20in80" android:title="20in80 MHz Pilots" />
+                <item android:id="@+id/pre_40in80" android:title="40in80 MHz Pilots" />
+
+            </group>
+        </menu>
+    </item>
+   <item android:id="@+id/idft"
+        android:title="idft size"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/bandwidth"
+        android:title="Bandwidth"
+        app:showAsAction="ifRoom">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android">
+            <group android:id="@+id/group_bandwidth" android:checkableBehavior="single">
+                <item android:id="@+id/ban_20" android:title="20 MHz" />
+                <item android:id="@+id/ban_40" android:title="40 MHz" />
+                <item android:id="@+id/ban_80" android:title="80 MHz" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/channel"
+        android:title="WiFi Channel"
+        app:showAsAction="ifRoom"/>
+
+
+
+</menu>

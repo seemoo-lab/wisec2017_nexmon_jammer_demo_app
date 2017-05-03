@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Jammer</string>
+    <string name="landscape_message">This is Landscape mode fragment</string>
+    <string name="portrait_message">This is Portrait mode fragment></string>
+    <string name="value">Value</string>
+</resources>

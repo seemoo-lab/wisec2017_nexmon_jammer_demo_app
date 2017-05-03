@@ -1,0 +1,15 @@
+<resources>
+
+    <!-- Base application theme. -->
+
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
+    <style name="MyTextView">
+        <item name="android:textSize">11sp</item>
+    </style>
+    <style name="MyButton" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">11sp</item>
+    </style>
+
+</resources>

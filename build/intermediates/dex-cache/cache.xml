@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\AppData\Local\Android\sdk\extras\m2repository\com\android\support\constraint\constraint-layout-solver\1.0.0-alpha7\constraint-layout-solver-1.0.0-alpha7.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="439eeb5ffd54cbd18db0a6aea471e8356f19fc36">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\constraint-layout-solver-1.0.0-alpha7_ae522bb1d7426dbb2d0e5003b16b3164a73ffa61.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\59c4404f4c54dabe6249de2a073fd7dc5d7cce1d\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_58787d9f46ceab81494475d0591e35ad5447de08.jar" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Stathis\.android\build-cache\cea54d5b04c391df625d96abb5646115f31c624d\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="00559690e2e40e0336b2427839641e183a4d0b19">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_3cfffd307fc096b1c1903b0fe2cf9dccb1fec981\classes.dex" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\f75d3ce01332d045cf63381a04a52deee71e0fef\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="9ab787a20aae245b5b3651ae0b9c38459eb37715">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_b000e38db6c6f2e121c009472a9972f022c120bc.jar" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Stathis\.android\build-cache\8f2dff4d46c972af47b0db2a85c47742af2cec58\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="de8046139933d665ec919c8052042ac1c6020a36">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_9fa19edfbb27052f5cac1d299158b7eb34d8a807\classes.dex" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\d1b6e5c580d5bd5f0a8b2cc1bc433fc085203897\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="518768f3200963fbfec652f498da2c9d39245234">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_372edd6a417c2032e0643865babac0ea955d693b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\25.3.0\support-annotations-25.3.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="dd84903d2e1af25a6081ef9038ad863cb14ca3a0">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\support-annotations-25.3.0_8cb4911715b941b94f53b938c26a9af6b2158b52.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\d6522c469d1f2bcf29480ce58ebea2863a53c1d6\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="70f23cb87278f89aa51e6f57e8f0fd5266572d95">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_288a71aca4ad3dd5b8bcf6e38939be44dce4e440.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\7ab6c8905fa2089c4b56064627ca2e1fbea88e95\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="5cc5ef8347a6bafa14556cbd35230aa9b3431bb0">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_8ac60169890c6c345b54a44424a1abe1fa7fcead.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\714431871a0d6f00b4413de0bfb3412430b88675\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="93c10d68ab5ea070f15782ae6d3a28d1f1d8f45e">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_fd39eb4f8fbcc036dc66bdee56bc26e5901fcfff.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\88179bc6a7c9678f06b28f75ac92287e58b4945a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="541a2ad68dc68aa49795821f8280b7624e6a0c9b">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_5cdb478a7799db5910961995bebdfbee1a1d4fcc.jar" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="510aa6efc159983dfbffa676a0dae37568c0a46f">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_37a4b5234207d79408e8814ab8245979f6939827\classes.dex" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\ca530fddb604ddeca37d00cdddd2d890028fbda4\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4b746ef0fd46acb5aaf3d9ab9a4cec22c28d3211">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_b0fdc79d2b3e226d41c731a70a2dc7acac2b9577.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\37a0efb9e16a1e547a20b32397c76f76031a2a5e\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="425c7b17887e5c3f8cbdf67ba171bc246f29b42c">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_b6b8e4d8b16c0fb6337122320038357a0ae588db.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\bcadc5a6e7fed86060f846aa5f9ae8cab2f2ab03\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d6a04527c17597019dad82777c5094a3d60d1c33">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_22243cc844ed89d123a6b50ddde7f73e6bab0041.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\7f31298440c91e64df024e6426bda5517dd0b65a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fbb206f7a119f66ce171d95aae1225a5b209a8b7">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_622eb2e415f93302e7233aabb7f7a79bc7ee2b20.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\efbbdbeb1fa65d7642ea5e55d5dc532b0ebb05d4\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="93c1199fcb0a34b980e6fff8350daff62e696ec2">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_6f0288455fd25bcefd7117edcbf8a1365316334e.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stathis\.android\build-cache\31675f1d0554a29793826093db4372f0e81162c8\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a3e61044038fb54cddf6b8dc79f41d2b57f42caf">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\pre-dexed\debug\classes_79d00ce6e35171cd9179e2a1e075c07d21cf4b8e.jar" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4e85b11f98470923fa4304bb0d92952700971679">
+        <dex dex="C:\Users\Stathis\AndroidStudioProjects\WiFiJammer\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_0653a284e176b57b683df3a2cc030a1dca5228d1\classes.dex" />
+    </item>
+
+</items>
