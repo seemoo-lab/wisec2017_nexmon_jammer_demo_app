@@ -8,22 +8,19 @@
         android:layout_height="wrap_content"
         android:padding="5sp"
         android:gravity="center"
-        android:text="Please enter the port of the receiver for the new UDP stream: "
+        android:text="Please insert the IP address of the receiver: "
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/portText"
+        android:id="@+id/ipAddress"
         android:textSize="18sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:ems="3"
-        android:text="3333" android:inputType="number"
+        android:text="192.168.1.2" android:inputType="text"
         android:textColor="@color/black"
         />
-
-
-
 </LinearLayout>

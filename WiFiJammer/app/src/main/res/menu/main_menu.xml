@@ -59,6 +59,18 @@
         android:title="WiFi Channel"
         app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ip_address"
+        android:title="IP Address"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/srcPort"
+        android:title="Source Port"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/dstPort"
+        android:title="Destination Port"
+        app:showAsAction="ifRoom"/>
+
 
 
 </menu>

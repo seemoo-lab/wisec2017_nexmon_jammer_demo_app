@@ -520,6 +520,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         int app = vars.get("App");
         if (app == 1) {
             //Transmitter
+            menu.findItem(R.id.ip_address).setVisible(true);
+            menu.findItem(R.id.dstPort).setVisible(true);
+            menu.findItem(R.id.srcPort).setVisible(true);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
@@ -535,6 +538,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
         }else if ( app == 2){
             //Receiver
+            menu.findItem(R.id.ip_address).setVisible(true);
+            menu.findItem(R.id.dstPort).setVisible(true);
+            menu.findItem(R.id.srcPort).setVisible(true);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
@@ -550,6 +556,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_5).setVisibility(View.VISIBLE);
         }else{
             //Jammer
+            menu.findItem(R.id.ip_address).setVisible(false);
+            menu.findItem(R.id.dstPort).setVisible(false);
+            menu.findItem(R.id.srcPort).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(true);
             menu.findItem(R.id.amp_phase).setVisible(true);
             menu.findItem(R.id.preset).setVisible(true);

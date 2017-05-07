@@ -7,6 +7,8 @@ package seemo.wifijammer;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.widget.TextView;
+
+import java.net.InetAddress;
 import java.util.List;
 import eu.chainfire.libsuperuser.Shell;
 
@@ -16,6 +18,15 @@ public class TcpdumpPacketCapture {
     private static Shell.Interactive rootTcpdumpShell;
     private static ProgressDialog progressBox;
     private static boolean isInitialised = false;
+    private static String port;
+    private static String ipAddress;
+
+    public static void setPort(int new_port){
+        port = String.valueOf(new_port);
+    }
+    public static void setIpAddress(InetAddress ipA){
+        ipAddress = ipA.toString();
+    }
 
     public static void initialiseCapture(Activity _activity) {
         activity = _activity;
@@ -67,7 +78,7 @@ public class TcpdumpPacketCapture {
                     }
                     rootTcpdumpShell.addCommand("cd "+ activity.getApplicationInfo().dataDir + "/files/");
 
-                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp dst port 53", 0, new Shell.OnCommandLineListener() {
+                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp src host " + ipAddress + " dst port "+ port, 0, new Shell.OnCommandLineListener() {
                         @Override
                         public void onCommandResult(int commandVal, int exitVal) {
                             if (exitVal < 0) {

@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'eu.chainfire:libsuperuser:1.0.0.+'
     compile 'com.androidplot:androidplot-core:1.4.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
