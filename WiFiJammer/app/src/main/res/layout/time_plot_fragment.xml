@@ -11,11 +11,12 @@
         android:layout_height="0dp"
         android:padding="5sp"
         ap:title="Signal in the Time Domain"
+        android:layout_weight="1"
         ap:rangeTitle="range"
         ap:domainTitle="domain"
         ap:lineLabels="left|bottom"
         ap:lineLabelRotationBottom="-45"/>
-    <!--android:layout_weight="1" !-->
+    <!--!-->
 
     <com.androidplot.xy.XYPlot
         style="@style/APDefacto.Dark"

@@ -307,33 +307,74 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         if (!item.isChecked()) {
             switch (item.getGroupId()) {
                 case R.id.group_amp_phase:
-                    switch (item.getItemId()) {
-                        case R.id.amp:
-                            Log.d(TAG, "Changing to Amp");
-                            findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
-                            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-                            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                            item.setChecked(true);
-                            vars.put("amp_phase", R.id.amp);
-                            return true;
-                        case R.id.phase:
-                            Log.d(TAG, "Changing to Ph");
-                            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-                            findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
-                            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                            item.setChecked(true);
-                            vars.put("amp_phase", R.id.phase);
-                            return true;
-                        case R.id.plot:
-                            Log.d(TAG, "Changing to Plot");
-                            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-                            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-                            findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
-                            item.setChecked(true);
-                            vars.put("amp_phase", R.id.plot);
-                            plotFragment.plotSignals(amps, phases, freqs);
-                            return true;
+
+                    Configuration config = getResources().getConfiguration();
+
+                    if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        /**
+                         * Landscape mode of the device
+                         */
+                        switch (item.getItemId()) {
+                            case R.id.amp:
+                                Log.d(TAG, "Changing to Amp");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.amp);
+                                return true;
+                            case R.id.phase:
+                                Log.d(TAG, "Changing to Ph");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.phase);
+                                return true;
+                            case R.id.plot:
+                                Log.d(TAG, "Changing to Plot");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.plot);
+                                plotFragment.plotSignals(amps, phases, freqs);
+                                return true;
+                        }
+                    }else{
+                        /**
+                         * Portrait mode of the device
+                         */
+                        switch (item.getItemId()) {
+                            case R.id.amp:
+                                Log.d(TAG, "Changing to Amp");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.amp);
+                                return true;
+                            case R.id.phase:
+                                Log.d(TAG, "Changing to Ph");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.phase);
+                                return true;
+                            case R.id.plot:
+                                Log.d(TAG, "Changing to Plot");
+                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+                                findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
+                                item.setChecked(true);
+                                vars.put("amp_phase", R.id.plot);
+                                plotFragment.plotSignals(amps, phases, freqs);
+                                return true;
+                        }
+
                     }
+
                 case R.id.group_type:
                     item.setChecked(true);
                     int value = getJammerType(item.getTitle().toString());
@@ -560,7 +601,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.dstPort).setVisible(false);
             menu.findItem(R.id.srcPort).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(true);
-            menu.findItem(R.id.amp_phase).setVisible(true);
             menu.findItem(R.id.preset).setVisible(true);
             menu.findItem(R.id.bandwidth).setVisible(true);
             menu.findItem(R.id.channel).setVisible(true);
@@ -609,18 +649,31 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 /**
                  * Portrait mode of the device
                  **/
-                menu.findItem(R.id.amp_phase).setVisible(false);
+                //menu.findItem(R.id.amp_phase).setVisible(false);
                 menu.findItem(R.id.amp_phase).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.preset).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 System.out.println("Entering Portrait Mode");
-                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
-                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
-                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
-                findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                switch(vars.get("amp_phase")){
+                    case R.id.plot:
+                        findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
+                        findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        break;
+                    default:
+                        findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                        findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+                        findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        break;
+
+                }
+
             }
             createAlertDialogs();
         }
