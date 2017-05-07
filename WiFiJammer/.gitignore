@@ -2,7 +2,7 @@
 .gradle
 /local.properties
 /.idea
-/gradle
+
 /settings.gradle
 gradlew
 gradlew.bat
@@ -17,3 +17,4 @@ app/libs/
 .idea/copyright/
 .idea/gradle.xml
 .idea/modules.xml
+gradle/
