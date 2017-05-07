@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <com.androidplot.xy.XYPlot
+        style="@style/APDefacto.Dark"
+        android:id="@+id/timePlot"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="5sp"
+        ap:title="Signal in the Time Domain"
+        ap:rangeTitle="range"
+        ap:domainTitle="domain"
+        ap:lineLabels="left|bottom"
+        ap:lineLabelRotationBottom="-45"/>
+    <!--android:layout_weight="1" !-->
+
+    <com.androidplot.xy.XYPlot
+        style="@style/APDefacto.Dark"
+        android:id="@+id/freqPlot"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="5sp"
+        ap:title="Singnal in the Frequency Domain"
+        ap:rangeTitle="range"
+        ap:domainTitle="domain"
+        ap:lineLabels="left|bottom"
+        ap:lineLabelRotationBottom="-45"/>
+</LinearLayout>

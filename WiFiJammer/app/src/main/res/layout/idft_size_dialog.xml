@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+        <TextView
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="Set the size of the IDFT:"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+
+    <SeekBar
+        android:id="@+id/idftSeekbar"
+        style="@android:style/Widget.Holo.Light.SeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:max="512"
+        android:progress="128" />
+
+    <EditText
+        android:id="@+id/idftSeekbarText"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:ems="3"
+        android:text="128" android:inputType="number"
+
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+
+
+
+</LinearLayout>

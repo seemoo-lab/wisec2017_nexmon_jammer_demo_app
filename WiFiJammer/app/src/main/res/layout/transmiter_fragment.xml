@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:gravity="center"
+        android:text="Please insert the IP address of the receiver: "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/ipAddress"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:ems="3"
+        android:text="192.168.1.2" android:inputType="text"
+        android:textColor="@color/black"
+         />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/senderList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ListView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            app:useCompatPadding="true"
+            android:clickable="true"
+            android:src="@drawable/fab_plus"
+            app:elevation="4dp" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

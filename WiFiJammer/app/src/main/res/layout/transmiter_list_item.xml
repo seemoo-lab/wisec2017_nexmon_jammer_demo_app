@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/item_run_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:padding="5sp"
+        android:src="@android:drawable/ic_media_play" />
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/black" />
+
+
+    <TextView
+        android:id="@+id/port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_marginTop="5dp"
+        android:text=""
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/item_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@android:drawable/ic_menu_delete" />
+
+
+
+</RelativeLayout>
