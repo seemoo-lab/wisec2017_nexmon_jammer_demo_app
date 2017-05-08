@@ -3,8 +3,6 @@
 /local.properties
 /.idea
 /build
-.idea/compiler.xml
-.idea/copyright/
-.idea/gradle.xml
-.idea/modules.xml
 
+
+app/libs/
