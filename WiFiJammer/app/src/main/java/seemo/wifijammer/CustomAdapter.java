@@ -1,14 +1,10 @@
 package seemo.wifijammer;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,14 +18,13 @@ import java.util.ArrayList;
 
 public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener{
 
-    private ArrayList<UDPStream> dataSet;
     Context mContext;
     TextView txtName;
     TextView txtPort;
     ImageView delete;
     ImageView run_pause;
     View parentView;
-
+    private ArrayList<UDPStream> dataSet;
 
 
     public CustomAdapter(ArrayList<UDPStream> data, Context context) {
@@ -48,25 +43,24 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
         switch (v.getId())
         {
             case R.id.item_delete:
-                udpStream.stopThread();
-                try{
-                    udpStream.join();
-                }catch (Exception e){e.printStackTrace();}
+                /**
+                 * TODO Stop UDP Stream
+                 */
                 dataSet.remove(udpStream);
                 notifyDataSetChanged();
                 break;
             case R.id.item_run_stop:
                 run_pause = (ImageView) parentView.findViewWithTag(position);
                 if (udpStream.running){
-                    udpStream.stopThread();
-                    try{
-                        udpStream.join();
-                    }catch (Exception e){e.printStackTrace();}
-
+                    /**
+                     * TODO Stop UDP Stream
+                     */
                     System.out.println("Thread stopped");
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
                 }else{
-                    new Thread(udpStream).start();
+                    /**
+                     * TODO Start UDP Stream
+                     */
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;

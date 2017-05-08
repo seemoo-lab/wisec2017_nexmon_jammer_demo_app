@@ -1,8 +1,10 @@
 package seemo.wifijammer;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -12,33 +14,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-
-import android.app.ProgressDialog;
-import android.content.res.AssetManager;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.widget.SeekBar;
-
-
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.Legend;
-
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -48,6 +30,15 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import eu.chainfire.libsuperuser.Shell;
 
@@ -55,9 +46,12 @@ import eu.chainfire.libsuperuser.Shell;
  * Created by Stathis on 05-May-17.
  */
 
+
+//MAC, IP Address, new graph button
 public class ReceiverFragment extends Fragment {
 
-    private ProgressDialog progressbox;
+    static Boolean isRootAvailable;
+    public HashMap<Integer, int[]> data;
     ViewGroup container;
     AlertDialog ipAddressDialog;
     AlertDialog srcPortDialog;
@@ -65,7 +59,9 @@ public class ReceiverFragment extends Fragment {
     int srcPort;
     int dstPort;
     InetAddress ipAddress;
-
+    Menu menu;
+    private ProgressDialog progressbox;
+    private PlotThread plotThread;
     private HorizontalBarChart mChart;
 
     private TextView tvX, tvY;
@@ -74,10 +70,9 @@ public class ReceiverFragment extends Fragment {
         /**
          * Inflate the layout for this fragment
          */
-        setHasOptionsMenu(true);
         this.container = container;
         createAlertDialogs();
-
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.receiver_fragment, container, false);
 
     }
@@ -85,13 +80,12 @@ public class ReceiverFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        drawPlot();
         dstPort = 1234;
         try{
             ipAddress = Inet4Address.getByName("192.168.1.2");
         }catch (Exception e){e.printStackTrace();}
 
-        final Button bt = (Button) getView().findViewById(R.id.button_packet_capture);
+        /*final Button bt = (Button) getView().findViewById(R.id.button_packet_capture);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +111,7 @@ public class ReceiverFragment extends Fragment {
                 }
                 bt.setEnabled(true);
             }
-        });
+        });*/
 
 
         progressbox = new ProgressDialog(getActivity());
@@ -129,7 +123,7 @@ public class ReceiverFragment extends Fragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final Boolean isRootAvailable = Shell.SU.available();
+                isRootAvailable = Shell.SU.available();
                 Boolean processExists = false;
                 String pid = null;
                 if(isRootAvailable) {
@@ -153,17 +147,15 @@ public class ReceiverFragment extends Fragment {
                     public void run() {
                         if (!isRootAvailable) {
                             ((TextView) getView().findViewById(R.id.main_tv)).setText("Root permission denied or phone is not rooted!");
-                            ( getView().findViewById(R.id.button_packet_capture)).setEnabled(false);
                         }
                         else {
                             if(processExistsFinal){
                                 ((TextView) getView().findViewById(R.id.main_tv)).setText("Tcpdump already running at pid: " + pidFinal );
-                                bt.setText("Stop  Capture");
-                                bt.setTag(1);
+                                menu.findItem(R.id.start).setTitle("Stop");
                             }
                             else {
                                 ((TextView) getView().findViewById(R.id.main_tv)).setText("Initialization Successful.");
-                                bt.setTag(0);
+
                             }
                         }
                     }
@@ -176,21 +168,50 @@ public class ReceiverFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()) {
-            case R.id.ip_address:
-                ipAddressDialog.show();
-                return true;
-            case R.id.dstPort:
-                dstPortDialog.show();
-                return true;
-            case R.id.srcPort:
-                srcPortDialog.show();
-                return true;
+        if (isRootAvailable) {
+            switch (item.getItemId()) {
+                case R.id.start:
+
+                    if (item.getTitle().toString().equals("Stop")) {
+                        //Using progress dialogue from main. See comment in: TcpdumpPacketCapture.stopTcpdumpCapture
+                        progressbox.setMessage("Killing Tcpdump process.");
+                        progressbox.show();
+                        TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
+                        stopPlotThread();
+                        item.setTitle("Start");
+                        ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture stopped.");
+                        progressbox.dismiss();
+
+                    } else {
+
+                        TcpdumpPacketCapture.setIpAddress(ipAddress);
+                        TcpdumpPacketCapture.setPort(dstPort);
+                        TcpdumpPacketCapture.initialiseCapture(getActivity());
+                        startPlotThread();
+                        item.setTitle("Stop");
+                    }
+                    return true;
+
+                case R.id.reset:
+                    progressbox.setMessage("Killing Tcpdump process.");
+                    progressbox.show();
+                    TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
+                    stopPlotThread();
+                    TcpdumpPacketCapture.resetData();
+                    menu.findItem(R.id.start).setTitle("Start");
+                    ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture reseted.");
+                    progressbox.dismiss();
+                    return true;
+            }
+
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -398,15 +419,15 @@ public class ReceiverFragment extends Fragment {
 
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
 
-        for (int i = 0; i < 10; i++) {
-            ;
-            float val1 = (float) Math.random()  / 3;
-            float val2 = (float) Math.random()  / 3;
-            float val3 = (float) Math.random() / 3;
+
+        for (HashMap.Entry<Integer, int[]> entry : data.entrySet()) {
+
+            int val1 = entry.getValue()[0];
+            int val2 = entry.getValue()[1];
 
             yVals1.add(new BarEntry(
-                    i,
-                    new float[]{val1, val2, val3},
+                    entry.getKey(),
+                    new float[]{val1, val2},
                     getResources().getDrawable(R.drawable.ic_menu)));
         }
 
@@ -435,12 +456,18 @@ public class ReceiverFragment extends Fragment {
         }
 
         mChart.setFitBars(true);
-        mChart.invalidate();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mChart.invalidate();
+            }
+        });
+
     }
 
     private int[] getColors() {
 
-        int stacksize = 3;
+        int stacksize = 2;
 
         // have as many colors as stack-values per entry
         int[] colors = new int[stacksize];
@@ -450,6 +477,39 @@ public class ReceiverFragment extends Fragment {
         }
 
         return colors;
+    }
+
+    public void startPlotThread() {
+
+        plotThread = new PlotThread();
+        plotThread.start();
+    }
+
+    private void stopPlotThread() {
+        if (plotThread != null) plotThread.stopThread();
+    }
+
+    private class PlotThread extends Thread {
+        public boolean running;
+
+        public void stopThread() {
+            running = false;
+        }
+
+        @Override
+        public void run() {
+            running = true;
+            while (running) {
+                data = TcpdumpPacketCapture.getData();
+                drawPlot();
+                try {
+                    sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
 }
 

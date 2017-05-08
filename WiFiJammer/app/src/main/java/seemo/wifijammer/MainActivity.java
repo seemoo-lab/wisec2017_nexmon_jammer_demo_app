@@ -1,19 +1,17 @@
 package seemo.wifijammer;
 
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
-
+import android.content.res.Configuration;
 import android.graphics.Color;
-
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.res.Configuration;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -561,9 +560,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         int app = vars.get("App");
         if (app == 1) {
             //Transmitter
-            menu.findItem(R.id.ip_address).setVisible(true);
-            menu.findItem(R.id.dstPort).setVisible(true);
-            menu.findItem(R.id.srcPort).setVisible(true);
+            menu.findItem(R.id.start).setVisible(false);
+            menu.findItem(R.id.reset).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
@@ -579,9 +577,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
         }else if ( app == 2){
             //Receiver
-            menu.findItem(R.id.ip_address).setVisible(true);
-            menu.findItem(R.id.dstPort).setVisible(true);
-            menu.findItem(R.id.srcPort).setVisible(true);
+            menu.findItem(R.id.start).setVisible(true);
+            menu.findItem(R.id.reset).setVisible(true);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
@@ -597,9 +594,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_5).setVisibility(View.VISIBLE);
         }else{
             //Jammer
-            menu.findItem(R.id.ip_address).setVisible(false);
-            menu.findItem(R.id.dstPort).setVisible(false);
-            menu.findItem(R.id.srcPort).setVisible(false);
+            menu.findItem(R.id.start).setVisible(false);
+            menu.findItem(R.id.reset).setVisible(false);
             menu.findItem(R.id.amp_phase).setVisible(true);
             menu.findItem(R.id.preset).setVisible(true);
             menu.findItem(R.id.bandwidth).setVisible(true);

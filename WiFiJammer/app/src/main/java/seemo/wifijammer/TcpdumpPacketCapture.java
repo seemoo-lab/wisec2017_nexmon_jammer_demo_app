@@ -7,9 +7,12 @@ package seemo.wifijammer;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+
 import eu.chainfire.libsuperuser.Shell;
 
 public class TcpdumpPacketCapture {
@@ -21,9 +24,16 @@ public class TcpdumpPacketCapture {
     private static String port;
     private static String ipAddress;
 
+    private static HashMap<Integer, int[]> data = new HashMap<>();
+
+    public static HashMap<Integer, int[]> getData() {
+        return data;
+    }
+
     public static void setPort(int new_port){
         port = String.valueOf(new_port);
     }
+
     public static void setIpAddress(InetAddress ipA){
         ipAddress = ipA.toString();
     }
@@ -58,7 +68,9 @@ public class TcpdumpPacketCapture {
                                 progressBox.dismiss();
                             }
                             else {
-                                progressBox.setMessage("There was an error starting root shell. Please grant root permissions or try again.");
+                                progressBox.dismiss();
+                                Toast.makeText(activity.getApplicationContext(), "Root privileges are needed. Please grant root permissions or try again.", Toast.LENGTH_SHORT).show();
+
                             }
                         }
                     });
@@ -78,7 +90,7 @@ public class TcpdumpPacketCapture {
                     }
                     rootTcpdumpShell.addCommand("cd "+ activity.getApplicationInfo().dataDir + "/files/");
 
-                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp src host " + ipAddress + " dst port "+ port, 0, new Shell.OnCommandLineListener() {
+                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp"/* src host " + ipAddress + " dst port "+ port*/, 0, new Shell.OnCommandLineListener() {
                         @Override
                         public void onCommandResult(int commandVal, int exitVal) {
                             if (exitVal < 0) {
@@ -90,7 +102,27 @@ public class TcpdumpPacketCapture {
                         @Override
                         public void onLine(String line) {
                             System.out.println(line);
-                            appendOutput(line);
+
+                            if (line.contains(">")) {
+                                int port = extractPort(line);
+                                if (port > 0) {
+
+                                    if (!data.containsKey(port)) {
+                                        data.put(port, new int[2]);
+                                    }
+
+                                    if (line.contains("[udp sum ok]")) {
+
+                                        data.get(port)[0]++;
+
+                                    } else {
+
+                                        data.get(port)[1]++;
+                                    }
+                                }
+                            }
+
+
                         }
                     });
                 }
@@ -121,16 +153,29 @@ public class TcpdumpPacketCapture {
         return retVal;
     }
 
-    private static void appendOutput(final String line) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringBuilder out = (new StringBuilder()).
-                        append(line).
-                        append((char)10);
-                ((TextView)activity.findViewById(R.id.main_tv)).append(out.toString());
-            }
-        });
+    private static int extractPort(String line) {
+        int port = -1;
+        int index2 = line.indexOf(": [");
+        System.out.println(index2);
+        int index1 = line.lastIndexOf(".");
+        System.out.println(index2);
+        line = line.substring(index1 + 1, index2);
+        port = Integer.parseInt(line);
 
+        if (port > 10000 || port < 1) {
+
+            throw new RuntimeException("Could not extract port from tcpdump line");
+
+        } else {
+
+
+        }
+
+        return port;
     }
+
+    public static void resetData() {
+        data = new HashMap<>();
+    }
+
 }

@@ -6,16 +6,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.net.Inet4Address;
@@ -26,13 +23,12 @@ import java.util.ArrayList;
  * Created by Stathis on 05-May-17.
  */
 
-
+// Power, Modulation(a/g(OFDM) Rate 6,9,12,18,24,36,48,54 ,b(DSSS) rate: 1, 2, 5,5 11,n(mcs index 0..7)  20/40 Mhz Band, LDPC on/off, ac mcs index 0..9  20/40/80 Band), DestPort
 
 public class TransmitterFragment extends Fragment {
+    private static CustomAdapter adapter;
     ArrayList<UDPStream> udpStreams;
     ListView listView;
-
-    private static CustomAdapter adapter;
     ViewGroup container;
     AlertDialog newUDPStreamDialog;
     AlertDialog ipAddressDialog;
@@ -48,7 +44,6 @@ public class TransmitterFragment extends Fragment {
          * Inflate the layout for this fragment
          */
         this.container = container;
-        setHasOptionsMenu(true);
         createNewUDPStreamDialog();
         createAlertDialogs();
         return inflater.inflate(R.layout.transmiter_fragment, container, false);
@@ -91,7 +86,7 @@ public class TransmitterFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()) {
+        /*switch (item.getItemId()) {
             case R.id.ip_address:
                 ipAddressDialog.show();
                 return true;
@@ -101,7 +96,7 @@ public class TransmitterFragment extends Fragment {
             case R.id.srcPort:
                 srcPortDialog.show();
                 return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
