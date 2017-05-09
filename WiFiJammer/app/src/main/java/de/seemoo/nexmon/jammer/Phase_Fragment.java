@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,17 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-
 /**
  * Created by Stathis on 10-Apr-17.
  */
 
-public class Phase_Fragment extends android.app.Fragment implements CircularSlider.OnSliderMovedListener{
+public class Phase_Fragment extends android.app.Fragment implements CircularSlider.OnSliderMovedListener {
+    public double angle = 0.0;
     FragmentListener mCallback;
     Bundle bundle = new Bundle();
-    public interface FragmentListener {
-        public void onUserAction(Bundle bundle);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -42,13 +39,14 @@ public class Phase_Fragment extends android.app.Fragment implements CircularSlid
             // ampSet = bundle.getBoolean("ampSet");
         }
     }
-    public double angle = 0.0;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
          * Inflate the layout for this fragment
          */
         return inflater.inflate(R.layout.phase_fragment, container, false);
     }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -64,13 +62,19 @@ public class Phase_Fragment extends android.app.Fragment implements CircularSlid
 
 
     }
-    public void onSliderMoved(double pos){
+
+    public void onSliderMoved(double pos) {
         angle = pos;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putDouble("angle", angle);
+    }
+
+    public interface FragmentListener {
+        void onUserAction(Bundle bundle);
     }
 }
 

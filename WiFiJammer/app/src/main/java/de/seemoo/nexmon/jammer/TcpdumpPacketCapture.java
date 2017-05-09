@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 /**
  * Created by Stathis on 07-May-17.
@@ -30,11 +30,11 @@ public class TcpdumpPacketCapture {
         return data;
     }
 
-    public static void setPort(int new_port){
+    public static void setPort(int new_port) {
         port = String.valueOf(new_port);
     }
 
-    public static void setIpAddress(InetAddress ipA){
+    public static void setIpAddress(InetAddress ipA) {
         ipAddress = ipA.toString();
     }
 
@@ -47,12 +47,11 @@ public class TcpdumpPacketCapture {
         progressBox.setCancelable(false);
         progressBox.show();
         if (rootTcpdumpShell != null) {
-            if(!isInitialised)
+            if (!isInitialised)
                 throw new RuntimeException("rootTcpdump shell: not null, initialized:false");
             startTcpdumpCapture();
             progressBox.dismiss();
-        }
-        else {
+        } else {
             rootTcpdumpShell = new Shell.Builder().
                     useSU().
                     setWantSTDERR(false).
@@ -66,8 +65,7 @@ public class TcpdumpPacketCapture {
                                 progressBox.setMessage("Starting packet capture..");
                                 startTcpdumpCapture();
                                 progressBox.dismiss();
-                            }
-                            else {
+                            } else {
                                 progressBox.dismiss();
                                 Toast.makeText(activity.getApplicationContext(), "Root privileges are needed. Please grant root permissions or try again.", Toast.LENGTH_SHORT).show();
 
@@ -81,24 +79,25 @@ public class TcpdumpPacketCapture {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     List<String> out = Shell.SH.run("ps | grep tcpdump");
-                    if(out.size() > 0){
+                    if (out.size() > 0) {
                         //One process already running. Don't start another.
-                        ((TextView)activity.findViewById(R.id.main_tv)).setText("Tcpdump "+out.size()+" process already running at pid: " + (out.get(0).split("\\s+"))[1] );
+                        ((TextView) activity.findViewById(R.id.main_tv)).setText("Tcpdump " + out.size() + " process already running at pid: " + (out.get(0).split("\\s+"))[1]);
                         return;
                     }
-                    rootTcpdumpShell.addCommand("cd "+ activity.getApplicationInfo().dataDir + "/files/");
+                    rootTcpdumpShell.addCommand("cd " + activity.getApplicationInfo().dataDir + "/files/");
 
-                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp"/* src host " + ipAddress + " dst port "+ port*/, 0, new Shell.OnCommandLineListener() {
+                    rootTcpdumpShell.addCommand("./tcpdump -vvv -n src host 130.83.113.225"/* src host " + ipAddress + " dst port "+ port*/, 0, new Shell.OnCommandLineListener() {
                         @Override
                         public void onCommandResult(int commandVal, int exitVal) {
                             if (exitVal < 0) {
-                                if(progressBox.isShowing()) {
+                                if (progressBox.isShowing()) {
                                     progressBox.setMessage("Error returned by shell command...");
                                 }
                             }
                         }
+
                         @Override
                         public void onLine(String line) {
                             System.out.println(line);
@@ -125,27 +124,25 @@ public class TcpdumpPacketCapture {
 
                         }
                     });
-                }
-                catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     throw ex;
                 }
             }
         }).start();
-        ((TextView)activity.findViewById(R.id.main_tv)).setText("Packet capture started..");
+        ((TextView) activity.findViewById(R.id.main_tv)).setText("Packet capture started..");
     }
 
-    public static int stopTcpdumpCapture(Activity _activity){
+    public static int stopTcpdumpCapture(Activity _activity) {
         int retVal = 0;
-        try{
+        try {
             List<String> out = Shell.SH.run("ps | grep tcpdump");
-            for(String x : out) {
+            for (String x : out) {
                 String[] temp = x.split("\\s+");
-                Integer pid =  Integer.valueOf(temp[1]);
-                List<String> exitOutput =  Shell.SU.run("kill -9 " + pid.toString());
+                Integer pid = Integer.valueOf(temp[1]);
+                List<String> exitOutput = Shell.SU.run("kill -9 " + pid.toString());
             }
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             //retVal = -1;
             throw ex;
@@ -158,7 +155,7 @@ public class TcpdumpPacketCapture {
         int index2 = line.indexOf(": [");
         System.out.println(index2);
         int index1 = line.lastIndexOf(".");
-        System.out.println(index2);
+        System.out.println(index1);
         line = line.substring(index1 + 1, index2);
         port = Integer.parseInt(line);
 

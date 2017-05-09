@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,5 +1,4 @@
-package seemo.wifijammer;
-
+package de.seemoo.nexmon.jammer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.Math.*;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 /**
  * Created by Stathis on 03-May-17.
@@ -26,11 +26,9 @@ public class PlotFragment extends android.app.Fragment {
     public double[] phases;
     public double[] freqs;
     public Double[] times;
+    public ArrayList<double[]> data = new ArrayList<>();
     Complex[] complexFrequencySignal;
     Complex[] complexTimeSignal;
-
-    public ArrayList<double[]> data = new ArrayList<>() ;
-
     private XYPlot timePlot;
     private XYPlot freqPlot;
     private XYSeries series1;
@@ -65,8 +63,8 @@ public class PlotFragment extends android.app.Fragment {
         timePlot = (XYPlot) getActivity().findViewById(R.id.timePlot);
         freqPlot = (XYPlot) getActivity().findViewById(R.id.freqPlot);
 
-        seriesFormat1 = new LineAndPointFormatter(getActivity() , R.xml.line_point_formatter1);
-        seriesFormat2 = new LineAndPointFormatter(getActivity() , R.xml.line_point_formatter2);
+        seriesFormat1 = new LineAndPointFormatter(getActivity(), R.xml.line_point_formatter1);
+        seriesFormat2 = new LineAndPointFormatter(getActivity(), R.xml.line_point_formatter2);
     }
 
 
@@ -76,15 +74,15 @@ public class PlotFragment extends android.app.Fragment {
     }
 
 
-    public void constructIQSamples(){
+    public void constructIQSamples() {
 
         int fs = 40000000;
         int size = amps.length;
 
         times = new Double[size];
 
-        for (int j = 0; j<size; j++){
-            times[j] = (j*1.0)/fs;
+        for (int j = 0; j < size; j++) {
+            times[j] = (j * 1.0) / fs;
         }
         System.out.println(Arrays.toString(times));
 
@@ -93,10 +91,10 @@ public class PlotFragment extends android.app.Fragment {
 
         complexFrequencySignal = new Complex[size];
 
-        for (int j=0; j<size; j++){
-            i=amps[j]*cos(phases[j]);
-            q=(-1)*amps[j]*sin(phases[j]);
-            complexFrequencySignal[j] = new Complex(i,q);
+        for (int j = 0; j < size; j++) {
+            i = amps[j] * cos(phases[j]);
+            q = (-1) * amps[j] * sin(phases[j]);
+            complexFrequencySignal[j] = new Complex(i, q);
         }
         /*Complex[] x = new Complex[7];
 
@@ -110,12 +108,12 @@ public class PlotFragment extends android.app.Fragment {
         complexTimeSignal = FFT.ifft(complexFrequencySignal);
     }
 
-    public void constructFFTPlotData(){
+    public void constructFFTPlotData() {
 
         int size = amps.length;
         Integer values[] = new Integer[size];
 
-        for(int i=0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             values[i] = (size / 2 - i) * (-1);
         }
         System.out.println(Arrays.toString(values));
@@ -123,28 +121,28 @@ public class PlotFragment extends android.app.Fragment {
         Complex x[] = FFT.fftshift(complexFrequencySignal);
         Double mags[] = new Double[size];
 
-        for (int i=0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             mags[i] = x[i].abs();
         }
 
-        List<? extends Number> xVals =  Arrays.asList(values);
-        List<? extends Number> yVals =  Arrays.asList(mags);
+        List<? extends Number> xVals = Arrays.asList(values);
+        List<? extends Number> yVals = Arrays.asList(mags);
 
         freqPlot.removeSeries(series3);
         series3 = new SimpleXYSeries(xVals, yVals, "FFT");
-        freqPlot.addSeries(series3,seriesFormat1);
+        freqPlot.addSeries(series3, seriesFormat1);
     }
 
-    public void plotSignals(double[] amps_new, double[] phases_new, double[] freqs_new){
+    public void plotSignals(double[] amps_new, double[] phases_new, double[] freqs_new) {
         this.amps = amps_new;
         this.phases = phases_new;
         this.freqs = freqs_new;
 
         constructIQSamples();
 
-        List<? extends Number> xVals =  Arrays.asList(times);
-        List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal,0));
-        List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal,1));
+        List<? extends Number> xVals = Arrays.asList(times);
+        List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal, 0));
+        List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal, 1));
 
         timePlot.removeSeries(series1);
         timePlot.removeSeries(series2);
@@ -156,16 +154,16 @@ public class PlotFragment extends android.app.Fragment {
         constructFFTPlotData();
     }
 
-    public Double[] extractPart(Complex[] complex, int part){
-        Double[]data = new Double[complex.length];
-        if (part == 0){
+    public Double[] extractPart(Complex[] complex, int part) {
+        Double[] data = new Double[complex.length];
+        if (part == 0) {
             //Real
-            for (int j=0; j<data.length; j++){
+            for (int j = 0; j < data.length; j++) {
                 data[j] = complex[j].re();
             }
-        }else{
+        } else {
             //Imaginary
-            for (int j=0; j<data.length; j++){
+            for (int j = 0; j < data.length; j++) {
                 data[j] = complex[j].im();
             }
         }

@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -38,7 +38,7 @@ public class TransmitterFragment extends Fragment {
     int dstPort = 5678;
 
     InetAddress ipAddress;
-    
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
          * Inflate the layout for this fragment
@@ -53,7 +53,7 @@ public class TransmitterFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        try{
+        try {
 
             FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
@@ -68,24 +68,23 @@ public class TransmitterFragment extends Fragment {
 
             listView = (ListView) getView().findViewById(R.id.senderList);
 
-            udpStreams= new ArrayList<>();
+            udpStreams = new ArrayList<>();
 
-            udpStreams.add(new UDPStream(srcPort, ipAddress ,dstPort,getActivity()));
+            udpStreams.add(new UDPStream(srcPort, ipAddress, dstPort, getActivity()));
 
-            adapter= new CustomAdapter(udpStreams,getActivity().getApplicationContext());
+            adapter = new CustomAdapter(udpStreams, getActivity().getApplicationContext());
 
             listView.setAdapter(adapter);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
 
 
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         /*switch (item.getItemId()) {
             case R.id.ip_address:
                 ipAddressDialog.show();
@@ -100,7 +99,7 @@ public class TransmitterFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createAlertDialogs(){
+    public void createAlertDialogs() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -111,13 +110,13 @@ public class TransmitterFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         EditText editText = (EditText) srcPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
-                        if (port>10000 || port <1){
+                        if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             srcPort = port;
 
                         }
@@ -125,8 +124,8 @@ public class TransmitterFragment extends Fragment {
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -143,13 +142,13 @@ public class TransmitterFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         EditText editText = (EditText) dstPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
-                        if (port>10000 || port <1){
+                        if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             dstPort = port;
 
                         }
@@ -157,8 +156,8 @@ public class TransmitterFragment extends Fragment {
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -175,26 +174,27 @@ public class TransmitterFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
 
                         EditText editText = (EditText) ipLayout.findViewById(R.id.ipAddress);
                         final IPAddressValidator ipAddressValidator = new IPAddressValidator();
-                        try{
+                        try {
                             String txt = editText.getText().toString();
                             if (ipAddressValidator.validate(txt)) {
                                 ipAddress = Inet4Address.getByName(txt);
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(getActivity().getApplicationContext(), "This is not a valid IP address please try again", Toast.LENGTH_SHORT).show();
                             }
-                        }catch (Exception e){e.printStackTrace();}
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -204,7 +204,7 @@ public class TransmitterFragment extends Fragment {
 
     }
 
-    public void createNewUDPStreamDialog(){
+    public void createNewUDPStreamDialog() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -215,14 +215,14 @@ public class TransmitterFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         EditText editText = (EditText) linear_layout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
-                        if (port>10000 || port <1){
+                        if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        }else{
-                            UDPStream udpStream = new UDPStream(srcPort, ipAddress ,port, getActivity());
+                        } else {
+                            UDPStream udpStream = new UDPStream(srcPort, ipAddress, port, getActivity());
                             udpStreams.add(udpStream);
                             adapter.notifyDataSetChanged();
                         }
@@ -230,8 +230,8 @@ public class TransmitterFragment extends Fragment {
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });

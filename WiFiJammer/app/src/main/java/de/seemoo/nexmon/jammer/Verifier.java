@@ -4,29 +4,29 @@
  * Copyright (C) 2013 Hensence.com
  */
 
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
+import android.content.Context;
 
-import java.security.NoSuchAlgorithmException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import android.content.Context;
+import java.security.NoSuchAlgorithmException;
 
 public class Verifier {
 
     private Verifier() {
     }
 
-    public static void crackPassword(){
+    public static void crackPassword() {
         boolean guard = false;
         String pass = "";
-        for(int num1 = 0; num1<10; num1++){
-            for(int num2 = 0; num2<10; num2++){
-                for(int num3 = 0; num3<10; num3++){
-                    for(int num4 = 0; num4<10; num4++){
-                        pass = String.valueOf(num1) +  String.valueOf(num2) +  String.valueOf(num3) +  String.valueOf(num4);
+        for (int num1 = 0; num1 < 10; num1++) {
+            for (int num2 = 0; num2 < 10; num2++) {
+                for (int num3 = 0; num3 < 10; num3++) {
+                    for (int num4 = 0; num4 < 10; num4++) {
+                        pass = String.valueOf(num1) + String.valueOf(num2) + String.valueOf(num3) + String.valueOf(num4);
                         System.out.println("Testing password: " + pass);
-                        if (Verifier.verifyPassword(null,pass)){
+                        if (Verifier.verifyPassword(null, pass)) {
                             guard = true;
                             break;
                         }
@@ -44,15 +44,15 @@ public class Verifier {
     }
 
     public static boolean verifyPassword(Context p1, String p2) {
-        if(p2.length() != 0x4) {
+        if (p2.length() != 0x4) {
             return false;
         }
         byte[] v = encodePassword(p2);
         byte[] p = "09042ec2c2c08c4cbece042681caf1d13984f24a".getBytes();
-        if(v.length == p.length) {
-            for(int i = 0x0; i < v.length; i = i + 0x1) {
-                if (v[i] != p[i]){
-                   return false;
+        if (v.length == p.length) {
+            for (int i = 0x0; i < v.length; i = i + 0x1) {
+                if (v[i] != p[i]) {
+                    return false;
                 }
             }
             return true;
@@ -62,27 +62,26 @@ public class Verifier {
 
     private static byte[] encodePassword(String p1) {
         //byte[] SALT = {0X1c02505f, 0x1c025023, 0x1c025053, 0x1c025049, 0x1c02504b, 0x1c025023, 0x1c02505f};
-        byte[] SALT ={95,35,83,73,75,35,95};
+        byte[] SALT = {95, 35, 83, 73, 75, 35, 95};
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append((char)SALT[0]);
-            sb.append((char)SALT[1]);
-            for(int i = 0x0; i < p1.length(); i = i + 1) {
-                sb.append((char)p1.getBytes("iso-8859-1")[i]);
-                sb.append((char)SALT[(i + 2)]);
+            sb.append((char) SALT[0]);
+            sb.append((char) SALT[1]);
+            for (int i = 0x0; i < p1.length(); i = i + 1) {
+                sb.append((char) p1.getBytes("iso-8859-1")[i]);
+                sb.append((char) SALT[(i + 2)]);
             }
-            sb.append((char)SALT[6]);
+            sb.append((char) SALT[6]);
             String string_result = sb.toString();
             string_result = SHA1(string_result);
             //byte[] result = {
             return string_result.getBytes("iso-8859-1");
 
-            } catch(UnsupportedEncodingException e)
-            {
-                e.printStackTrace();
-            }
-            return null;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
+        return null;
+    }
 
 
     private static String convertToHex(byte[] data) {
@@ -96,7 +95,7 @@ public class Verifier {
                 else
                     buf.append((char) ('a' + (halfbyte - 10)));
                 halfbyte = data[i] & 0x0F;
-            } while(two_halfs++ < 1);
+            } while (two_halfs++ < 1);
         }
         return buf.toString();
     }
@@ -105,13 +104,13 @@ public class Verifier {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-1");
-                byte[] sha1hash = new byte[0x28];
+            byte[] sha1hash = new byte[0x28];
             md.update(p1.getBytes("iso-8859-1"), 0x0, p1.length());
             sha1hash = md.digest();
             return convertToHex(sha1hash);
-        } catch(NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        } catch(UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;

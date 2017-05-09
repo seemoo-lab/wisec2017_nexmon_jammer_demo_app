@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -51,7 +51,7 @@ import eu.chainfire.libsuperuser.Shell;
 public class ReceiverFragment extends Fragment {
 
     static Boolean isRootAvailable;
-    public HashMap<Integer, int[]> data;
+    public HashMap<Integer, int[]> data = new HashMap<>();
     ViewGroup container;
     AlertDialog ipAddressDialog;
     AlertDialog srcPortDialog;
@@ -79,11 +79,16 @@ public class ReceiverFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
+        initializePlot();
+
         super.onActivityCreated(savedInstanceState);
         dstPort = 1234;
-        try{
+        try {
             ipAddress = Inet4Address.getByName("192.168.1.2");
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         /*final Button bt = (Button) getView().findViewById(R.id.button_packet_capture);
         bt.setOnClickListener(new View.OnClickListener() {
@@ -126,17 +131,15 @@ public class ReceiverFragment extends Fragment {
                 isRootAvailable = Shell.SU.available();
                 Boolean processExists = false;
                 String pid = null;
-                if(isRootAvailable) {
+                if (isRootAvailable) {
                     List<String> out = Shell.SH.run("ps | grep tcpdump");
-                    if(out.size() == 1) {
+                    if (out.size() == 1) {
                         processExists = true;
                         pid = (out.get(0).split("\\s+"))[1];
-                    }
-                    else if(out.size() == 0) {
+                    } else if (out.size() == 0) {
                         if (loadTcpdumpFromAssets() != 0)
                             throw new RuntimeException("Copying tcpdump binary failed.");
-                    }
-                    else
+                    } else
                         throw new RuntimeException("Searching for running process returned unexpected result.");
                 }
 
@@ -147,13 +150,11 @@ public class ReceiverFragment extends Fragment {
                     public void run() {
                         if (!isRootAvailable) {
                             ((TextView) getView().findViewById(R.id.main_tv)).setText("Root permission denied or phone is not rooted!");
-                        }
-                        else {
-                            if(processExistsFinal){
-                                ((TextView) getView().findViewById(R.id.main_tv)).setText("Tcpdump already running at pid: " + pidFinal );
+                        } else {
+                            if (processExistsFinal) {
+                                ((TextView) getView().findViewById(R.id.main_tv)).setText("Tcpdump already running at pid: " + pidFinal);
                                 menu.findItem(R.id.start).setTitle("Stop");
-                            }
-                            else {
+                            } else {
                                 ((TextView) getView().findViewById(R.id.main_tv)).setText("Initialization Successful.");
 
                             }
@@ -173,7 +174,7 @@ public class ReceiverFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (isRootAvailable) {
             switch (item.getItemId()) {
                 case R.id.start:
@@ -216,7 +217,7 @@ public class ReceiverFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createAlertDialogs(){
+    public void createAlertDialogs() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -227,13 +228,13 @@ public class ReceiverFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         EditText editText = (EditText) srcPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
-                        if (port>10000 || port <1){
+                        if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             srcPort = port;
 
                         }
@@ -241,8 +242,8 @@ public class ReceiverFragment extends Fragment {
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -259,13 +260,13 @@ public class ReceiverFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         EditText editText = (EditText) dstPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
-                        if (port>10000 || port <1){
+                        if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             dstPort = port;
 
                         }
@@ -273,8 +274,8 @@ public class ReceiverFragment extends Fragment {
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -291,26 +292,27 @@ public class ReceiverFragment extends Fragment {
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
 
                         EditText editText = (EditText) ipLayout.findViewById(R.id.ipAddress);
                         final IPAddressValidator ipAddressValidator = new IPAddressValidator();
-                        try{
+                        try {
                             String txt = editText.getText().toString();
                             if (ipAddressValidator.validate(txt)) {
                                 ipAddress = Inet4Address.getByName(txt);
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(getActivity().getApplicationContext(), "This is not a valid IP address please try again", Toast.LENGTH_SHORT).show();
                             }
-                        }catch (Exception e){e.printStackTrace();}
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
@@ -320,7 +322,7 @@ public class ReceiverFragment extends Fragment {
 
     }
 
-    private int loadTcpdumpFromAssets(){
+    private int loadTcpdumpFromAssets() {
         int retval = 0;
         // updating progress message from other thread causes exception.
         // progressbox.setMessage("Setting up data..");
@@ -329,7 +331,7 @@ public class ReceiverFragment extends Fragment {
         File file = new File(filePath);
         AssetManager assetManager = getActivity().getAssets();
 
-        try{
+        try {
             if (file.exists()) {
                 Shell.SH.run("chmod 755 " + filePath);
                 return retval;
@@ -339,9 +341,7 @@ public class ReceiverFragment extends Fragment {
             // Mark the binary executable
 
             Shell.SH.run("chmod 755 " + filePath);
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             retval = -1;
         }
@@ -358,32 +358,29 @@ public class ReceiverFragment extends Fragment {
             new File(destPath).createNewFile();
             out = new FileOutputStream(destPath);
             // write file
-            while((len = in.read(buff)) != -1){
+            while ((len = in.read(buff)) != -1) {
                 out.write(buff, 0, len);
             }
             in.close();
             out.flush();
             out.close();
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return -1;
         }
         return 0;
     }
 
-    private void drawPlot(){
-
+    private void initializePlot() {
         mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
 
         mChart.getDescription().setEnabled(false);
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(40);
+        mChart.setMaxVisibleValueCount(400);
 
-        // scaling can now only be done on x- and y-axis separately
-        mChart.setPinchZoom(false);
+        mChart.setPinchZoom(true);
 
         mChart.setDrawGridBackground(false);
         mChart.setDrawBarShadow(false);
@@ -417,11 +414,22 @@ public class ReceiverFragment extends Fragment {
 
         // mChart.setDrawLegend(false);
 
+        mChart.setFitBars(true);
+        mChart.invalidate();
+
+    }
+
+    private void updatePlot() {
+
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
 
+        String legends[] = new String[data.size()];
+        int i = 0;
 
         for (HashMap.Entry<Integer, int[]> entry : data.entrySet()) {
 
+            legends[i] = entry.getKey().toString();
+            i++;
             int val1 = entry.getValue()[0];
             int val2 = entry.getValue()[1];
 
@@ -437,13 +445,15 @@ public class ReceiverFragment extends Fragment {
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
             set1.setValues(yVals1);
+            set1.setColors(getColors());
+            set1.setStackLabels(legends);
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new BarDataSet(yVals1, "Statistics Vienna 2014");
+            set1 = new BarDataSet(yVals1, "TCPDUMP Graph");
             set1.setDrawIcons(false);
             set1.setColors(getColors());
-            set1.setStackLabels(new String[]{"Births", "Divorces", "Marriages"});
+            set1.setStackLabels(legends);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);
@@ -455,7 +465,6 @@ public class ReceiverFragment extends Fragment {
             mChart.setData(data);
         }
 
-        mChart.setFitBars(true);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -501,7 +510,7 @@ public class ReceiverFragment extends Fragment {
             running = true;
             while (running) {
                 data = TcpdumpPacketCapture.getData();
-                drawPlot();
+                updatePlot();
                 try {
                     sleep(1000);
                 } catch (Exception e) {

@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 
 import android.content.Context;
@@ -49,14 +49,15 @@ public class VerticalSeekBar extends AppCompatSeekBar {
         if (!isEnabled()) {
             return false;
         }
-        HorizontalScrollView scrollView =  (HorizontalScrollView) ((View)getParent().getParent().getParent()).findViewById(R.id.horizontalScrollView);
+        HorizontalScrollView scrollView = (HorizontalScrollView) ((View) getParent().getParent().getParent()).findViewById(R.id.horizontalScrollView);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // Disable Scrolling
-                scrollView.setOnTouchListener(new View.OnTouchListener()
-                {
+                scrollView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public synchronized boolean onTouch(View v, MotionEvent event) {return true;}
+                    public synchronized boolean onTouch(View v, MotionEvent event) {
+                        return true;
+                    }
                 });
 
             case MotionEvent.ACTION_MOVE:

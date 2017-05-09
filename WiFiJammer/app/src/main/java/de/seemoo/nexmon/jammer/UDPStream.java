@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.app.Activity;
 
@@ -27,7 +27,7 @@ public class UDPStream {
         this.act = act;
     }
 
-    public void stopThread(){
+    public void stopThread() {
         running = false;
     }
 

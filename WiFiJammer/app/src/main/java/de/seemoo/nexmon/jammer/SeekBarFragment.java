@@ -1,10 +1,9 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,12 +11,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import java.text.DecimalFormat;
-import java.util.concurrent.CountDownLatch;
 import java.util.Date;
 
 /**
@@ -37,10 +35,6 @@ public class SeekBarFragment extends android.app.Fragment {
     // Interface to pass data to Activity
     Bundle bundle = new Bundle();
     FragmentListener mCallback;
-
-    public interface FragmentListener {
-        public void onUserAction(Bundle bundle);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -62,15 +56,18 @@ public class SeekBarFragment extends android.app.Fragment {
         setHasOptionsMenu(true);
     }
 
-    public void setData(double[] data){
+    public void setData(double[] data) {
         this.data = data;
     }
 
-    public void setFreqs(double[] freqs){
+    public void setFreqs(double[] freqs) {
         this.freqs = freqs;
     }
 
-    public void setBandwidth(int band){this.bandwidth = band; updateFrequencies();}
+    public void setBandwidth(int band) {
+        this.bandwidth = band;
+        updateFrequencies();
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -101,7 +98,7 @@ public class SeekBarFragment extends android.app.Fragment {
         }
 
         ((TextView) getView().findViewById(R.id.fragment_header)).setText(name);
-        ( getView().findViewById(R.id.fragment_header)).setBackgroundColor(color);
+        (getView().findViewById(R.id.fragment_header)).setBackgroundColor(color);
 
         inflater = LayoutInflater.from(getActivity());
         container = (LinearLayout) getView().findViewById(R.id.container);
@@ -132,12 +129,12 @@ public class SeekBarFragment extends android.app.Fragment {
         updateFrequencies();
         setScrollToMiddle();
         if (name.equals("Amplitudes")) passFreqs();
-        bundle.putBoolean("setup", true) ;
+        bundle.putBoolean("setup", true);
         mCallback.onUserAction(bundle);
 
     }
 
-    public void createSeekBars(){
+    public void createSeekBars() {
         int idft_size = 512;
 
         final DecimalFormat df = new DecimalFormat("#.###");
@@ -145,22 +142,22 @@ public class SeekBarFragment extends android.app.Fragment {
         Date counter = new Date();
         // System.out.println(counter.getTime());
 
-        for (int i = 0; i<idft_size; i++){
+        for (int i = 0; i < idft_size; i++) {
 
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.verticalseekbar, container, false);
-            layout.setTag(name +"_layout_"+ i);
+            layout.setTag(name + "_layout_" + i);
             //container.addView(layout);
 
 
             TextView freq = (TextView) layout.findViewById(R.id.verticalSeekbarFreq);
 
-            freq.setTag(name +"_freq_"+ i);
+            freq.setTag(name + "_freq_" + i);
 
             TextView sliderText = (TextView) layout.findViewById(R.id.verticalSeekbarText);
 
             freq.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public synchronized boolean onTouch (View v, MotionEvent event){
+                public synchronized boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         HorizontalScrollView scrollView = (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
                         // enable scrolling
@@ -173,7 +170,7 @@ public class SeekBarFragment extends android.app.Fragment {
 
             sliderText.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public synchronized boolean onTouch (View v, MotionEvent event){
+                public synchronized boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         HorizontalScrollView scrollView = (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
                         // enable scrolling
@@ -184,31 +181,31 @@ public class SeekBarFragment extends android.app.Fragment {
                 }
             });
 
-            sliderText.setTag(name +"_tag_"+ i);
+            sliderText.setTag(name + "_tag_" + i);
 
 
             final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) layout.findViewById(R.id.verticalSeekbar);
-            verticalSeekBar.setTag(name +"_seekBar_" +i);
+            verticalSeekBar.setTag(name + "_seekBar_" + i);
 
-            verticalSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            verticalSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
-                public void onStopTrackingTouch (SeekBar seekBar){
+                public void onStopTrackingTouch(SeekBar seekBar) {
                 }
 
                 @Override
-                public void onStartTrackingTouch (SeekBar seekBar){
+                public void onStartTrackingTouch(SeekBar seekBar) {
                 }
 
                 @Override
-                public synchronized void onProgressChanged (SeekBar seekBar, int progress, boolean fromUser){
+                public synchronized void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
                     int tag = Integer.parseInt(((String) seekBar.getTag()).replaceAll("[^0-9]", ""));
 
-                    TextView sliderText = (TextView) getView().findViewWithTag(name+ "_tag_" + tag);
+                    TextView sliderText = (TextView) getView().findViewWithTag(name + "_tag_" + tag);
                     double value;
-                    if (name=="Amplitudes") value = progress / 100.0;
-                    else  value = (progress-50)/100.0*2*Math.PI;
+                    if (name == "Amplitudes") value = progress / 100.0;
+                    else value = (progress - 50) / 100.0 * 2 * Math.PI;
 
                     value = Double.valueOf(df.format(value));
                     sliderText.setText("" + value);
@@ -224,21 +221,20 @@ public class SeekBarFragment extends android.app.Fragment {
         }
     }
 
-    public void setConcurrentScrolling(String name){
-        HorizontalScrollView scrollView =  (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
+    public void setConcurrentScrolling(String name) {
+        HorizontalScrollView scrollView = (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
         scrollView.setTag(name);
 
-        scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener()
-        {
+        scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
-            public void onScrollChange (View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY){
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-                if (v.getTag().toString().equals("Amplitudes")){
+                if (v.getTag().toString().equals("Amplitudes")) {
                     HorizontalScrollView sv = (HorizontalScrollView) getView().getRootView().findViewWithTag("Phases");
-                    sv.scrollTo( scrollX, scrollY);
-                }else {
-                    HorizontalScrollView sv = (HorizontalScrollView)getView().getRootView().findViewWithTag("Amplitudes");
-                    sv.scrollTo( scrollX, scrollY);
+                    sv.scrollTo(scrollX, scrollY);
+                } else {
+                    HorizontalScrollView sv = (HorizontalScrollView) getView().getRootView().findViewWithTag("Amplitudes");
+                    sv.scrollTo(scrollX, scrollY);
                 }
 
             }
@@ -249,12 +245,12 @@ public class SeekBarFragment extends android.app.Fragment {
     public void updateFrequencies() {
         int idft_size = data.length;
 
-        double subcarrier_s = (bandwidth*2 / (double) idft_size) * 1000;
+        double subcarrier_s = (bandwidth * 2 / (double) idft_size) * 1000;
 
         final DecimalFormat df = new DecimalFormat("#.###");
         double subcarrier_size = Double.valueOf(df.format(subcarrier_s));
 
-        for (int j = 0; j< idft_size; j++) {
+        for (int j = 0; j < idft_size; j++) {
             final LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
             final TextView freq = (TextView) getView().getRootView().findViewWithTag(name + "_freq_" + j);
             final TextView sliderText = (TextView) getView().getRootView().findViewWithTag(name + "_tag_" + j);
@@ -308,21 +304,25 @@ public class SeekBarFragment extends android.app.Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void setScrollToMiddle(){
-        HorizontalScrollView scrollView =  (HorizontalScrollView) getView().getRootView().findViewById(R.id.horizontalScrollView) ;
+    public void setScrollToMiddle() {
+        HorizontalScrollView scrollView = (HorizontalScrollView) getView().getRootView().findViewById(R.id.horizontalScrollView);
 
-        int x =data.length;
-        if (x%2 != 0) x--;
-        TextView freq = (TextView)  getView().getRootView().findViewById(R.id.main).findViewWithTag(name +"_freq_" + 1);
+        int x = data.length;
+        if (x % 2 != 0) x--;
+        TextView freq = (TextView) getView().getRootView().findViewById(R.id.main).findViewWithTag(name + "_freq_" + 1);
         //System.out.println(x);
         //System.out.println(freq.getWidth());
 
-        scrollView.scrollTo(freq.getWidth()*x/2 - (scrollView.getWidth()/2-freq.getWidth()/2), 0);
+        scrollView.scrollTo(freq.getWidth() * x / 2 - (scrollView.getWidth() / 2 - freq.getWidth() / 2), 0);
     }
 
-    public void passFreqs (){
+    public void passFreqs() {
         bundle.putDoubleArray("freqs", freqs);
         mCallback.onUserAction(bundle);
+    }
+
+    public interface FragmentListener {
+        void onUserAction(Bundle bundle);
     }
 }
 

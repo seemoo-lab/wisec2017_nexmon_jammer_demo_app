@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 
 import android.app.FragmentManager;
@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.HashMap;
+
 
 public class MainActivity extends AppCompatActivity implements SeekBarFragment.FragmentListener {
     private static final String TAG = "MainActivity";
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             vars.put("WiFi Channel", 1);
             vars.put("Bandwidth", 20);
             vars.put("JammerType", 0);
-            vars.put("App",0);
+            vars.put("App", 0);
             amps = new double[vars.get("idft size")];
             phases = new double[vars.get("idft size")];
             freqs = new double[vars.get("idft size")];
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -104,19 +105,19 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         @Override
                         public boolean onNavigationItemSelected(MenuItem menuItem) {
                             menuItem.setChecked(true);
-                            switch(menuItem.getTitle().toString()){
+                            switch (menuItem.getTitle().toString()) {
                                 case "Transmitter":
-                                    vars.put("App",1);
+                                    vars.put("App", 1);
                                     setTitle("Transmitter");
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                                 case "WiFi Jammer":
-                                    vars.put("App",0);
+                                    vars.put("App", 0);
                                     setTitle("Jammer");
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                                 case "Receiver":
-                                    vars.put("App",2);
+                                    vars.put("App", 2);
                                     setTitle("Receiver");
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
@@ -178,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             ampFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_1, ampFragment, "amp");
         }
-        plotFragment= (PlotFragment) fragmentManager.findFragmentByTag("plot");
-        if (plotFragment == null){
+        plotFragment = (PlotFragment) fragmentManager.findFragmentByTag("plot");
+        if (plotFragment == null) {
             plotFragment = new PlotFragment();
             Bundle args = new Bundle();
             args.putDoubleArray("amps", amps);
@@ -190,13 +191,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         }
 
         transmitterFragment = (TransmitterFragment) fragmentManager.findFragmentByTag("transmitter");
-        if (transmitterFragment == null){
+        if (transmitterFragment == null) {
             transmitterFragment = new TransmitterFragment();
             fragmentTransaction.add(R.id.fragment_container_4, transmitterFragment, "transmitter");
         }
 
         receiverFragment = (ReceiverFragment) fragmentManager.findFragmentByTag("receiver");
-        if (receiverFragment == null){
+        if (receiverFragment == null) {
             receiverFragment = new ReceiverFragment();
             fragmentTransaction.add(R.id.fragment_container_5, receiverFragment, "receiver");
         }
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             case "Bandwidth":
                                 if (item.getTitle().toString().contains(vars.get("Bandwidth").toString())) {
                                     int value = vars.get("Bandwidth");
-                                    switch (value){
+                                    switch (value) {
                                         case 20:
                                             menu.findItem(R.id.pre_20).setVisible(true);
                                             menu.findItem(R.id.pre_40).setVisible(false);
@@ -261,14 +262,14 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                 }
                                 break;
                             case "Preset":
-                                if (item.getTitle().toString().replace("in","").contains(vars.get("Preset").toString()+ " ")) {
+                                if (item.getTitle().toString().replace("in", "").contains(vars.get("Preset").toString() + " ")) {
                                     setPresetPilots(vars.get("Preset"));
                                     item.setChecked(true);
                                 }
                                 break;
                             case "Type":
                                 int type = vars.get("JammerType");
-                                if (getJammerType(item.getTitle().toString())==type) {
+                                if (getJammerType(item.getTitle().toString()) == type) {
                                     item.setChecked(true);
                                 }
                                 break;
@@ -340,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                 plotFragment.plotSignals(amps, phases, freqs);
                                 return true;
                         }
-                    }else{
+                    } else {
                         /**
                          * Portrait mode of the device
                          */
@@ -392,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     ampFragment.setBandwidth(value);
                     phaseFragment.setBandwidth(value);
                     vars.put("Preset", value);
-                    switch (value){
+                    switch (value) {
                         case 20:
                             menu.findItem(R.id.pre_20).setVisible(true).setChecked(true);
                             menu.findItem(R.id.pre_40).setVisible(false);
@@ -448,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         seekBarText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    int value = Integer.parseInt(((EditText)v).getText().toString());
+                    int value = Integer.parseInt(((EditText) v).getText().toString());
                     if (value > 512) value = 512;
                     if (value < 1) value = 1;
                     seekBar.setProgress(value);
@@ -485,10 +486,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1,int id) {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
                         int value = Integer.parseInt(seekBarText.getText().toString());
-                        if (value != vars.get("idft size")){
+                        if (value != vars.get("idft size")) {
                             if (value > 512) value = 512;
                             if (value < 1) value = 1;
                             vars.put("idft size", value);
@@ -506,8 +507,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
                     }
                 })
-                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         seekBarText.setText(String.valueOf(vars.get("idft size")));
                         dialog.cancel();
                     }
@@ -524,17 +525,17 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckedTextView checkedTextView = (CheckedTextView) view;
-                if (checkedTextView.isChecked()){
+                if (checkedTextView.isChecked()) {
                     vars.put("WiFi Channel", Integer.parseInt(checkedTextView.getText().toString().split(" ", 2)[0]));
                 }
 
             }
         });
 
-        String[] channels = {"1 (2412MHz)","2 (2417MHz)","3 (2422MHz)","4 (2427MHz)","5 (2432MHz)","6 (2437MHz)","7 (2442MHz)","8 (2447MHz)","9 (2452MHz)","10 (2457MHz)","11 (2462MHz)","12 (2467MHz)","13 (2472MHz)","14 (2484MHz)","184 (4920MHz)","186 (4930MHz)","188 (4940MHz)","190 (4950MHz)","192 (4960MHz)","194 (4970MHz)","196 (4980MHz)","198 (4990MHz)","200 (5000MHz)","202 (5010MHz)","204 (5020MHz)","206 (5030MHz)","208 (5040MHz)","210 (5050MHz)","212 (5060MHz)","214 (5070MHz)","216 (5080MHz)","218 (5090MHz)","220 (5100MHz)","222 (5110MHz)","224 (5120MHz)","226 (5130MHz)","228 (5140MHz)","32 (5160MHz)","34 (5170MHz)","36 (5180MHz)","38 (5190MHz)","40 (5200MHz)","42 (5210MHz)","44 (5220MHz)","46 (5230MHz)"," 48 (5240MHz)","50 (5250MHz)","52 (5260MHz)","54 (5270MHz)","56 (5280MHz)","58 (5290MHz)","60 (5300MHz)","62 (5310MHz)","64 (5320MHz)","66 (5330MHz)","68 (5340MHz)","70 (5350MHz)","72 (5360MHz)","74 (5370MHz)","76 (5380MHz)","78 (5390MHz)","80 (5400MHz)","82 (5410MHz)","84 (5420MHz)","86 (5430MHz)","88 (5440MHz)","90 (5450MHz)","92 (5460MHz)","94 (5470MHz)","96 (5480MHz)","98 (5490MHz)","100 (5500MHz)","102 (5510MHz)","104 (5520MHz)","106 (5530MHz)","108 (5540MHz)","110 (5550MHz)","112 (5560MHz)","114 (5570MHz)","116 (5580MHz)","118 (5590MHz)","120 (5600MHz)","122 (5610MHz)","124 (5620MHz)","126 (5630MHz)","128 (5640MHz)","130 (5650MHz)","132 (5660MHz)","134 (5670MHz)","136 (5680MHz)","138 (5690MHz)","140 (5700MHz)","142 (5710MHz)","144 (5720MHz)","145 (5725MHz)","146 (5730MHz)","147 (5735MHz)","148 (5740MHz)","149 (5745MHz)","150 (5750MHz)","151 (5755MHz)","152 (5760MHz)","153 (5765MHz)","154 (5770MHz)","155 (5775MHz)","156 (5780MHz)","157 (5785MHz)","158 (5790MHz)","159 (5795MHz)","160 (5800MHz)","161 (5805MHz)","162 (5810MHz)","163 (5815MHz)","164 (5820MHz)","165 (5825MHz)","166 (5830MHz)","168 (5840MHz)","170 (5850MHz)","172 (5860MHz)","174 (5870MHz)","176 (5880MHz)","178 (5890MHz)","180 (5900MHz)"};
+        String[] channels = {"1 (2412MHz)", "2 (2417MHz)", "3 (2422MHz)", "4 (2427MHz)", "5 (2432MHz)", "6 (2437MHz)", "7 (2442MHz)", "8 (2447MHz)", "9 (2452MHz)", "10 (2457MHz)", "11 (2462MHz)", "12 (2467MHz)", "13 (2472MHz)", "14 (2484MHz)", "184 (4920MHz)", "186 (4930MHz)", "188 (4940MHz)", "190 (4950MHz)", "192 (4960MHz)", "194 (4970MHz)", "196 (4980MHz)", "198 (4990MHz)", "200 (5000MHz)", "202 (5010MHz)", "204 (5020MHz)", "206 (5030MHz)", "208 (5040MHz)", "210 (5050MHz)", "212 (5060MHz)", "214 (5070MHz)", "216 (5080MHz)", "218 (5090MHz)", "220 (5100MHz)", "222 (5110MHz)", "224 (5120MHz)", "226 (5130MHz)", "228 (5140MHz)", "32 (5160MHz)", "34 (5170MHz)", "36 (5180MHz)", "38 (5190MHz)", "40 (5200MHz)", "42 (5210MHz)", "44 (5220MHz)", "46 (5230MHz)", " 48 (5240MHz)", "50 (5250MHz)", "52 (5260MHz)", "54 (5270MHz)", "56 (5280MHz)", "58 (5290MHz)", "60 (5300MHz)", "62 (5310MHz)", "64 (5320MHz)", "66 (5330MHz)", "68 (5340MHz)", "70 (5350MHz)", "72 (5360MHz)", "74 (5370MHz)", "76 (5380MHz)", "78 (5390MHz)", "80 (5400MHz)", "82 (5410MHz)", "84 (5420MHz)", "86 (5430MHz)", "88 (5440MHz)", "90 (5450MHz)", "92 (5460MHz)", "94 (5470MHz)", "96 (5480MHz)", "98 (5490MHz)", "100 (5500MHz)", "102 (5510MHz)", "104 (5520MHz)", "106 (5530MHz)", "108 (5540MHz)", "110 (5550MHz)", "112 (5560MHz)", "114 (5570MHz)", "116 (5580MHz)", "118 (5590MHz)", "120 (5600MHz)", "122 (5610MHz)", "124 (5620MHz)", "126 (5630MHz)", "128 (5640MHz)", "130 (5650MHz)", "132 (5660MHz)", "134 (5670MHz)", "136 (5680MHz)", "138 (5690MHz)", "140 (5700MHz)", "142 (5710MHz)", "144 (5720MHz)", "145 (5725MHz)", "146 (5730MHz)", "147 (5735MHz)", "148 (5740MHz)", "149 (5745MHz)", "150 (5750MHz)", "151 (5755MHz)", "152 (5760MHz)", "153 (5765MHz)", "154 (5770MHz)", "155 (5775MHz)", "156 (5780MHz)", "157 (5785MHz)", "158 (5790MHz)", "159 (5795MHz)", "160 (5800MHz)", "161 (5805MHz)", "162 (5810MHz)", "163 (5815MHz)", "164 (5820MHz)", "165 (5825MHz)", "166 (5830MHz)", "168 (5840MHz)", "170 (5850MHz)", "172 (5860MHz)", "174 (5870MHz)", "176 (5880MHz)", "178 (5890MHz)", "180 (5900MHz)"};
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, channels);
         listView.setAdapter(adapter);
-        listView.setItemChecked(vars.get("WiFi Channel")-1, true);
+        listView.setItemChecked(vars.get("WiFi Channel") - 1, true);
 
         alertDialogBuilder = new AlertDialog.Builder(this);
 
@@ -544,12 +545,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("CLOSE",null);
+                .setPositiveButton("CLOSE", null);
 
 
         // create alert dialog
         channelDialog = alertDialogBuilder.create();
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -575,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_4).setVisibility(View.VISIBLE);
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
-        }else if ( app == 2){
+        } else if (app == 2) {
             //Receiver
             menu.findItem(R.id.start).setVisible(true);
             menu.findItem(R.id.reset).setVisible(true);
@@ -592,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_5).setVisibility(View.VISIBLE);
-        }else{
+        } else {
             //Jammer
             menu.findItem(R.id.start).setVisible(false);
             menu.findItem(R.id.reset).setVisible(false);
@@ -618,7 +620,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
                 System.out.println("Entering Landscape Mode");
-                switch(vars.get("amp_phase")){
+                switch (vars.get("amp_phase")) {
                     case R.id.amp:
                         findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -652,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 System.out.println("Entering Portrait Mode");
-                switch(vars.get("amp_phase")){
+                switch (vars.get("amp_phase")) {
                     case R.id.plot:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -675,37 +677,37 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         }
     }
 
-    public void setPresetPilots(int value){
-        switch (value){
+    public void setPresetPilots(int value) {
+        switch (value) {
             case 20:
-                VerticalSeekBar seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_0");
+                VerticalSeekBar seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_0");
                 seekBar.setProgress(100);
                 break;
             case 40:
-                seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_1");
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_1");
                 seekBar.setProgress(100);
                 break;
             case 2040:
-                seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_2");
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_2");
                 seekBar.setProgress(100);
                 break;
             case 80:
-                seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_3");
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_3");
                 seekBar.setProgress(100);
                 break;
             case 2080:
-                seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_4");
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_4");
                 seekBar.setProgress(100);
                 break;
             case 4080:
-                seekBar = (VerticalSeekBar)  findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_5");
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_5");
                 seekBar.setProgress(100);
                 break;
         }
     }
 
-    public int getJammerType(String title){
-        switch (title){
+    public int getJammerType(String title) {
+        switch (title) {
             case "Simple Reactive Jammer":
                 return 0;
             case "Acknowledging Jammer":

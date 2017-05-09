@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -31,32 +31,34 @@ public class FFT {
         int n = x.length;
 
         // base case
-        if (n == 1) return new Complex[] { x[0] };
+        if (n == 1) return new Complex[]{x[0]};
 
         // radix 2 Cooley-Tukey FFT
-        if (n % 2 != 0) { throw new RuntimeException("n is not a power of 2"); }
+        if (n % 2 != 0) {
+            throw new RuntimeException("n is not a power of 2");
+        }
 
         // fft of even terms
-        Complex[] even = new Complex[n/2];
-        for (int k = 0; k < n/2; k++) {
-            even[k] = x[2*k];
+        Complex[] even = new Complex[n / 2];
+        for (int k = 0; k < n / 2; k++) {
+            even[k] = x[2 * k];
         }
         Complex[] q = fft(even);
 
         // fft of odd terms
-        Complex[] odd  = even;  // reuse the array
-        for (int k = 0; k < n/2; k++) {
-            odd[k] = x[2*k + 1];
+        Complex[] odd = even;  // reuse the array
+        for (int k = 0; k < n / 2; k++) {
+            odd[k] = x[2 * k + 1];
         }
         Complex[] r = fft(odd);
 
         // combine
         Complex[] y = new Complex[n];
-        for (int k = 0; k < n/2; k++) {
+        for (int k = 0; k < n / 2; k++) {
             double kth = -2 * k * Math.PI / n;
             Complex wk = new Complex(Math.cos(kth), Math.sin(kth));
-            y[k]       = q[k].plus(wk.times(r[k]));
-            y[k + n/2] = q[k].minus(wk.times(r[k]));
+            y[k] = q[k].plus(wk.times(r[k]));
+            y[k + n / 2] = q[k].minus(wk.times(r[k]));
         }
         return y;
     }
@@ -94,7 +96,9 @@ public class FFT {
 
         // should probably pad x and y with 0s so that they have same length
         // and are powers of 2
-        if (x.length != y.length) { throw new RuntimeException("Dimensions don't agree"); }
+        if (x.length != y.length) {
+            throw new RuntimeException("Dimensions don't agree");
+        }
 
         int n = x.length;
 
@@ -117,13 +121,13 @@ public class FFT {
     public static Complex[] convolve(Complex[] x, Complex[] y) {
         Complex ZERO = new Complex(0, 0);
 
-        Complex[] a = new Complex[2*x.length];
-        for (int i = 0;        i <   x.length; i++) a[i] = x[i];
-        for (int i = x.length; i < 2*x.length; i++) a[i] = ZERO;
+        Complex[] a = new Complex[2 * x.length];
+        for (int i = 0; i < x.length; i++) a[i] = x[i];
+        for (int i = x.length; i < 2 * x.length; i++) a[i] = ZERO;
 
-        Complex[] b = new Complex[2*y.length];
-        for (int i = 0;        i <   y.length; i++) b[i] = y[i];
-        for (int i = y.length; i < 2*y.length; i++) b[i] = ZERO;
+        Complex[] b = new Complex[2 * y.length];
+        for (int i = 0; i < y.length; i++) b[i] = y[i];
+        for (int i = y.length; i < 2 * y.length; i++) b[i] = ZERO;
 
         return cconvolve(a, b);
     }
@@ -138,40 +142,41 @@ public class FFT {
         System.out.println();
     }
 
-    public static Complex[] fftshift(Complex[]x){
+    public static Complex[] fftshift(Complex[] x) {
 
         int size = x.length;
 
-        double[] real = extractPart(x,0);
-        double[] imag = extractPart(x,1);
+        double[] real = extractPart(x, 0);
+        double[] imag = extractPart(x, 1);
 
         Complex[] result = new Complex[size];
 
-        if (size % 2 == 0){
-            for (int i=0; i < size; i++){
-                if (i < size/2) result[i] = new Complex(real[size/2 + i],imag[size/2 + i]);
-                else result[i] = new Complex(real[i - size/2],imag[i - size/2]);
+        if (size % 2 == 0) {
+            for (int i = 0; i < size; i++) {
+                if (i < size / 2) result[i] = new Complex(real[size / 2 + i], imag[size / 2 + i]);
+                else result[i] = new Complex(real[i - size / 2], imag[i - size / 2]);
             }
-        }else{
-            for (int i=0; i< size; i++){
-                if (i < size/2) result[i] = new Complex(real[size/2 + 1 + i],imag[size/2 + 1 + i]);
-                else result[i] = new Complex(real[i - size/2],imag[i - size/2]);
+        } else {
+            for (int i = 0; i < size; i++) {
+                if (i < size / 2)
+                    result[i] = new Complex(real[size / 2 + 1 + i], imag[size / 2 + 1 + i]);
+                else result[i] = new Complex(real[i - size / 2], imag[i - size / 2]);
             }
         }
         return result;
 
     }
 
-    public static double[] extractPart(Complex[] complex, int part){
-        double[]data = new double[complex.length];
-        if (part == 0){
+    public static double[] extractPart(Complex[] complex, int part) {
+        double[] data = new double[complex.length];
+        if (part == 0) {
             //Real
-            for (int j=0; j<data.length; j++){
+            for (int j = 0; j < data.length; j++) {
                 data[j] = complex[j].re();
             }
-        }else{
+        } else {
             //Imaginary
-            for (int j=0; j<data.length; j++){
+            for (int j = 0; j < data.length; j++) {
                 data[j] = complex[j].im();
             }
         }

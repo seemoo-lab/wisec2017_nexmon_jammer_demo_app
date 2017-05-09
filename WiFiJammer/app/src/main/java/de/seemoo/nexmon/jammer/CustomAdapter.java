@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 
 
-public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener{
+public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener {
 
     Context mContext;
     TextView txtName;
@@ -30,18 +30,17 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
     public CustomAdapter(ArrayList<UDPStream> data, Context context) {
         super(context, R.layout.transmiter_list_item, data);
         this.dataSet = data;
-        this.mContext=context;
+        this.mContext = context;
 
     }
 
     @Override
     public void onClick(View v) {
-        int position=(Integer) v.getTag();
-        UDPStream  udpStream =  getItem(position);
+        int position = (Integer) v.getTag();
+        UDPStream udpStream = getItem(position);
 
 
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.item_delete:
                 /**
                  * TODO Stop UDP Stream
@@ -51,13 +50,13 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                 break;
             case R.id.item_run_stop:
                 run_pause = (ImageView) parentView.findViewWithTag(position);
-                if (udpStream.running){
+                if (udpStream.running) {
                     /**
                      * TODO Stop UDP Stream
                      */
                     System.out.println("Thread stopped");
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
-                }else{
+                } else {
                     /**
                      * TODO Start UDP Stream
                      */

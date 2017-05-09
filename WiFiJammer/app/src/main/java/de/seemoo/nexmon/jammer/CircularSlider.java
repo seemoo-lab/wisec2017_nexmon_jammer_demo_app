@@ -1,4 +1,4 @@
-package seemo.wifijammer;
+package de.seemoo.nexmon.jammer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -21,28 +21,11 @@ import java.util.Arrays;
 
 public class CircularSlider extends View {
 
-    /**
-     * Listener interface used to detect when slider moves around.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public interface OnSliderMovedListener {
-
-        /**
-         * This method is invoked when slider moves, providing position of the slider thumb.
-         *
-         * @param pos Value between 0 and 1 representing the current angle.<br>
-         *            {@code pos = (Angle - StartingAngle) / (2 * Pi)}
-         */
-        void onSliderMoved(double pos);
-    }
-
     private int mThumbX;
     private int mThumbY;
-
     private int mCircleCenterX;
     private int mCircleCenterY;
     private int mCircleRadius;
-
     private Drawable mThumbImage;
     private int mPadding;
     private int mThumbSize;
@@ -53,7 +36,6 @@ public class CircularSlider extends View {
     private double mStartAngle;
     private double mAngle = mStartAngle;
     private boolean mIsThumbSelected = false;
-
     private Paint mPaint = new Paint();
     private SweepGradient mGradientShader;
     private OnSliderMovedListener mListener;
@@ -308,6 +290,21 @@ public class CircularSlider extends View {
         // redraw the whole component
         invalidate();
         return true;
+    }
+
+    /**
+     * Listener interface used to detect when slider moves around.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public interface OnSliderMovedListener {
+
+        /**
+         * This method is invoked when slider moves, providing position of the slider thumb.
+         *
+         * @param pos Value between 0 and 1 representing the current angle.<br>
+         *            {@code pos = (Angle - StartingAngle) / (2 * Pi)}
+         */
+        void onSliderMoved(double pos);
     }
 
 }
