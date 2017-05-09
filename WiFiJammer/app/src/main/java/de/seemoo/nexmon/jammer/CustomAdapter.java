@@ -45,6 +45,7 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                 /**
                  * TODO Stop UDP Stream
                  */
+                udpStream.running = false;
                 dataSet.remove(udpStream);
                 notifyDataSetChanged();
                 break;
@@ -54,12 +55,14 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                     /**
                      * TODO Stop UDP Stream
                      */
+                    udpStream.running = false;
                     System.out.println("Thread stopped");
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
                 } else {
                     /**
                      * TODO Start UDP Stream
                      */
+                    udpStream.running = true;
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;

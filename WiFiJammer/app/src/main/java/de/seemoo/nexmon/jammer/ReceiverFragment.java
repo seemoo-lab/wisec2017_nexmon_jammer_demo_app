@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
@@ -27,6 +27,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -48,7 +50,7 @@ import eu.chainfire.libsuperuser.Shell;
 
 
 //MAC, IP Address, new graph button
-public class ReceiverFragment extends Fragment {
+public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     static Boolean isRootAvailable;
     public HashMap<Integer, int[]> data = new HashMap<>();
@@ -63,8 +65,7 @@ public class ReceiverFragment extends Fragment {
     private ProgressDialog progressbox;
     private PlotThread plotThread;
     private HorizontalBarChart mChart;
-
-    private TextView tvX, tvY;
+    private ArrayList<Integer> ports = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -80,8 +81,6 @@ public class ReceiverFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
-        initializePlot();
-
         super.onActivityCreated(savedInstanceState);
         dstPort = 1234;
         try {
@@ -90,33 +89,6 @@ public class ReceiverFragment extends Fragment {
             e.printStackTrace();
         }
 
-        /*final Button bt = (Button) getView().findViewById(R.id.button_packet_capture);
-        bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button bt = (Button) v;
-                bt.setEnabled(false);
-                if((int)bt.getTag() == 1){
-                    //Using progress dialogue from main. See comment in: TcpdumpPacketCapture.stopTcpdumpCapture
-                    progressbox.setMessage("Killing Tcpdump process.");
-                    progressbox.show();
-                    TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
-                    bt.setText("Start Capture");
-                    bt.setTag(0);
-                    ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture stopped.");
-                    progressbox.dismiss();
-                }
-                else if ((int)bt.getTag() == 0){
-
-                    TcpdumpPacketCapture.setIpAddress(ipAddress);
-                    TcpdumpPacketCapture.setPort(dstPort);
-                    TcpdumpPacketCapture.initialiseCapture(getActivity());
-                    bt.setText("Stop  Capture");
-                    bt.setTag(1);
-                }
-                bt.setEnabled(true);
-            }
-        });*/
 
 
         progressbox = new ProgressDialog(getActivity());
@@ -132,10 +104,13 @@ public class ReceiverFragment extends Fragment {
                 Boolean processExists = false;
                 String pid = null;
                 if (isRootAvailable) {
+
+                    initializePlot();
+
                     List<String> out = Shell.SH.run("ps | grep tcpdump");
                     if (out.size() == 1) {
                         processExists = true;
-                        pid = (out.get(0).split("\\s+"))[1];
+                        TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
                     } else if (out.size() == 0) {
                         if (loadTcpdumpFromAssets() != 0)
                             throw new RuntimeException("Copying tcpdump binary failed.");
@@ -143,21 +118,13 @@ public class ReceiverFragment extends Fragment {
                         throw new RuntimeException("Searching for running process returned unexpected result.");
                 }
 
-                final Boolean processExistsFinal = processExists;
-                final String pidFinal = pid;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (!isRootAvailable) {
                             ((TextView) getView().findViewById(R.id.main_tv)).setText("Root permission denied or phone is not rooted!");
                         } else {
-                            if (processExistsFinal) {
-                                ((TextView) getView().findViewById(R.id.main_tv)).setText("Tcpdump already running at pid: " + pidFinal);
-                                menu.findItem(R.id.start).setTitle("Stop");
-                            } else {
-                                ((TextView) getView().findViewById(R.id.main_tv)).setText("Initialization Successful.");
-
-                            }
+                            ((TextView) getView().findViewById(R.id.main_tv)).setText("Receiver Ready");
                         }
                     }
                 });
@@ -205,6 +172,9 @@ public class ReceiverFragment extends Fragment {
                     TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
                     stopPlotThread();
                     TcpdumpPacketCapture.resetData();
+                    data = new HashMap<>();
+                    ports = new ArrayList<>();
+                    initializePlot();
                     menu.findItem(R.id.start).setTitle("Start");
                     ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture reseted.");
                     progressbox.dismiss();
@@ -378,7 +348,13 @@ public class ReceiverFragment extends Fragment {
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(400);
+        mChart.setMaxVisibleValueCount(40);
+
+        mChart.setNoDataText("No packets were received yet");
+
+        mChart.setAutoScaleMinMaxEnabled(false);
+
+        mChart.setKeepPositionOnRotation(true);
 
         mChart.setPinchZoom(true);
 
@@ -389,18 +365,16 @@ public class ReceiverFragment extends Fragment {
         mChart.setHighlightFullBarEnabled(false);
 
         // change the position of the y-labels
-        YAxis leftAxis = mChart.getAxisLeft();
-        //leftAxis.setValueFormatter(new MyAxisValueFormatter());
+        YAxis leftAxis = mChart.getAxisRight();
+        leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-        mChart.getAxisRight().setEnabled(false);
+        mChart.getAxisLeft().setEnabled(false);
 
-        XAxis xLabels = mChart.getXAxis();
-        xLabels.setPosition(XAxisPosition.TOP);
-
-        // mChart.setDrawXLabels(false);
-        // mChart.setDrawYLabels(false);
-
-        // setting data
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setValueFormatter(this);
+        xAxis.setPosition(XAxisPosition.TOP);
+        xAxis.setGranularity(1);
+        xAxis.setGranularityEnabled(true);
 
 
         Legend l = mChart.getLegend();
@@ -412,58 +386,52 @@ public class ReceiverFragment extends Fragment {
         l.setFormToTextSpace(4f);
         l.setXEntrySpace(6f);
 
-        // mChart.setDrawLegend(false);
-
-        mChart.setFitBars(true);
-        mChart.invalidate();
 
     }
 
     private void updatePlot() {
 
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
 
-        String legends[] = new String[data.size()];
         int i = 0;
-
         for (HashMap.Entry<Integer, int[]> entry : data.entrySet()) {
 
-            legends[i] = entry.getKey().toString();
-            i++;
-            int val1 = entry.getValue()[0];
-            int val2 = entry.getValue()[1];
+            int key = entry.getKey();
+            int[] value = entry.getValue();
 
-            yVals1.add(new BarEntry(
-                    entry.getKey(),
-                    new float[]{val1, val2},
-                    getResources().getDrawable(R.drawable.ic_menu)));
+            float val1 = value[0];
+            float val2 = value[0];
+
+            ports.add(i, key);
+
+            yVals.add(new BarEntry(i, new float[]{val1, val2}));
+            i++;
         }
 
-        BarDataSet set1;
+        BarDataSet set;
 
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
-            set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
-            set1.setValues(yVals1);
-            set1.setColors(getColors());
-            set1.setStackLabels(legends);
+            set = (BarDataSet) mChart.getData().getDataSetByIndex(0);
+            set.setValues(yVals);
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new BarDataSet(yVals1, "TCPDUMP Graph");
-            set1.setDrawIcons(false);
-            set1.setColors(getColors());
-            set1.setStackLabels(legends);
+            set = new BarDataSet(yVals, "");
+            set.setDrawIcons(false);
+            set.setColors(getColors());
+            set.setStackLabels(new String[]{"FCS correct", "FCS incorrect"});
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-            dataSets.add(set1);
+            dataSets.add(set);
 
             BarData data = new BarData(dataSets);
-            //data.setValueFormatter(new MyValueFormatter());
-            data.setValueTextColor(Color.WHITE);
+            data.setValueFormatter(new LargeValueFormatter());
 
             mChart.setData(data);
         }
+
+        mChart.setFitBars(true);
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -473,6 +441,15 @@ public class ReceiverFragment extends Fragment {
         });
 
     }
+
+    @Override
+    public String getFormattedValue(float value, AxisBase axis) {
+        // "value" represents the position of the label on the axis (x or y)
+
+        return ports.get((int) value).toString();
+    }
+
+
 
     private int[] getColors() {
 
@@ -510,7 +487,7 @@ public class ReceiverFragment extends Fragment {
             running = true;
             while (running) {
                 data = TcpdumpPacketCapture.getData();
-                updatePlot();
+                if (data.size() > 0) updatePlot();
                 try {
                     sleep(1000);
                 } catch (Exception e) {

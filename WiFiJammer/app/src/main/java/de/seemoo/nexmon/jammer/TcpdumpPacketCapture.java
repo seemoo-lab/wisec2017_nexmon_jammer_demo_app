@@ -88,7 +88,7 @@ public class TcpdumpPacketCapture {
                     }
                     rootTcpdumpShell.addCommand("cd " + activity.getApplicationInfo().dataDir + "/files/");
 
-                    rootTcpdumpShell.addCommand("./tcpdump -vvv -n src host 130.83.113.225"/* src host " + ipAddress + " dst port "+ port*/, 0, new Shell.OnCommandLineListener() {
+                    rootTcpdumpShell.addCommand("./tcpdump -vvv -nn udp"/* src host " + ipAddress + " dst port "+ port*/, 0, new Shell.OnCommandLineListener() {
                         @Override
                         public void onCommandResult(int commandVal, int exitVal) {
                             if (exitVal < 0) {
@@ -100,7 +100,7 @@ public class TcpdumpPacketCapture {
 
                         @Override
                         public void onLine(String line) {
-                            System.out.println(line);
+                            //System.out.println(line);
 
                             if (line.contains(">")) {
                                 int port = extractPort(line);
@@ -153,9 +153,9 @@ public class TcpdumpPacketCapture {
     private static int extractPort(String line) {
         int port = -1;
         int index2 = line.indexOf(": [");
-        System.out.println(index2);
+        //System.out.println(index2);
         int index1 = line.lastIndexOf(".");
-        System.out.println(index1);
+        //System.out.println(index1);
         line = line.substring(index1 + 1, index2);
         port = Integer.parseInt(line);
 
