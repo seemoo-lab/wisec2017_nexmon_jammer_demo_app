@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public PlotFragment plotFragment;
     public TransmitterFragment transmitterFragment;
     public ReceiverFragment receiverFragment;
+    public AboutUsFragment aboutUsFragment;
 
 
     public void onUserAction(Bundle bundle) {
@@ -123,7 +124,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                                 case "About":
-                                    Toast.makeText(getApplicationContext(),"about",Toast.LENGTH_SHORT).show();
+                                    vars.put("App", 3);
+                                    setTitle("About Us");
+                                    onConfigurationChanged(getResources().getConfiguration());
                                     break;
                             }
                             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
@@ -204,6 +207,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         if (receiverFragment == null) {
             receiverFragment = new ReceiverFragment();
             fragmentTransaction.add(R.id.fragment_container_5, receiverFragment, "receiver");
+        }
+
+        aboutUsFragment = (AboutUsFragment) fragmentManager.findFragmentByTag("aboutUs");
+        if (aboutUsFragment == null) {
+            aboutUsFragment = new AboutUsFragment();
+            fragmentTransaction.add(R.id.fragment_container_6, aboutUsFragment, "aboutUs");
         }
         fragmentTransaction.commit();
     }
@@ -581,6 +590,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_4).setVisibility(View.VISIBLE);
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
         } else if (app == 2) {
             //Receiver
             menu.findItem(R.id.start).setVisible(true);
@@ -598,6 +608,25 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_5).setVisibility(View.VISIBLE);
+            findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+        } else if (app == 3) {
+            //About
+            menu.findItem(R.id.start).setVisible(false);
+            menu.findItem(R.id.reset).setVisible(false);
+            menu.findItem(R.id.amp_phase).setVisible(false);
+            menu.findItem(R.id.amp_phase).setVisible(false);
+            menu.findItem(R.id.preset).setVisible(false);
+            menu.findItem(R.id.bandwidth).setVisible(false);
+            menu.findItem(R.id.channel).setVisible(false);
+            menu.findItem(R.id.idft).setVisible(false);
+            menu.findItem(R.id.type).setVisible(false);
+            findViewById(R.id.jammingPower).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_6).setVisibility(View.VISIBLE);
         } else {
             //Jammer
             menu.findItem(R.id.start).setVisible(false);
@@ -631,6 +660,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
                     case R.id.phase:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
@@ -638,6 +668,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
                     case R.id.plot:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
@@ -645,6 +676,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                 }
 
             } else {
@@ -665,6 +697,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
                     default:
                         findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
@@ -672,6 +705,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
 
                 }
