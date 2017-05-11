@@ -18,12 +18,13 @@
 
     <de.seemoo.nexmon.jammer.VerticalSeekBar
         android:id="@+id/verticalSeekbar"
-        style="@android:style/Widget.Holo.Light.SeekBar"
+        style="@style/SeekBarSeemoo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
         android:max="100"
-        android:padding="20dp" />
+        android:padding="20dp"
+        android:thumb="@drawable/seemoo_scrubber_control_selector_holo_light" />
 
     <TextView
         android:id="@+id/verticalSeekbarText"

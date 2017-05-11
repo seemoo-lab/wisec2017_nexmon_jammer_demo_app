@@ -15,4 +15,10 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <style name="SeekBarSeemoo" parent="android:Widget.Holo.Light.SeekBar">
+        <item name="android:progressDrawable">@drawable/seemoo_scrubber_progress_horizontal_holo_light</item>
+        <item name="android:indeterminateDrawable">@drawable/seemoo_scrubber_progress_horizontal_holo_light</item>
+        <item name="android:thumb">@drawable/seemoo_scrubber_control_selector_holo_light</item>
+    </style>
+
 </resources>

@@ -63,7 +63,7 @@
 
             <SeekBar
                 android:id="@+id/seekbar"
-                style="@android:style/Widget.Holo.Light.SeekBar"
+                style="@style/SeekBarSeemoo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"

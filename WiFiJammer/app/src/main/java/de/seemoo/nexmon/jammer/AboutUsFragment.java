@@ -86,11 +86,6 @@ public class AboutUsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        try {
-            getActivity().setTitle("Nexmon: About us");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void onClickNexmon() {
