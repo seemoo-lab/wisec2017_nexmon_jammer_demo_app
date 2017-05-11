@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                     setTitle("Transmitter");
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
-                                case "WiFi Jammer":
+                                case "Jammer":
                                     vars.put("App", 0);
                                     setTitle("Jammer");
                                     onConfigurationChanged(getResources().getConfiguration());
@@ -120,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                     vars.put("App", 2);
                                     setTitle("Receiver");
                                     onConfigurationChanged(getResources().getConfiguration());
+                                    break;
+                                case "About":
+                                    Toast.makeText(getApplicationContext(),"about",Toast.LENGTH_SHORT).show();
                                     break;
                             }
                             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
@@ -532,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             }
         });
 
-        String[] channels = {"1 (2412MHz)", "2 (2417MHz)", "3 (2422MHz)", "4 (2427MHz)", "5 (2432MHz)", "6 (2437MHz)", "7 (2442MHz)", "8 (2447MHz)", "9 (2452MHz)", "10 (2457MHz)", "11 (2462MHz)", "12 (2467MHz)", "13 (2472MHz)", "14 (2484MHz)", "184 (4920MHz)", "186 (4930MHz)", "188 (4940MHz)", "190 (4950MHz)", "192 (4960MHz)", "194 (4970MHz)", "196 (4980MHz)", "198 (4990MHz)", "200 (5000MHz)", "202 (5010MHz)", "204 (5020MHz)", "206 (5030MHz)", "208 (5040MHz)", "210 (5050MHz)", "212 (5060MHz)", "214 (5070MHz)", "216 (5080MHz)", "218 (5090MHz)", "220 (5100MHz)", "222 (5110MHz)", "224 (5120MHz)", "226 (5130MHz)", "228 (5140MHz)", "32 (5160MHz)", "34 (5170MHz)", "36 (5180MHz)", "38 (5190MHz)", "40 (5200MHz)", "42 (5210MHz)", "44 (5220MHz)", "46 (5230MHz)", " 48 (5240MHz)", "50 (5250MHz)", "52 (5260MHz)", "54 (5270MHz)", "56 (5280MHz)", "58 (5290MHz)", "60 (5300MHz)", "62 (5310MHz)", "64 (5320MHz)", "66 (5330MHz)", "68 (5340MHz)", "70 (5350MHz)", "72 (5360MHz)", "74 (5370MHz)", "76 (5380MHz)", "78 (5390MHz)", "80 (5400MHz)", "82 (5410MHz)", "84 (5420MHz)", "86 (5430MHz)", "88 (5440MHz)", "90 (5450MHz)", "92 (5460MHz)", "94 (5470MHz)", "96 (5480MHz)", "98 (5490MHz)", "100 (5500MHz)", "102 (5510MHz)", "104 (5520MHz)", "106 (5530MHz)", "108 (5540MHz)", "110 (5550MHz)", "112 (5560MHz)", "114 (5570MHz)", "116 (5580MHz)", "118 (5590MHz)", "120 (5600MHz)", "122 (5610MHz)", "124 (5620MHz)", "126 (5630MHz)", "128 (5640MHz)", "130 (5650MHz)", "132 (5660MHz)", "134 (5670MHz)", "136 (5680MHz)", "138 (5690MHz)", "140 (5700MHz)", "142 (5710MHz)", "144 (5720MHz)", "145 (5725MHz)", "146 (5730MHz)", "147 (5735MHz)", "148 (5740MHz)", "149 (5745MHz)", "150 (5750MHz)", "151 (5755MHz)", "152 (5760MHz)", "153 (5765MHz)", "154 (5770MHz)", "155 (5775MHz)", "156 (5780MHz)", "157 (5785MHz)", "158 (5790MHz)", "159 (5795MHz)", "160 (5800MHz)", "161 (5805MHz)", "162 (5810MHz)", "163 (5815MHz)", "164 (5820MHz)", "165 (5825MHz)", "166 (5830MHz)", "168 (5840MHz)", "170 (5850MHz)", "172 (5860MHz)", "174 (5870MHz)", "176 (5880MHz)", "178 (5890MHz)", "180 (5900MHz)"};
+        String[] channels = {"1 (2412MHz)", "2 (2417MHz)", "3 (2422MHz)", "4 (2427MHz)", "5 (2432MHz)", "6 (2437MHz)", "7 (2442MHz)", "8 (2447MHz)", "9 (2452MHz)", "10 (2457MHz)", "11 (2462MHz)", "12 (2467MHz)", "13 (2472MHz)", "14 (2484MHz)", "184 (4920MHz)", "186 (4930MHz)", "188 (4940MHz)", "190 (4950MHz)", "192 (4960MHz)", "194 (4970MHz)", "196 (4980MHz)", "198 (4990MHz)", "200 (5000MHz)", "202 (5010MHz)", "204 (5020MHz)", "206 (5030MHz)", "208 (5040MHz)", "210 (5050MHz)", "212 (5060MHz)", "214 (5070MHz)", "216 (5080MHz)", "218 (5090MHz)", "220 (5100MHz)", "222 (5110MHz)", "224 (5120MHz)", "226 (5130MHz)", "228 (5140MHz)", "32 (5160MHz)", "34 (5170MHz)", "36 (5180MHz)", "38 (5190MHz)", "40 (5200MHz)", "42 (5210MHz)", "44 (5220MHz)", "46 (5230MHz)", "48 (5240MHz)", "50 (5250MHz)", "52 (5260MHz)", "54 (5270MHz)", "56 (5280MHz)", "58 (5290MHz)", "60 (5300MHz)", "62 (5310MHz)", "64 (5320MHz)", "66 (5330MHz)", "68 (5340MHz)", "70 (5350MHz)", "72 (5360MHz)", "74 (5370MHz)", "76 (5380MHz)", "78 (5390MHz)", "80 (5400MHz)", "82 (5410MHz)", "84 (5420MHz)", "86 (5430MHz)", "88 (5440MHz)", "90 (5450MHz)", "92 (5460MHz)", "94 (5470MHz)", "96 (5480MHz)", "98 (5490MHz)", "100 (5500MHz)", "102 (5510MHz)", "104 (5520MHz)", "106 (5530MHz)", "108 (5540MHz)", "110 (5550MHz)", "112 (5560MHz)", "114 (5570MHz)", "116 (5580MHz)", "118 (5590MHz)", "120 (5600MHz)", "122 (5610MHz)", "124 (5620MHz)", "126 (5630MHz)", "128 (5640MHz)", "130 (5650MHz)", "132 (5660MHz)", "134 (5670MHz)", "136 (5680MHz)", "138 (5690MHz)", "140 (5700MHz)", "142 (5710MHz)", "144 (5720MHz)", "145 (5725MHz)", "146 (5730MHz)", "147 (5735MHz)", "148 (5740MHz)", "149 (5745MHz)", "150 (5750MHz)", "151 (5755MHz)", "152 (5760MHz)", "153 (5765MHz)", "154 (5770MHz)", "155 (5775MHz)", "156 (5780MHz)", "157 (5785MHz)", "158 (5790MHz)", "159 (5795MHz)", "160 (5800MHz)", "161 (5805MHz)", "162 (5810MHz)", "163 (5815MHz)", "164 (5820MHz)", "165 (5825MHz)", "166 (5830MHz)", "168 (5840MHz)", "170 (5850MHz)", "172 (5860MHz)", "174 (5870MHz)", "176 (5880MHz)", "178 (5890MHz)", "180 (5900MHz)"};
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, channels);
         listView.setAdapter(adapter);
         listView.setItemChecked(vars.get("WiFi Channel") - 1, true);

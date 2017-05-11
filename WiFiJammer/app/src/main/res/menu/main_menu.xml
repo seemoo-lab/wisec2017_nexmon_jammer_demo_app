@@ -42,7 +42,7 @@
         </menu>
     </item>
    <item android:id="@+id/idft"
-        android:title="idft size"
+        android:title="IDFT Size"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/bandwidth"
         android:title="Bandwidth"

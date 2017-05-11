@@ -2,6 +2,7 @@ package de.seemoo.nexmon.jammer;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,13 +66,14 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                      * TODO Stop UDP Stream
                      */
                     udpStream.running = false;
-                    System.out.println("Thread stopped");
+                    Log.i("TRANSMITTER", "Stopping " + txtId + " at port " + txtPort);
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
                 } else {
                     /**
                      * TODO Start UDP Stream
                      */
                     udpStream.running = true;
+                    Log.i("TRANSMITTER", "Starting " + txtId + " at port " + txtPort);
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;
