@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         } else {
             vars = new HashMap<String, Integer>();
-            vars.put("amp_phase", R.id.amp);
+            vars.put("amp_phase", R.id.amp_sliders_top);
             vars.put("jammingPower", 50);
             vars.put("idft size", 128);
             vars.put("Preset", 20);
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         }
         if (!item.isChecked()) {
             switch (item.getGroupId()) {
-                case R.id.group_amp_phase:
+                case R.id.group_view_top:
 
                     Configuration config = getResources().getConfiguration();
 
@@ -328,29 +328,29 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                          * Landscape mode of the device
                          */
                         switch (item.getItemId()) {
-                            case R.id.amp:
+                            case R.id.amp_sliders_top:
                                 Log.d(TAG, "Changing to Amp");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.amp);
+                                vars.put("amp_phase", R.id.amp_sliders_top);
                                 return true;
-                            case R.id.phase:
+                            case R.id.phase_sliders_top:
                                 Log.d(TAG, "Changing to Ph");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.phase);
+                                vars.put("amp_phase", R.id.phase_sliders_top);
                                 return true;
-                            case R.id.plot:
+                            case R.id.time_plot_top:
                                 Log.d(TAG, "Changing to Plot");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.plot);
+                                vars.put("amp_phase", R.id.time_plot_top);
                                 plotFragment.plotSignals(amps, phases, freqs);
                                 return true;
                         }
@@ -359,29 +359,29 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                          * Portrait mode of the device
                          */
                         switch (item.getItemId()) {
-                            case R.id.amp:
+                            case R.id.amp_sliders_top:
                                 Log.d(TAG, "Changing to Amp");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.amp);
+                                vars.put("amp_phase", R.id.amp_sliders_top);
                                 return true;
-                            case R.id.phase:
+                            case R.id.phase_sliders_top:
                                 Log.d(TAG, "Changing to Ph");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.phase);
+                                vars.put("amp_phase", R.id.phase_sliders_top);
                                 return true;
-                            case R.id.plot:
+                            case R.id.time_plot_top:
                                 Log.d(TAG, "Changing to Plot");
                                 findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                                 findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
                                 item.setChecked(true);
-                                vars.put("amp_phase", R.id.plot);
+                                vars.put("amp_phase", R.id.time_plot_top);
                                 plotFragment.plotSignals(amps, phases, freqs);
                                 return true;
                         }
@@ -654,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
                 System.out.println("Entering Landscape Mode");
                 switch (vars.get("amp_phase")) {
-                    case R.id.amp:
+                    case R.id.amp_sliders_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
@@ -662,7 +662,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
-                    case R.id.phase:
+                    case R.id.phase_sliders_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
                         findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
@@ -670,7 +670,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
                         break;
-                    case R.id.plot:
+                    case R.id.time_plot_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
@@ -691,7 +691,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 System.out.println("Entering Portrait Mode");
                 switch (vars.get("amp_phase")) {
-                    case R.id.plot:
+                    case R.id.time_plot_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);

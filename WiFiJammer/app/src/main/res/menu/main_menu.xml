@@ -3,14 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_menu">
     <item android:id="@+id/amp_phase"
-        android:title="Amp\nPhase"
+        android:title="View"
         app:showAsAction="ifRoom">
         <menu xmlns:android="http://schemas.android.com/apk/res/android">
-            <group android:id="@+id/group_amp_phase" android:checkableBehavior="single">
-                <item android:id="@+id/amp" android:title="Amplitude"/>
-                <item android:id="@+id/phase" android:title="Phase"/>
-                <item android:id="@+id/plot" android:title="Plot"/>
-            </group>
+            <item android:id="@+id/view_top"
+                android:title="Top"
+                app:showAsAction="ifRoom">
+                <menu xmlns:android="http://schemas.android.com/apk/res/android">
+                    <group android:id="@+id/group_view_top" android:checkableBehavior="single">
+                        <item android:id="@+id/amp_sliders_top" android:title="Amplitude Sliders"/>
+                        <item android:id="@+id/phase_sliders_top" android:title="Phase Sliders"/>
+                        <item android:id="@+id/time_plot_top" android:title="Time-Domain Plot"/>
+                        <item android:id="@+id/frequency_plot_top" android:title="Frequency-Domain Plot"/>
+                    </group>
+                </menu>
+            </item>
+            <item android:id="@+id/item_bottom"
+                android:title="Bottom"
+                app:showAsAction="ifRoom">
+                <menu xmlns:android="http://schemas.android.com/apk/res/android">
+                    <group android:id="@+id/group_view_bottom" android:checkableBehavior="single">
+                        <item android:id="@+id/amp_sliders_bottom" android:title="Amplitude Sliders"/>
+                        <item android:id="@+id/phase_sliders_bottom" android:title="Phase Sliders"/>
+                        <item android:id="@+id/time_plot_bottom" android:title="Time-Domain Plot"/>
+                        <item android:id="@+id/frequency_plot_bottom" android:title="Frequency-Domain Plot"/>
+                    </group>
+                </menu>
+            </item>
         </menu>
     </item>
     <item android:id="@+id/type"
