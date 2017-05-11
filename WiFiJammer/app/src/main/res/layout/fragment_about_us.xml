@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
-                android:text="Nexmon started as a firmware modification framework to enable monitor mode and frame injection on the BCM4339 WiFi chip, which is available in the Nexus 5. If you do not have a Nexus 5, but another device with a Broadcom WiFi chip, you should still be able to activate monitor mode without radiotap headers with our nexutil program." />
+                android:text="The Nexmon Jammer is based on the C-based firmware patching framework Nexmon that allows to modify firmwares running on embedded systems such as Wi-Fi chips. This app is part of a demonstrator shown at WiSec 2017 and based on the jammer developed for our WiSec full paper that was created in cooperation with Francesco Gringoli from University of Brescia, Italy." />
 
             <TextView
                 android:id="@+id/tvAboutUsCont"
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingBottom="10dp"
-                android:text="Main developer Nexmon:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nDaniel Wegemer &lt;dwegemer@seemoo.de&gt;\n\nDeveloper of this app:\nFabian Knapp &lt;fknapp@seemoo.de&gt;\n\nNexmon was developed in the Secure Mobile Networking Lab (SEEMOO) at the Technische Universität Darmstadt (TU Darmstadt) in Germany. All sources are available under https://nexmon.org. You can follow us on Twitter https://twitter.com/nexmon_dev" />
+                android:text="Developer of the Nexmon framework:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nDaniel Wegemer &lt;dwegemer@seemoo.de&gt;\n\nDeveloper of the Nexmon jammer:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nFrancesco Gringoli &lt;francesco.gringoli@unibs.it&gt;\n\nDeveloper of the Nexmon Jammer app:\nStathis Deligeorgopoulos\n\nNexmon is being developed at the Secure Mobile Networking Lab (SEEMOO) at the Technische Universität Darmstadt (TU Darmstadt) in Germany. All sources are available under https://nexmon.org. You can follow us on Twitter https://twitter.com/nexmon_dev" />
 
             <LinearLayout
                 android:layout_width="match_parent"
