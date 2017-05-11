@@ -1,0 +1,154 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5sp"
+        android:text="New UDP Stream:"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="5sp"
+            android:text="Power:"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/udpSeekbarText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ems="3"
+            android:gravity="center"
+            android:inputType="number"
+            android:text="50"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+    <SeekBar
+        android:id="@+id/udpSeekbar"
+        style="@android:style/Widget.Holo.Light.SeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:padding="5sp"
+        android:progress="50" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:padding="3sp"
+            android:text="Destination Port:"
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <EditText
+
+            android:id="@+id/port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/modulation_spinner"
+            android:layout_toEndOf="@+id/name"
+            android:ems="3"
+            android:gravity="center"
+            android:inputType="number"
+            android:padding="3sp"
+            android:text="3333"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+
+        <TextView
+            android:id="@+id/mod_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:padding="3sp"
+            android:text="Modulation:"
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <Spinner
+            android:id="@+id/modulation_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/rate_text"
+            android:layout_below="@+id/name"
+            android:layout_toEndOf="@+id/mod_text"
+            android:padding="3sp" />
+
+        <TextView
+            android:id="@+id/rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mod_text"
+            android:padding="3sp"
+            android:text="Rate:"
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <Spinner
+            android:id="@+id/rate_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/band_text"
+            android:layout_below="@+id/mod_text"
+            android:layout_toEndOf="@+id/rate_text"
+            android:padding="3sp" />
+
+        <TextView
+            android:id="@+id/band_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rate_text"
+            android:padding="3sp"
+            android:text="Bandwidth:"
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+        <Spinner
+            android:id="@+id/band_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/LDPCSwitch"
+            android:layout_below="@+id/rate_spinner"
+            android:layout_toEndOf="@+id/band_text"
+            android:padding="3sp" />
+
+        <Switch
+            android:id="@+id/LDPCSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/band_text"
+            android:padding="3sp"
+            android:text="LDPC:     "
+            android:textColor="@android:color/black"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

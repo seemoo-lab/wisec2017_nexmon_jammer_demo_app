@@ -15,8 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.Date;
+
+import static java.lang.Math.ceil;
 
 /**
  * Created by Stathis on 04-Apr-17.
@@ -137,7 +138,6 @@ public class SeekBarFragment extends android.app.Fragment {
     public void createSeekBars() {
         int idft_size = 512;
 
-        final DecimalFormat df = new DecimalFormat("#.###");
 
         Date counter = new Date();
         // System.out.println(counter.getTime());
@@ -207,7 +207,7 @@ public class SeekBarFragment extends android.app.Fragment {
                     if (name == "Amplitudes") value = progress / 100.0;
                     else value = (progress - 50) / 100.0 * 2 * Math.PI;
 
-                    value = Double.valueOf(df.format(value));
+                    value = ceil(value * 1000) / 1000.0;
                     sliderText.setText("" + value);
                     data[tag] = value;
 
@@ -247,15 +247,16 @@ public class SeekBarFragment extends android.app.Fragment {
 
         double subcarrier_s = (bandwidth * 2 / (double) idft_size) * 1000;
 
-        final DecimalFormat df = new DecimalFormat("#.###");
-        double subcarrier_size = Double.valueOf(df.format(subcarrier_s));
+        double subcarrier_size = ceil(subcarrier_s * 1000) / 1000.0;
 
         for (int j = 0; j < idft_size; j++) {
             final LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
             final TextView freq = (TextView) getView().getRootView().findViewWithTag(name + "_freq_" + j);
             final TextView sliderText = (TextView) getView().getRootView().findViewWithTag(name + "_tag_" + j);
 
-            double value = Double.valueOf(df.format(subcarrier_size * (idft_size / 2 - j) * (-1)));
+            double value = subcarrier_size * (idft_size / 2 - j) * (-1);
+
+            value = ceil(value * 1000) / 1000.0;
 
             if (Math.abs(value) <= bandwidth * 500) layout.setBackgroundColor(color);
             else layout.setBackgroundColor(Color.WHITE);
@@ -266,7 +267,10 @@ public class SeekBarFragment extends android.app.Fragment {
 
             final String t;
             if (Math.abs(value) >= 1000) {
-                value = Double.valueOf(df.format(value / 1000));
+
+                value = value / 1000;
+
+                value = ceil(value * 1000) / 1000.0;
                 t = "MHz";
             } else t = "kHz";
 
@@ -277,7 +281,7 @@ public class SeekBarFragment extends android.app.Fragment {
             freq.setText("SC " + scText + " at\n" + value + t);
 
             if (name.equals("Amplitudes")) sliderText.setText("" + data[j]);
-            else sliderText.setText("" + Double.valueOf(df.format(data[j])));
+            else sliderText.setText("" + ceil(data[j] * 1000) / 1000.0);
 
             final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) getView().getRootView().findViewWithTag(name + "_seekBar_" + j);
 
@@ -288,7 +292,7 @@ public class SeekBarFragment extends android.app.Fragment {
                     double value;
                     if (name.equals("Amplitudes")) value = data[tag] * 100.0;
                     else value = (data[tag] * 2 * Math.PI) / 100 + 50;
-                    value = Double.valueOf(df.format(value));
+                    value = ceil(value * 1000) / 1000.0;
                     verticalSeekBar.setProgress((int) value);
                 }
             });

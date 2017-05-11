@@ -68,6 +68,10 @@
         android:id="@+id/reset"
         android:title="Reset"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/help"
+        android:title="Help"
+        app:showAsAction="ifRoom" />
 
 
 </menu>

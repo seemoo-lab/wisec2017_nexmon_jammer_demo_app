@@ -2,10 +2,10 @@
 <android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:id="@+id/drawer_layout">
+    android:fitsSystemWindows="true">
 
 
     <LinearLayout
@@ -19,7 +19,7 @@
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorControlActivated"
+            android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -41,9 +41,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="0sp"
 
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="Jamming Power"
-                    android:layout_weight="1"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
 
@@ -53,9 +53,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="0sp"
 
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="50%"
-                    android:layout_weight="1"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
 
@@ -77,8 +77,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Start"
-                android:onClick="onButtonClick" />
+                android:onClick="onButtonClick"
+                android:text="Start" />
         </LinearLayout>
 
         <FrameLayout

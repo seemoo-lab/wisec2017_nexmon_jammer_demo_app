@@ -12,6 +12,9 @@
         <item
             android:id="@+id/navigation_item_3"
             android:title="Receiver"/>
+        <item
+            android:id="@+id/navigation_item_4"
+            android:title="About" />
     </group>
 
 

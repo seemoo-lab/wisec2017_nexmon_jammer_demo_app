@@ -20,10 +20,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            app:useCompatPadding="true"
             android:clickable="true"
             android:src="@drawable/fab_plus"
-            app:elevation="4dp" />
+            app:backgroundTint="@color/colorPrimary"
+            app:elevation="4dp"
+            app:useCompatPadding="true" />
 
     </RelativeLayout>
 

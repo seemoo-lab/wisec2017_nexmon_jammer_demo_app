@@ -142,10 +142,10 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isRootAvailable) {
-            switch (item.getItemId()) {
-                case R.id.start:
 
+        switch (item.getItemId()) {
+            case R.id.start:
+                if (isRootAvailable) {
                     if (item.getTitle().toString().equals("Stop")) {
                         //Using progress dialogue from main. See comment in: TcpdumpPacketCapture.stopTcpdumpCapture
                         progressbox.setMessage("Killing Tcpdump process.");
@@ -164,9 +164,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                         startPlotThread();
                         item.setTitle("Stop");
                     }
-                    return true;
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
+                }
+                return true;
 
-                case R.id.reset:
+            case R.id.reset:
+                if (isRootAvailable) {
                     progressbox.setMessage("Killing Tcpdump process.");
                     progressbox.show();
                     TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
@@ -178,12 +182,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     menu.findItem(R.id.start).setTitle("Start");
                     ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture reseted.");
                     progressbox.dismiss();
-                    return true;
-            }
-
-        } else {
-            Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
+                }
+                return true;
         }
+
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -191,7 +196,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
-        final View srcPortLayout = getActivity().getLayoutInflater().inflate(R.layout.src_port_dialog, container, false);
+        final View srcPortLayout = getActivity().getLayoutInflater().inflate(R.layout.udpstream_dialog, container, false);
 
         alertDialogBuilder.setView(srcPortLayout);
 
@@ -200,7 +205,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 .setCancelable(false)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
-                        EditText editText = (EditText) srcPortLayout.findViewById(R.id.portText);
+                       /* EditText editText = (EditText) srcPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
                         if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
@@ -209,7 +214,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                         }
                         InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);*/
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -232,7 +237,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 .setCancelable(false)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
-                        EditText editText = (EditText) dstPortLayout.findViewById(R.id.portText);
+                       /* EditText editText = (EditText) dstPortLayout.findViewById(R.id.portText);
                         int port = Integer.parseInt(editText.getText().toString());
                         if (port > 10000 || port < 1) {
                             Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
@@ -241,7 +246,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                         }
                         InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);*/
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

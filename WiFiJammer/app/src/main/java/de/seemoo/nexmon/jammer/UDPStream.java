@@ -2,29 +2,33 @@ package de.seemoo.nexmon.jammer;
 
 import android.app.Activity;
 
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-
 /**
  * Created by Stathis on 05-May-17.
  */
 
 public class UDPStream {
 
-    int serverPort;
-    DatagramSocket socket;
-    InetAddress address;
-    int port;
+    int id;
+    int destPort;
     boolean running;
     Activity act;
+    int power;
+    String modulation;
+    int rate;
+    int bandwidth;
+    boolean ldpc;
 
 
-    public UDPStream(int serverPort, InetAddress address, int port, Activity act) {
-        super();
-        this.serverPort = serverPort;
-        this.address = address;
-        this.port = port;
+    public UDPStream(int id, int port, int power, String modulation, int rate, int bandwidth, boolean ldpc, Activity act) {
+        this.id = id;
+        this.destPort = port;
         this.act = act;
+        this.power = power;
+        this.modulation = modulation;
+        this.rate = rate;
+        this.bandwidth = bandwidth;
+        this.ldpc = ldpc;
+        running = false;
     }
 
     public void stopThread() {

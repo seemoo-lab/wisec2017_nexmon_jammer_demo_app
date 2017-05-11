@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/item_run_stop"
@@ -10,29 +10,198 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:padding="5sp"
+        android:layout_margin="2sp"
+        android:padding="1sp"
         android:src="@android:drawable/ic_media_play" />
 
 
-    <TextView
-        android:id="@+id/name"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:layout_centerHorizontal="true"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/black" />
+        android:layout_toEndOf="@+id/item_run_stop"
+        android:layout_toStartOf="@+id/item_delete"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:padding="3sp"
+            android:text="Stream"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/streamId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/name"
+            android:padding="3sp"
+            android:text="2"
+            android:textColor="@android:color/black" />
 
 
-    <TextView
-        android:id="@+id/port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_marginTop="5dp"
-        android:text=""
-        android:layout_centerHorizontal="true"
-        android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/portText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:padding="3sp"
+            android:text="Port:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/portValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:layout_toEndOf="@+id/portText"
+            android:padding="3sp"
+            android:text="3333"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/powerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/portText"
+            android:padding="3sp"
+            android:text="Power:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/powerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/portValue"
+            android:layout_toEndOf="@+id/powerText"
+            android:padding="3sp"
+            android:text="100"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/powerUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/powerValue"
+            android:layout_alignBottom="@+id/powerValue"
+            android:layout_toEndOf="@+id/powerValue"
+            android:padding="3sp"
+            android:text="%"
+            android:textColor="@android:color/black" />
+
+
+        <TextView
+            android:id="@+id/mod_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/modulation_value"
+            android:padding="3sp"
+            android:text="Modulation:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/modulation_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:padding="3sp"
+            android:text="802.11a/g"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/rateValue"
+            android:layout_alignBottom="@+id/rateValue"
+            android:layout_toStartOf="@+id/rateValue"
+            android:padding="3sp"
+            android:text="Rate:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/rateValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/rateUnit"
+            android:layout_alignBottom="@+id/rateUnit"
+            android:layout_toStartOf="@+id/rateUnit"
+            android:padding="3sp"
+            android:text="11"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/rateUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/modulation_value"
+            android:padding="3sp"
+            android:text="Mbit/s"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/band_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/bandValue"
+            android:layout_alignBottom="@+id/bandValue"
+            android:layout_toStartOf="@+id/bandValue"
+            android:padding="3sp"
+            android:text="Band:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/bandValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rateValue"
+            android:layout_toStartOf="@+id/bandUnit"
+            android:padding="3sp"
+            android:text="40"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/bandUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/rateUnit"
+            android:padding="3sp"
+            android:text="MHz"
+            android:textColor="@android:color/black" />
+
+        <TextView
+
+            android:id="@+id/ldpcText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/ldpcValue"
+            android:layout_alignBottom="@+id/ldpcValue"
+            android:layout_toStartOf="@+id/ldpcValue"
+            android:padding="3sp"
+            android:text="LDPC:"
+            android:textColor="@android:color/black" />
+
+        <TextView
+
+            android:id="@+id/ldpcValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mod_text"
+            android:layout_centerHorizontal="true"
+            android:padding="3sp"
+            android:text="ON"
+            android:textColor="@android:color/black" />
+
+    </RelativeLayout>
+
 
     <ImageView
         android:id="@+id/item_delete"
@@ -40,6 +209,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_margin="2sp"
+        android:padding="1sp"
         android:src="@android:drawable/ic_menu_delete" />
 
 
