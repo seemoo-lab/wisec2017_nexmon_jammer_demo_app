@@ -1,6 +1,7 @@
 package de.seemoo.nexmon.jammer;
 
 import android.app.Activity;
+import android.support.v7.app.AlertDialog;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -17,6 +18,7 @@ public class UDPStream {
     int rate;
     int bandwidth;
     boolean ldpc;
+    AlertDialog alertDialog;
 
 
     public UDPStream(int id, int port, int power, String modulation, int rate, int bandwidth, boolean ldpc, Activity act) {
@@ -29,6 +31,7 @@ public class UDPStream {
         this.bandwidth = bandwidth;
         this.ldpc = ldpc;
         running = false;
+
     }
 
     public void stopThread() {

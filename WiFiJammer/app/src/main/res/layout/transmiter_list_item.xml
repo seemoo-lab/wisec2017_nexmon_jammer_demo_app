@@ -16,6 +16,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/transListItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/item_run_stop"

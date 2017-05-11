@@ -41,7 +41,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     private static CustomAdapter adapter;
     private static List<String> modulations = Arrays.asList("802.11a/g", "802.11b", "802.11n", "802.11ac");
     private static List<String> rates802_11_a_g = Arrays.asList("6", "9", "12", "18", "24", "36", "48", "54");
-    private static List<String> rates802_11_b = Arrays.asList("1", "2", "5,5", "11");
+    private static List<String> rates802_11_b = Arrays.asList("1", "2", "5", "11");
     private static List<String> rates802_11_n_mcs_index = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7");
     private static List<String> rates802_11_ac_mcs_index = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
     private static List<String> bands802_11_n = Arrays.asList("20", "40");
@@ -51,6 +51,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     ViewGroup container;
     AlertDialog newUDPStreamDialog;
     InetAddress ipAddress;
+    int existing_dialog_id = -1;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -71,7 +72,24 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    existing_dialog_id = -1;
                     newUDPStreamDialog.show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (newUDPStreamDialog.isShowing()) {
+                            }
+                            udpStreams.get(udpStreams.size() - 1).alertDialog = newUDPStreamDialog;
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    createNewUDPStreamDialog();
+                                }
+                            });
+
+                        }
+                    }).start();
+
 
                 }
             });
@@ -83,7 +101,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
             udpStreams = new ArrayList<>();
 
 
-            adapter = new CustomAdapter(udpStreams, getActivity().getApplicationContext());
+            adapter = new CustomAdapter(udpStreams, getActivity().getApplicationContext(), this);
 
             listView.setAdapter(adapter);
 
@@ -114,7 +132,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
     public void createNewUDPStreamDialog() {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
         final View linear_layout = getActivity().getLayoutInflater().inflate(R.layout.udpstream_dialog, container, false);
 
@@ -170,7 +188,6 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         int power = ((SeekBar) linear_layout.findViewById(R.id.udpSeekbar)).getProgress();
                         String modulation = ((Spinner) linear_layout.findViewById(R.id.modulation_spinner)).getSelectedItem().toString();
                         int rate = Integer.valueOf(((Spinner) linear_layout.findViewById(R.id.rate_spinner)).getSelectedItem().toString());
-                        System.out.println(rate);
                         int bandwidth = 0;
                         boolean ldpc = false;
                         try {
@@ -179,21 +196,19 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         } catch (Exception e) {
                         }
 
-                        // iid =
-
-                        //if (udpStreams.size() <= iid) {
+                        if (existing_dialog_id < 0) {
 
                         UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, getActivity());
                         udpStreams.add(udpStream);
-                        /*}else{
-                            UDPStream udpStream = udpStreams.get(iid);
+                        } else {
+                            UDPStream udpStream = udpStreams.get(existing_dialog_id);
                             udpStream.destPort = port;
                             udpStream.power = power;
                             udpStream.modulation = modulation;
                             udpStream.rate = rate;
                             udpStream.bandwidth = bandwidth;
                             udpStream.ldpc = ldpc;
-                        }*/
+                        }
                         adapter.notifyDataSetChanged();
 
 

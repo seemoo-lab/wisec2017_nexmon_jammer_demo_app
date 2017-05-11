@@ -1,12 +1,14 @@
 package de.seemoo.nexmon.jammer;
 
+
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,14 +31,15 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
     ImageView delete;
     ImageView run_pause;
     View parentView;
+    TransmitterFragment fragment;
     private ArrayList<UDPStream> dataSet;
 
 
-    public CustomAdapter(ArrayList<UDPStream> data, Context context) {
+    public CustomAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
         super(context, R.layout.transmiter_list_item, data);
         this.dataSet = data;
         this.mContext = context;
-
+        this.fragment = frag;
     }
 
 
@@ -72,24 +75,15 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;
-            case R.id.name:
-                System.out.println("hi");
-                Snackbar.make(v, "UDP Stream state: " + udpStream.running, Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
-                break;
-            default:
-                System.out.println("hi");
-                Snackbar.make(v, "UDP Stream state: " + udpStream.running, Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
-                break;
         }
+
     }
 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        UDPStream udpStream = getItem(position);
+        final UDPStream udpStream = getItem(position);
         parentView = parent;
         LayoutInflater inflater = LayoutInflater.from(getContext());
         convertView = inflater.inflate(R.layout.transmiter_list_item, parent, false);
@@ -135,9 +129,9 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                 ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
                 break;
         }
+
         txtRate.setText(String.valueOf(udpStream.rate));
         txtBand.setText(String.valueOf(udpStream.bandwidth));
-
         if (udpStream.ldpc) txtLDPC.setText("ON");
         else txtLDPC.setText("OFF");
 
@@ -145,7 +139,21 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
         delete.setTag(position);
         run_pause.setOnClickListener(this);
         run_pause.setTag(position);
+
+
+        RelativeLayout relativeLayout = (RelativeLayout) convertView.findViewById(R.id.transListItem);
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                fragment.existing_dialog_id = udpStream.id;
+                udpStream.alertDialog.show();
+                return true;
+            }
+        });
         // Return the completed view to render on screen
         return convertView;
     }
+
 }
+
+

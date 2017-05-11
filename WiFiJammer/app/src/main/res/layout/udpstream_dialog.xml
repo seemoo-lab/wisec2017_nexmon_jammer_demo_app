@@ -71,12 +71,13 @@
             android:id="@+id/port"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/modulation_spinner"
+
+            android:layout_alignBaseline="@+id/name"
+            android:layout_alignBottom="@+id/name"
             android:layout_toEndOf="@+id/name"
             android:ems="3"
             android:gravity="center"
             android:inputType="number"
-            android:padding="3sp"
             android:text="3333"
             android:textColor="@color/black"
             android:textSize="15sp" />
