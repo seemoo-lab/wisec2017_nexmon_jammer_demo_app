@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             vars.put("Bandwidth", 20);
             vars.put("JammerType", 0);
             vars.put("App", 0);
+            vars.put("jammerStart", 0);
             amps = new double[vars.get("idft size")];
             phases = new double[vars.get("idft size")];
             freqs = new double[vars.get("idft size")];
@@ -450,8 +452,20 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         System.out.println("Amplitudes: " + Arrays.toString(amps));
         System.out.println("Phases: " + Arrays.toString(phases));
         System.out.println("Frequencies: " + Arrays.toString(freqs));
+        Button startBtn = (Button) view;
+        switch (vars.get("jammerStart")) {
+            case 0: // not started -> now starting
+                vars.put("jammerStart", 1);
+                startBtn.setText("stop");
+                break;
+            case 1: // started -> now stopping
+                vars.put("jammerStart", 0);
+                startBtn.setText("start");
+                break;
+            default:
+                vars.put("jammerStart", 0);
 
-
+        }
     }
 
     private void createAlertDialogs() {
