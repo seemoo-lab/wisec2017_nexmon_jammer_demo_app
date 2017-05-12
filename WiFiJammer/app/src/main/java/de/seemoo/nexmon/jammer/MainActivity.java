@@ -650,8 +650,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             Configuration config = getResources().getConfiguration();
             String orientation;
 
-            int fragmentVisibility[] = { View.GONE, View.GONE, View.GONE, View.GONE, View.GONE, View.GONE };
-
             if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 /**
                  * Landscape mode of the device
@@ -685,6 +683,11 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+
+            menu.findItem(R.id.amp_sliders).setChecked(vars.get("amp_sliders_" + orientation) == 1);
+            menu.findItem(R.id.phase_sliders).setChecked(vars.get("phase_sliders_" + orientation) == 1);
+            menu.findItem(R.id.time_plot).setChecked(vars.get("time_plot_" + orientation) == 1);
+            menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);
 
             createAlertDialogs();
         }
