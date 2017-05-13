@@ -70,7 +70,15 @@
         android:title="Reset"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/help"
+        android:id="@+id/help_jammer"
+        android:title="Help"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/help_transmitter"
+        android:title="Help"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/help_receiver"
         android:title="Help"
         app:showAsAction="ifRoom" />
 

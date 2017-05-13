@@ -4,8 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <com.androidplot.xy.XYPlot
-        android:id="@+id/timePlot"
+        android:id="@+id/freqPlot"
         style="@style/APDefacto.Dark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,6 +16,5 @@
         ap:lineLabelRotationBottom="-45"
         ap:lineLabels="left|bottom"
         ap:rangeTitle="range"
-        ap:title="Signal in the Time Domain" />
-
+        ap:title="Singnal in the Frequency Domain" />
 </LinearLayout>

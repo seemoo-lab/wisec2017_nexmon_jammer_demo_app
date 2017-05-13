@@ -2,9 +2,9 @@ package de.seemoo.nexmon.jammer;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -13,8 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,10 +55,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     static Boolean isRootAvailable;
     public HashMap<Integer, int[]> data = new HashMap<>();
     ViewGroup container;
-    AlertDialog ipAddressDialog;
-    AlertDialog srcPortDialog;
-    AlertDialog dstPortDialog;
-    int srcPort;
+    AlertDialog helpDialog;
     int dstPort;
     InetAddress ipAddress;
     Menu menu;
@@ -88,7 +85,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
 
         progressbox = new ProgressDialog(getActivity());
@@ -186,6 +182,9 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
                 }
                 return true;
+            case R.id.help_receiver:
+                helpDialog.show();
+                return true;
         }
 
 
@@ -194,106 +193,67 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     public void createAlertDialogs() {
 
+        View list_layout = getActivity().getLayoutInflater().inflate(R.layout.help_receiver, null, true);
+
+        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
+        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
+        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
+        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
+
+        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://nexmon.org"));
+                startActivity(intent);
+            }
+        });
+
+        imgTudLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        btnLicenses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LicenseDialog licenseDialog = LicenseDialog.newInstance();
+                licenseDialog.show(getFragmentManager(), "");
+            }
+        });
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
-        final View srcPortLayout = getActivity().getLayoutInflater().inflate(R.layout.udpstream_dialog, container, false);
-
-        alertDialogBuilder.setView(srcPortLayout);
-
-        // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1, int id) {
-                       /* EditText editText = (EditText) srcPortLayout.findViewById(R.id.portText);
-                        int port = Integer.parseInt(editText.getText().toString());
-                        if (port > 10000 || port < 1) {
-                            Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        } else {
-                            srcPort = port;
-
-                        }
-                        InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);*/
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        // create alert dialog
-        srcPortDialog = alertDialogBuilder.create();
-
-        final View dstPortLayout = getActivity().getLayoutInflater().inflate(R.layout.dst_port_dialog, container, false);
-
-        alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-        alertDialogBuilder.setView(dstPortLayout);
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(list_layout);
 
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1, int id) {
-                       /* EditText editText = (EditText) dstPortLayout.findViewById(R.id.portText);
-                        int port = Integer.parseInt(editText.getText().toString());
-                        if (port > 10000 || port < 1) {
-                            Toast.makeText(getActivity().getApplicationContext(), "This is not a port number please try again", Toast.LENGTH_SHORT).show();
-                        } else {
-                            dstPort = port;
+                .setPositiveButton("CLOSE", null);
 
-                        }
-                        InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);*/
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
 
         // create alert dialog
-        dstPortDialog = alertDialogBuilder.create();
-
-        final View ipLayout = getActivity().getLayoutInflater().inflate(R.layout.ip_dialog, container, false);
-
-        alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-        alertDialogBuilder.setView(ipLayout);
-
-        // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1, int id) {
-
-                        EditText editText = (EditText) ipLayout.findViewById(R.id.ipAddress);
-                        final IPAddressValidator ipAddressValidator = new IPAddressValidator();
-                        try {
-                            String txt = editText.getText().toString();
-                            if (ipAddressValidator.validate(txt)) {
-                                ipAddress = Inet4Address.getByName(txt);
-                            } else {
-                                Toast.makeText(getActivity().getApplicationContext(), "This is not a valid IP address please try again", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        InputMethodManager imm = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        // create alert dialog
-        ipAddressDialog = alertDialogBuilder.create();
+        helpDialog = alertDialogBuilder.create();
 
     }
 

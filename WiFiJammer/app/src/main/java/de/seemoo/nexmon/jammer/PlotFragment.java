@@ -22,6 +22,7 @@ import static java.lang.Math.sin;
  */
 
 public class PlotFragment extends android.app.Fragment {
+    public int mode;
     public double[] amps;
     public double[] phases;
     public double[] freqs;
@@ -38,10 +39,23 @@ public class PlotFragment extends android.app.Fragment {
     private LineAndPointFormatter seriesFormat2;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            //Restore the fragment's state here
+            amps = savedInstanceState.getDoubleArray("amps");
+            phases = savedInstanceState.getDoubleArray("phases");
+            freqs = savedInstanceState.getDoubleArray("freqs");
+            mode = savedInstanceState.getInt("mode");
+        } else {
+            amps = getArguments().getDoubleArray("amps");
+            phases = getArguments().getDoubleArray("phases");
+            freqs = getArguments().getDoubleArray("freqs");
+            mode = getArguments().getInt("mode");
+        }
         /**
          * Inflate the layout for this fragment
          */
-        return inflater.inflate(R.layout.time_plot_fragment, container, false);
+        if (mode == 0) return inflater.inflate(R.layout.time_plot_fragment, container, false);
+        else return inflater.inflate(R.layout.freq_plot_fragment, container, false);
 
     }
 
@@ -49,16 +63,7 @@ public class PlotFragment extends android.app.Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            //Restore the fragment's state here
-            amps = savedInstanceState.getDoubleArray("amps");
-            phases = savedInstanceState.getDoubleArray("phases");
-            freqs = savedInstanceState.getDoubleArray("freqs");
-        } else {
-            amps = getArguments().getDoubleArray("amps");
-            phases = getArguments().getDoubleArray("phases");
-            freqs = getArguments().getDoubleArray("freqs");
-        }
+
 
         timePlot = (XYPlot) getActivity().findViewById(R.id.timePlot);
         freqPlot = (XYPlot) getActivity().findViewById(R.id.freqPlot);
@@ -140,18 +145,24 @@ public class PlotFragment extends android.app.Fragment {
 
         constructIQSamples();
 
-        List<? extends Number> xVals = Arrays.asList(times);
-        List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal, 0));
-        List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal, 1));
+        if (mode == 0) {
+            // Time Plot
 
-        timePlot.removeSeries(series1);
-        timePlot.removeSeries(series2);
-        series1 = new SimpleXYSeries(xVals, yValsReal, "Real");
-        series2 = new SimpleXYSeries(xVals, yValsImag, "Imaginary");
-        timePlot.addSeries(series1, seriesFormat1);
-        timePlot.addSeries(series2, seriesFormat2);
+            List<? extends Number> xVals = Arrays.asList(times);
+            List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal, 0));
+            List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal, 1));
 
-        constructFFTPlotData();
+            timePlot.removeSeries(series1);
+            timePlot.removeSeries(series2);
+            series1 = new SimpleXYSeries(xVals, yValsReal, "Real");
+            series2 = new SimpleXYSeries(xVals, yValsImag, "Imaginary");
+            timePlot.addSeries(series1, seriesFormat1);
+            timePlot.addSeries(series2, seriesFormat2);
+        } else {
+            // Frequency Plot
+            constructFFTPlotData();
+        }
+
     }
 
     public Double[] extractPart(Complex[] complex, int part) {

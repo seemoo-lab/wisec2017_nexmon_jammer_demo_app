@@ -3,8 +3,10 @@ package de.seemoo.nexmon.jammer;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -16,7 +18,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -50,6 +54,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     ListView listView;
     ViewGroup container;
     AlertDialog newUDPStreamDialog;
+    AlertDialog helpDialog;
     InetAddress ipAddress;
     int existing_dialog_id = -1;
 
@@ -58,13 +63,16 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
          * Inflate the layout for this fragment
          */
         this.container = container;
+        setHasOptionsMenu(true);
         createNewUDPStreamDialog();
+        createAlertDialogs();
         return inflater.inflate(R.layout.transmiter_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 
         try {
 
@@ -115,20 +123,79 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*switch (item.getItemId()) {
-            case R.id.ip_address:
-                ipAddressDialog.show();
+        switch (item.getItemId()) {
+            case R.id.help_transmitter:
+                helpDialog.show();
                 return true;
-            case R.id.dstPort:
-                dstPortDialog.show();
-                return true;
-            case R.id.srcPort:
-                srcPortDialog.show();
-                return true;
-        }*/
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    public void createAlertDialogs() {
+
+        View list_layout = getActivity().getLayoutInflater().inflate(R.layout.help_transmitter, null, true);
+
+        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
+        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
+        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
+        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
+
+        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://nexmon.org"));
+                startActivity(intent);
+            }
+        });
+
+        imgTudLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        btnLicenses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LicenseDialog licenseDialog = LicenseDialog.newInstance();
+                licenseDialog.show(getFragmentManager(), "");
+            }
+        });
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(list_layout);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("CLOSE", null);
+
+
+        // create alert dialog
+        helpDialog = alertDialogBuilder.create();
+
+    }
 
     public void createNewUDPStreamDialog() {
 

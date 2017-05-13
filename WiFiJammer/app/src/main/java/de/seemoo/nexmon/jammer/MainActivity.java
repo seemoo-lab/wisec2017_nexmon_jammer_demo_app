@@ -4,8 +4,10 @@ package de.seemoo.nexmon.jammer;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
     public AlertDialog idftDialog;
     public AlertDialog channelDialog;
+    public AlertDialog helpDialog;
     public Menu menu;
     public SeekBarFragment ampFragment;
     public SeekBarFragment phaseFragment;
@@ -201,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             args.putDoubleArray("amps", amps);
             args.putDoubleArray("phases", phases);
             args.putDoubleArray("freqs", freqs);
+            args.putInt("mode", 0);
             timePlotFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_3, timePlotFragment, "timeplot");
         }
@@ -212,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             args.putDoubleArray("amps", amps);
             args.putDoubleArray("phases", phases);
             args.putDoubleArray("freqs", freqs);
+            args.putInt("mode", 1);
             freqPlotFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_4, freqPlotFragment, "freqplot");
         }
@@ -338,6 +344,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 return true;
             case R.id.channel:
                 channelDialog.show();
+                return true;
+            case R.id.help_jammer:
+                helpDialog.show();
                 return true;
         }
 
@@ -584,6 +593,68 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         // create alert dialog
         channelDialog = alertDialogBuilder.create();
+
+        list_layout = getLayoutInflater().inflate(R.layout.help_jammer, null, true);
+
+        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
+        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
+        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
+        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
+
+        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://nexmon.org"));
+                startActivity(intent);
+            }
+        });
+
+        imgTudLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
+                startActivity(intent);
+            }
+        });
+
+        btnLicenses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LicenseDialog licenseDialog = LicenseDialog.newInstance();
+                licenseDialog.show(getFragmentManager(), "");
+            }
+        });
+
+        alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(list_layout);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("CLOSE", null);
+
+
+        // create alert dialog
+        helpDialog = alertDialogBuilder.create();
     }
 
     @Override
@@ -604,6 +675,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.channel).setVisible(false);
             menu.findItem(R.id.idft).setVisible(false);
             menu.findItem(R.id.type).setVisible(false);
+            menu.findItem(R.id.help_transmitter).setVisible(true);
+            menu.findItem(R.id.help_receiver).setVisible(false);
+            menu.findItem(R.id.help_jammer).setVisible(false);
             findViewById(R.id.jammingPower).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -622,6 +696,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.channel).setVisible(false);
             menu.findItem(R.id.idft).setVisible(false);
             menu.findItem(R.id.type).setVisible(false);
+            menu.findItem(R.id.help_transmitter).setVisible(false);
+            menu.findItem(R.id.help_receiver).setVisible(true);
+            menu.findItem(R.id.help_jammer).setVisible(false);
             findViewById(R.id.jammingPower).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -640,6 +717,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.channel).setVisible(false);
             menu.findItem(R.id.idft).setVisible(false);
             menu.findItem(R.id.type).setVisible(false);
+            menu.findItem(R.id.help_transmitter).setVisible(false);
+            menu.findItem(R.id.help_receiver).setVisible(false);
+            menu.findItem(R.id.help_jammer).setVisible(false);
             findViewById(R.id.jammingPower).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -658,6 +738,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.channel).setVisible(true);
             menu.findItem(R.id.idft).setVisible(true);
             menu.findItem(R.id.type).setVisible(true);
+            menu.findItem(R.id.help_transmitter).setVisible(false);
+            menu.findItem(R.id.help_receiver).setVisible(false);
+            menu.findItem(R.id.help_jammer).setVisible(true);
             findViewById(R.id.jammingPower).setVisibility(View.VISIBLE);
 
             Configuration config = getResources().getConfiguration();
