@@ -1,14 +1,21 @@
 package de.seemoo.nexmon.jammer;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,17 +33,13 @@ public class PlotFragment extends android.app.Fragment {
     public double[] amps;
     public double[] phases;
     public double[] freqs;
-    public Double[] times;
+    public float[] times;
     public ArrayList<double[]> data = new ArrayList<>();
     Complex[] complexFrequencySignal;
     Complex[] complexTimeSignal;
-    private XYPlot timePlot;
-    private XYPlot freqPlot;
-    private XYSeries series1;
-    private XYSeries series2;
-    private XYSeries series3;
-    private LineAndPointFormatter seriesFormat1;
-    private LineAndPointFormatter seriesFormat2;
+
+
+    private LineChart mChart;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -63,13 +66,10 @@ public class PlotFragment extends android.app.Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        createTimePlot();
+        if (mode == 0) createTimePlot();
+        else createFreqPlot();
 
-
-        timePlot = (XYPlot) getActivity().findViewById(R.id.timePlot);
-        freqPlot = (XYPlot) getActivity().findViewById(R.id.freqPlot);
-
-        seriesFormat1 = new LineAndPointFormatter(getActivity(), R.xml.line_point_formatter1);
-        seriesFormat2 = new LineAndPointFormatter(getActivity(), R.xml.line_point_formatter2);
     }
 
 
@@ -84,12 +84,11 @@ public class PlotFragment extends android.app.Fragment {
         int fs = 40000000;
         int size = amps.length;
 
-        times = new Double[size];
+        times = new float[size];
 
         for (int j = 0; j < size; j++) {
-            times[j] = (j * 1.0) / fs;
+            times[j] = (float) (j * 1.0) / fs;
         }
-        System.out.println(Arrays.toString(times));
 
         double i;
         double q;
@@ -101,6 +100,9 @@ public class PlotFragment extends android.app.Fragment {
             q = (-1) * amps[j] * sin(phases[j]);
             complexFrequencySignal[j] = new Complex(i, q);
         }
+
+
+        //FFT.show(complexFrequencySignal,"hi");
         /*Complex[] x = new Complex[7];
 
         // original data
@@ -111,6 +113,7 @@ public class PlotFragment extends android.app.Fragment {
         FFT.show(y, "hi");*/
 
         complexTimeSignal = FFT.ifft(complexFrequencySignal);
+        //FFT.show(complexTimeSignal,"hi");
     }
 
     public void constructFFTPlotData() {
@@ -133,9 +136,7 @@ public class PlotFragment extends android.app.Fragment {
         List<? extends Number> xVals = Arrays.asList(values);
         List<? extends Number> yVals = Arrays.asList(mags);
 
-        freqPlot.removeSeries(series3);
-        series3 = new SimpleXYSeries(xVals, yVals, "FFT");
-        freqPlot.addSeries(series3, seriesFormat1);
+
     }
 
     public void plotSignals(double[] amps_new, double[] phases_new, double[] freqs_new) {
@@ -143,42 +144,166 @@ public class PlotFragment extends android.app.Fragment {
         this.phases = phases_new;
         this.freqs = freqs_new;
 
-        constructIQSamples();
 
         if (mode == 0) {
             // Time Plot
-
-            List<? extends Number> xVals = Arrays.asList(times);
-            List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal, 0));
-            List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal, 1));
-
-            timePlot.removeSeries(series1);
-            timePlot.removeSeries(series2);
-            series1 = new SimpleXYSeries(xVals, yValsReal, "Real");
-            series2 = new SimpleXYSeries(xVals, yValsImag, "Imaginary");
-            timePlot.addSeries(series1, seriesFormat1);
-            timePlot.addSeries(series2, seriesFormat2);
+            updateTimePlot();
         } else {
             // Frequency Plot
-            constructFFTPlotData();
+            updateFreqPlot();
+            //constructFFTPlotData();
         }
 
     }
 
-    public Double[] extractPart(Complex[] complex, int part) {
-        Double[] data = new Double[complex.length];
+    public float[] extractPart(Complex[] complex, int part) {
+        float[] data = new float[complex.length];
         if (part == 0) {
             //Real
             for (int j = 0; j < data.length; j++) {
-                data[j] = complex[j].re();
+                //System.out.println(complex[j].re());
+                data[j] = (float) complex[j].re();
+                //System.out.println(data[j]);
             }
         } else {
             //Imaginary
             for (int j = 0; j < data.length; j++) {
-                data[j] = complex[j].im();
+                data[j] = (float) complex[j].im();
             }
         }
         return data;
+    }
+
+    public void createTimePlot() {
+
+        TextView title = (TextView) getView().findViewById(R.id.plot_title);
+        title.setText("Time Domain Plot");
+
+        mChart = (LineChart) getView().findViewById(R.id.chart1);
+
+
+        // enable description text
+        mChart.getDescription().setEnabled(true);
+
+        // enable touch gestures
+        mChart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        mChart.setPinchZoom(true);
+
+        // set an alternative background color
+        mChart.setBackgroundColor(Color.LTGRAY);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        mChart.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = mChart.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+        //l.setTypeface(mTfLight);
+        l.setTextColor(Color.WHITE);
+
+        XAxis xl = mChart.getXAxis();
+        //xl.setTypeface(mTfLight);
+        xl.setTextColor(Color.WHITE);
+        xl.setDrawGridLines(false);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        //leftAxis.setTypeface(mTfLight);
+        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setAxisMaximum(0.04f);
+        leftAxis.setAxisMinimum(-0.04f);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        updateTimePlot();
+    }
+
+    public void createFreqPlot() {
+        TextView title = (TextView) getView().findViewById(R.id.plot_title);
+        title.setText("Frequency Domain Plot");
+    }
+
+    public void updateTimePlot() {
+        mChart.clearValues();
+
+        LineData data = mChart.getData();
+
+        if (data != null) {
+
+            ILineDataSet set_real = data.getDataSetByIndex(0);
+            ILineDataSet set_imag = data.getDataSetByIndex(1);
+            // set.addEntry(...); // can be called as well
+
+            if (set_real == null) {
+                set_real = createSet();
+                data.addDataSet(set_real);
+                //set_imag = createSet();
+                //data.addDataSet(set_imag);
+            }
+
+            constructIQSamples();
+
+
+            float[] real = extractPart(complexTimeSignal, 0);
+            float[] imag = extractPart(complexTimeSignal, 1);
+
+            //System.out.println(Arrays.toString(real));
+            //System.out.println(Arrays.toString(imag));
+
+
+            for (int i = 0; i < times.length; i++) {
+
+
+                data.addEntry(new Entry(times[i], real[i]), 0);
+                //data.addEntry(new Entry(times[i], imag[i]), 1);
+
+            }
+
+
+            data.notifyDataChanged();
+
+            // let the chart know it's data has changed
+            mChart.notifyDataSetChanged();
+
+
+        }
+
+    }
+
+    public void updateFreqPlot() {
+
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
     }
 
 }
