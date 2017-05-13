@@ -2,35 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_menu">
-    <item
-        android:id="@+id/view"
+    <item android:id="@+id/view"
         android:title="View"
         app:showAsAction="ifRoom">
         <menu xmlns:android="http://schemas.android.com/apk/res/android">
-            <item android:id="@+id/view_top"
-                android:title="Top"
-                app:showAsAction="ifRoom">
-                <menu xmlns:android="http://schemas.android.com/apk/res/android">
-                    <group android:id="@+id/group_view_top" android:checkableBehavior="single">
-                        <item android:id="@+id/amp_sliders_top" android:title="Amplitude Sliders"/>
-                        <item android:id="@+id/phase_sliders_top" android:title="Phase Sliders"/>
-                        <item android:id="@+id/time_plot_top" android:title="Time-Domain Plot"/>
-                        <item android:id="@+id/frequency_plot_top" android:title="Frequency-Domain Plot"/>
-                    </group>
-                </menu>
-            </item>
-            <item android:id="@+id/item_bottom"
-                android:title="Bottom"
-                app:showAsAction="ifRoom">
-                <menu xmlns:android="http://schemas.android.com/apk/res/android">
-                    <group android:id="@+id/group_view_bottom" android:checkableBehavior="single">
-                        <item android:id="@+id/amp_sliders_bottom" android:title="Amplitude Sliders"/>
-                        <item android:id="@+id/phase_sliders_bottom" android:title="Phase Sliders"/>
-                        <item android:id="@+id/time_plot_bottom" android:title="Time-Domain Plot"/>
-                        <item android:id="@+id/frequency_plot_bottom" android:title="Frequency-Domain Plot"/>
-                    </group>
-                </menu>
-            </item>
+            <group android:id="@+id/group_view" android:checkableBehavior="all">
+                <item android:id="@+id/amp_sliders" android:title="Amplitude Sliders"/>
+                <item android:id="@+id/phase_sliders" android:title="Phase Sliders"/>
+                <item android:id="@+id/time_plot" android:title="Time-Domain Plot"/>
+                <item android:id="@+id/frequency_plot" android:title="Frequency-Domain Plot"/>
+            </group>
         </menu>
     </item>
     <item android:id="@+id/type"

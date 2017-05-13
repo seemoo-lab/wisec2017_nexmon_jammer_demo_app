@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -121,10 +122,10 @@ public class SeekBarFragment extends android.app.Fragment {
     }
 
     public void setVerticalSeekBars() {
-        final int idft_size = data.length;
-        for (int j = 0; j < 512; j++) {
+        final int sliders_count = Constants.getSlidersCount(data.length);
+        for (int j = 0; j < Constants.MAX_SLIDERS_COUNT; j++) {
             LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
-            if (j < idft_size) layout.setVisibility(View.VISIBLE);
+            if (j < sliders_count) layout.setVisibility(View.VISIBLE);
             else layout.setVisibility(View.GONE);
         }
         updateFrequencies();
@@ -136,13 +137,7 @@ public class SeekBarFragment extends android.app.Fragment {
     }
 
     public void createSeekBars() {
-        int idft_size = 512;
-
-
-        Date counter = new Date();
-        // System.out.println(counter.getTime());
-
-        for (int i = 0; i < idft_size; i++) {
+        for (int i = 0; i < Constants.MAX_SLIDERS_COUNT; i++) {
 
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.verticalseekbar, container, false);
             layout.setTag(name + "_layout_" + i);
@@ -242,43 +237,40 @@ public class SeekBarFragment extends android.app.Fragment {
 
     }
 
+    private double round(double value, int decimals) {
+        double factor = Math.pow(10, decimals);
+        return ceil(value * factor) / factor;
+    }
+
     public void updateFrequencies() {
         int idft_size = data.length;
+        int slidersCount = Constants.getSlidersCount(idft_size);
 
-        double subcarrier_s = (bandwidth * 2 / (double) idft_size) * 1000;
+        double subcarrierSpacing = round((bandwidth * Constants.OVERSAMPLING_RATE / (double) idft_size) * 1000, 3);
 
-        double subcarrier_size = ceil(subcarrier_s * 1000) / 1000.0;
-
-        for (int j = 0; j < idft_size; j++) {
+        for (int j = 0; j < slidersCount; j++) {
             final LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
             final TextView freq = (TextView) getView().getRootView().findViewWithTag(name + "_freq_" + j);
             final TextView sliderText = (TextView) getView().getRootView().findViewWithTag(name + "_tag_" + j);
 
-            double value = subcarrier_size * (idft_size / 2 - j) * (-1);
+            double subcarrierFrequency = round(subcarrierSpacing * (slidersCount / 2 - j) * (-1), 4);
 
-            value = ceil(value * 1000) / 1000.0;
-
-            if (Math.abs(value) <= bandwidth * 500) layout.setBackgroundColor(color);
+            if (Math.abs(subcarrierFrequency) <= bandwidth * 500) layout.setBackgroundColor(color);
             else layout.setBackgroundColor(Color.WHITE);
 
-            if (value == 0) value = 0;
+            if (name.equals("Amplitudes")) freqs[j] = subcarrierFrequency * 1000;
 
-            if (name.equals("Amplitudes")) freqs[j] = value * 1000;
+            final String freqUnit;
+            if (Math.abs(subcarrierFrequency) >= 1000) {
 
-            final String t;
-            if (Math.abs(value) >= 1000) {
+                subcarrierFrequency = round(subcarrierFrequency / 1000, 3);
 
-                value = value / 1000;
+                freqUnit = "MHz";
+            } else freqUnit = "kHz";
 
-                value = ceil(value * 1000) / 1000.0;
-                t = "MHz";
-            } else t = "kHz";
+            int subcarrierNumber = j - slidersCount / 2;
 
-            int scText;
-            if (j < idft_size / 2) scText = idft_size / 2 + j;
-            else scText = j - idft_size / 2;
-
-            freq.setText("SC " + scText + " at\n" + value + t);
+            freq.setText("SC " + subcarrierNumber + " at\n" + subcarrierFrequency + freqUnit);
 
             if (name.equals("Amplitudes")) sliderText.setText("" + data[j]);
             else sliderText.setText("" + ceil(data[j] * 1000) / 1000.0);
@@ -291,8 +283,7 @@ public class SeekBarFragment extends android.app.Fragment {
                     int tag = Integer.parseInt(((String) verticalSeekBar.getTag()).replaceAll("[^0-9]", ""));
                     double value;
                     if (name.equals("Amplitudes")) value = data[tag] * 100.0;
-                    else value = (data[tag] * 2 * Math.PI) / 100 + 50;
-                    value = ceil(value * 1000) / 1000.0;
+                    else value = round((data[tag] * 2 * Math.PI) / 100 + 50, 3);
                     verticalSeekBar.setProgress((int) value);
                 }
             });
@@ -311,13 +302,14 @@ public class SeekBarFragment extends android.app.Fragment {
     public void setScrollToMiddle() {
         HorizontalScrollView scrollView = (HorizontalScrollView) getView().getRootView().findViewById(R.id.horizontalScrollView);
 
-        int x = data.length;
-        if (x % 2 != 0) x--;
+        int idft_size = data.length;
+        int slidersCount = Constants.getSlidersCount(idft_size);
+        if (slidersCount % 2 != 0) slidersCount--;
         TextView freq = (TextView) getView().getRootView().findViewById(R.id.main).findViewWithTag(name + "_freq_" + 1);
         //System.out.println(x);
         //System.out.println(freq.getWidth());
 
-        scrollView.scrollTo(freq.getWidth() * x / 2 - (scrollView.getWidth() / 2 - freq.getWidth() / 2), 0);
+        scrollView.scrollTo(freq.getWidth() * slidersCount / 2 - (scrollView.getWidth() / 2 - freq.getWidth() / 2), 0);
     }
 
     public void passFreqs() {
@@ -329,130 +321,3 @@ public class SeekBarFragment extends android.app.Fragment {
         void onUserAction(Bundle bundle);
     }
 }
-
-        /*
-        final CountDownLatch latch = new CountDownLatch(2);
-        Thread a = new Thread(new WorkerThread_1(this, latch));
-        Thread b = new Thread(new WorkerThread_2(this, latch));
-        a.start();
-        b.start();
-        latch.await();  //main thread is waiting on CountDownLatch to finish
-        System.out.println("All services are up, Application is starting now");
-        */
-
-/*
-class WorkerThread_1 implements Runnable {
-    SeekBarFragment seekBarFragment;
-    public String name;
-    public double[] data;
-    CountDownLatch latch;
-
-    public WorkerThread_1(SeekBarFragment seekBarFragment, CountDownLatch latch){
-        this.seekBarFragment = seekBarFragment;
-        name = seekBarFragment.name;
-        data = this.seekBarFragment.data;
-        this.latch=latch;
-    }
-
-    public void run() {
-        Looper.prepare();
-
-        final int idft_size = seekBarFragment.data.length;
-        double subcarrier_s = (seekBarFragment.bandwidth*2/(double) idft_size) *1000;
-        try {
-            final DecimalFormat df = new DecimalFormat("#.###");
-            final double subcarrier_size = Double.valueOf(df.format(subcarrier_s));
-
-            for (int j = 0; j<idft_size; j++){
-                final int k = j;
-                seekBarFragment.getActivity().runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        LinearLayout layout = (LinearLayout) seekBarFragment.getView().getRootView().findViewWithTag(name +"_layout_" + k);
-                        layout.setVisibility(View.VISIBLE);
-
-                        layout.setBackgroundColor(seekBarFragment.color);
-                        final TextView freq = (TextView) seekBarFragment.getView().getRootView().findViewWithTag(name +"_freq_" + k);
-                        final TextView sliderText = (TextView) seekBarFragment.getView().getRootView().findViewWithTag(name +"_tag_" + k);
-
-                        double value = Double.valueOf(df.format(subcarrier_size * (idft_size/2 - k)*(-1)));
-
-                        if (Math.abs(value) <= seekBarFragment.bandwidth*500) layout.setBackgroundColor(seekBarFragment.color);
-                        else layout.setBackgroundColor(Color.WHITE);
-
-                        if (value==0) value=0;
-
-                        if (name == "Amplitudes") seekBarFragment.freqs[k] = value*1000;
-
-                        final String t;
-                        if(Math.abs(value)>=1000) {
-                            value = Double.valueOf(df.format(value / 1000));
-                            t = "MHz";
-                        } else t = "kHz";
-
-                        int scText;
-                        if (k<idft_size/2) scText= idft_size/2 + k;
-                        else scText=k-idft_size/2;
-
-                        freq.setText("SC "+scText + " at\n"+value +t);
-                        if (name=="Amplitudes") sliderText.setText(""+data[k]);
-                        else  sliderText.setText(""+ Double.valueOf(df.format(data[k])));
-
-                        final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) seekBarFragment.getView().getRootView().findViewWithTag(name +"_seekBar_" + k);
-
-                        Handler mHandler = new Handler();
-                        mHandler.post(new Runnable() {
-                            public void run () {
-                                int tag = Integer.parseInt(((String) verticalSeekBar.getTag()).replaceAll("[^0-9]", ""));
-                                double value;
-                                if (name=="Amplitudes") value = data[tag] *100.0;
-                                else  value = (data[tag]*2*Math.PI)/100 +50;
-                                value = Double.valueOf(df.format(value));
-                                verticalSeekBar.setProgress((int) value);
-                            }
-                        });
-
-                    }
-                });
-            }
-
-            latch.countDown();
-        }
-        catch (NumberFormatException e){
-            e.printStackTrace();
-        }
-
-
-    }
-}
-
-class WorkerThread_2 implements Runnable {
-    SeekBarFragment seekBarFragment;
-    public String name;
-    public double[] data;
-    CountDownLatch latch;
-
-    public WorkerThread_2(SeekBarFragment seekBarFragment, CountDownLatch latch){
-        this.seekBarFragment = seekBarFragment;
-        name = seekBarFragment.name;
-        data = this.seekBarFragment.data;
-        this.latch=latch;
-    }
-
-    public void run() {
-        for (int i = data.length; i<512; i++){
-            final int  m = i;
-            seekBarFragment.getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    LinearLayout layout = (LinearLayout) seekBarFragment.getView().getRootView().findViewWithTag(name + "_layout_" + m);
-                    layout.setVisibility(View.GONE);
-                }});
-        }
-        latch.countDown();
-    }
-
-}
-*/
