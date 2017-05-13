@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -96,9 +98,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             vars.put("JammerType", 0);
             vars.put("App", 0);
             vars.put("jammerStart", 0);
-            amps = new double[vars.get("idft size")];
-            phases = new double[vars.get("idft size")];
-            freqs = new double[vars.get("idft size")];
+            amps = new double[Constants.getSlidersCount(vars.get("idft size"))];
+            phases = new double[Constants.getSlidersCount(vars.get("idft size"))];
+            freqs = new double[Constants.getSlidersCount(vars.get("idft size"))];
         }
 
 
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     @Override
     public void onStart() {
         super.onStart();
+        Log.d("D", "onStart: enter");
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -240,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             fragmentTransaction.add(R.id.fragment_container_7, aboutUsFragment, "aboutUs");
         }
         fragmentTransaction.commit();
+        Log.d("D", "onStart: exit");
     }
 
     @Override
@@ -531,17 +535,17 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 .setCancelable(false)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
-                        int value = Integer.parseInt(seekBarText.getText().toString());
-                        if (value != vars.get("idft size")) {
-                            if (value > Constants.MAX_IDFT_SIZE) value = Constants.MAX_IDFT_SIZE;
-                            if (value < Constants.MIN_IDFT_SIZE) value = Constants.MIN_IDFT_SIZE;
-                            vars.put("idft size", value);
-                            amps = new double[value];
-                            freqs = new double[value];
+                        int newIdftSize = Integer.parseInt(seekBarText.getText().toString());
+                        if (newIdftSize != vars.get("idft size")) {
+                            if (newIdftSize > Constants.MAX_IDFT_SIZE) newIdftSize = Constants.MAX_IDFT_SIZE;
+                            if (newIdftSize < Constants.MIN_IDFT_SIZE) newIdftSize = Constants.MIN_IDFT_SIZE;
+                            vars.put("idft size", newIdftSize);
+                            amps = new double[Constants.getSlidersCount(newIdftSize)];
+                            freqs = new double[Constants.getSlidersCount(newIdftSize)];
                             ampFragment.setData(amps);
                             ampFragment.setFreqs(freqs);
                             ampFragment.setVerticalSeekBars();
-                            phases = new double[value];
+                            phases = new double[Constants.getSlidersCount(newIdftSize)];
                             phaseFragment.setData(phases);
                             phaseFragment.setVerticalSeekBars();
                             setPresetPilots(vars.get("Preset"));

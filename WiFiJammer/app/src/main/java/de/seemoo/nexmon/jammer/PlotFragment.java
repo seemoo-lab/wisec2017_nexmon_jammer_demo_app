@@ -1,6 +1,7 @@
 package de.seemoo.nexmon.jammer;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ public class PlotFragment extends android.app.Fragment {
     public int mode;
     public double[] amps;
     public double[] phases;
+    public double[] time_i;
+    public double[] time_q;
     public double[] freqs;
     public Double[] times;
     public ArrayList<double[]> data = new ArrayList<>();
@@ -110,24 +113,26 @@ public class PlotFragment extends android.app.Fragment {
         Complex[] y = FFT.fftshift(x);
         FFT.show(y, "hi");*/
 
-        complexTimeSignal = FFT.ifft(complexFrequencySignal);
+//        complexTimeSignal = FFT.ifft(complexFrequencySignal);
     }
 
     public void constructFFTPlotData() {
 
         int size = amps.length;
-        Integer values[] = new Integer[size];
+        Double values[] = new Double[size];
+
+        Log.d("D", "size: " + size);
 
         for (int i = 0; i < size; i++) {
-            values[i] = (size / 2 - i) * (-1);
+            //values[i] = (size / 2 - i) * (-1);
+            values[i] = freqs[i];
         }
         System.out.println(Arrays.toString(values));
 
-        Complex x[] = FFT.fftshift(complexFrequencySignal);
         Double mags[] = new Double[size];
 
         for (int i = 0; i < size; i++) {
-            mags[i] = x[i].abs();
+            mags[i] = amps[i];
         }
 
         List<? extends Number> xVals = Arrays.asList(values);

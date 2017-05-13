@@ -122,7 +122,7 @@ public class SeekBarFragment extends android.app.Fragment {
     }
 
     public void setVerticalSeekBars() {
-        final int sliders_count = Constants.getSlidersCount(data.length);
+        final int sliders_count = data.length;
         for (int j = 0; j < Constants.MAX_SLIDERS_COUNT; j++) {
             LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
             if (j < sliders_count) layout.setVisibility(View.VISIBLE);
@@ -243,8 +243,9 @@ public class SeekBarFragment extends android.app.Fragment {
     }
 
     public void updateFrequencies() {
-        int idft_size = data.length;
-        int slidersCount = Constants.getSlidersCount(idft_size);
+        int slidersCount = data.length;
+        // TODO Make this idft_size depend on the real idft_size setting
+        int idft_size = 128;
 
         double subcarrierSpacing = round((bandwidth * Constants.OVERSAMPLING_RATE / (double) idft_size) * 1000, 3);
 
@@ -302,8 +303,7 @@ public class SeekBarFragment extends android.app.Fragment {
     public void setScrollToMiddle() {
         HorizontalScrollView scrollView = (HorizontalScrollView) getView().getRootView().findViewById(R.id.horizontalScrollView);
 
-        int idft_size = data.length;
-        int slidersCount = Constants.getSlidersCount(idft_size);
+        int slidersCount = data.length;
         if (slidersCount % 2 != 0) slidersCount--;
         TextView freq = (TextView) getView().getRootView().findViewById(R.id.main).findViewWithTag(name + "_freq_" + 1);
         //System.out.println(x);
