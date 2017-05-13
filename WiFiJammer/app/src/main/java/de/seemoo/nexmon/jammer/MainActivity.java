@@ -25,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public Menu menu;
     public SeekBarFragment ampFragment;
     public SeekBarFragment phaseFragment;
-    public PlotFragment plotFragment;
+    public PlotFragment timePlotFragment;
+    public PlotFragment freqPlotFragment;
     public TransmitterFragment transmitterFragment;
     public ReceiverFragment receiverFragment;
     public AboutUsFragment aboutUsFragment;
@@ -76,7 +76,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         } else {
             vars = new HashMap<String, Integer>();
-            vars.put("amp_phase", R.id.amp_sliders_top);
+            vars.put("view_top", R.id.amp_sliders_top);
+            vars.put("view_bottom", R.id.phase_sliders_bottom);
             vars.put("jammingPower", 50);
             vars.put("idft size", 128);
             vars.put("Preset", 20);
@@ -186,33 +187,43 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             ampFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_1, ampFragment, "amp");
         }
-        plotFragment = (PlotFragment) fragmentManager.findFragmentByTag("plot");
-        if (plotFragment == null) {
-            plotFragment = new PlotFragment();
+        timePlotFragment = (PlotFragment) fragmentManager.findFragmentByTag("timeplot");
+        if (timePlotFragment == null) {
+            timePlotFragment = new PlotFragment();
             Bundle args = new Bundle();
             args.putDoubleArray("amps", amps);
             args.putDoubleArray("phases", phases);
             args.putDoubleArray("freqs", freqs);
-            plotFragment.setArguments(args);
-            fragmentTransaction.add(R.id.fragment_container_3, plotFragment, "plot");
+            timePlotFragment.setArguments(args);
+            fragmentTransaction.add(R.id.fragment_container_3, timePlotFragment, "timeplot");
+        }
+        freqPlotFragment = (PlotFragment) fragmentManager.findFragmentByTag("freqplot");
+        if (freqPlotFragment == null) {
+            freqPlotFragment = new PlotFragment();
+            Bundle args = new Bundle();
+            args.putDoubleArray("amps", amps);
+            args.putDoubleArray("phases", phases);
+            args.putDoubleArray("freqs", freqs);
+            freqPlotFragment.setArguments(args);
+            fragmentTransaction.add(R.id.fragment_container_4, freqPlotFragment, "freqplot");
         }
 
         transmitterFragment = (TransmitterFragment) fragmentManager.findFragmentByTag("transmitter");
         if (transmitterFragment == null) {
             transmitterFragment = new TransmitterFragment();
-            fragmentTransaction.add(R.id.fragment_container_4, transmitterFragment, "transmitter");
+            fragmentTransaction.add(R.id.fragment_container_5, transmitterFragment, "transmitter");
         }
 
         receiverFragment = (ReceiverFragment) fragmentManager.findFragmentByTag("receiver");
         if (receiverFragment == null) {
             receiverFragment = new ReceiverFragment();
-            fragmentTransaction.add(R.id.fragment_container_5, receiverFragment, "receiver");
+            fragmentTransaction.add(R.id.fragment_container_6, receiverFragment, "receiver");
         }
 
         aboutUsFragment = (AboutUsFragment) fragmentManager.findFragmentByTag("aboutUs");
         if (aboutUsFragment == null) {
             aboutUsFragment = new AboutUsFragment();
-            fragmentTransaction.add(R.id.fragment_container_6, aboutUsFragment, "aboutUs");
+            fragmentTransaction.add(R.id.fragment_container_7, aboutUsFragment, "aboutUs");
         }
         fragmentTransaction.commit();
     }
@@ -229,7 +240,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(vars.get("amp_phase")).setChecked(true);
+        menu.findItem(vars.get("view_top")).setChecked(true);
+        menu.findItem(vars.get("view_bottom")).setChecked(true);
 
         // initialize activity variables
         int i = 1;
@@ -319,74 +331,18 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         }
         if (!item.isChecked()) {
             switch (item.getGroupId()) {
+
                 case R.id.group_view_top:
+                    String view1 = "view_top";
+                    String view2 = "view_bottom";
+                    changeViews(item, view1, view2);
+                    return true;
 
-                    Configuration config = getResources().getConfiguration();
-
-                    if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        /**
-                         * Landscape mode of the device
-                         */
-                        switch (item.getItemId()) {
-                            case R.id.amp_sliders_top:
-                                Log.d(TAG, "Changing to Amp");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.amp_sliders_top);
-                                return true;
-                            case R.id.phase_sliders_top:
-                                Log.d(TAG, "Changing to Ph");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.phase_sliders_top);
-                                return true;
-                            case R.id.time_plot_top:
-                                Log.d(TAG, "Changing to Plot");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.time_plot_top);
-                                plotFragment.plotSignals(amps, phases, freqs);
-                                return true;
-                        }
-                    } else {
-                        /**
-                         * Portrait mode of the device
-                         */
-                        switch (item.getItemId()) {
-                            case R.id.amp_sliders_top:
-                                Log.d(TAG, "Changing to Amp");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.amp_sliders_top);
-                                return true;
-                            case R.id.phase_sliders_top:
-                                Log.d(TAG, "Changing to Ph");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.phase_sliders_top);
-                                return true;
-                            case R.id.time_plot_top:
-                                Log.d(TAG, "Changing to Plot");
-                                findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-                                findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
-                                item.setChecked(true);
-                                vars.put("amp_phase", R.id.time_plot_top);
-                                plotFragment.plotSignals(amps, phases, freqs);
-                                return true;
-                        }
-
-                    }
+                case R.id.group_view_bottom:
+                    view1 = "view_bottom";
+                    view2 = "view_top";
+                    changeViews(item, view1, view2);
+                    return true;
 
                 case R.id.group_type:
                     item.setChecked(true);
@@ -440,6 +396,72 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             }
         }
         return super.onOptionsItemSelected(item);
+
+    }
+
+    public void changeViews(MenuItem item, String view1, String view2) {
+
+        int itemId = item.getItemId();
+
+
+        if (itemId == R.id.amp_sliders_top || itemId == R.id.amp_sliders_bottom) {
+            Log.d(TAG, "Changing to Amp");
+            findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+            item.setChecked(true);
+
+        } else if (itemId == R.id.phase_sliders_top || itemId == R.id.phase_sliders_bottom) {
+            Log.d(TAG, "Changing to Ph");
+            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+            item.setChecked(true);
+
+        } else if (itemId == R.id.time_plot_top || itemId == R.id.time_plot_bottom) {
+            Log.d(TAG, "Changing to Plot");
+            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.VISIBLE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+            item.setChecked(true);
+            timePlotFragment.plotSignals(amps, phases, freqs);
+        } else if (itemId == R.id.frequency_plot_top || itemId == R.id.frequency_plot_bottom) {
+            Log.d(TAG, "Changing to Plot");
+            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.VISIBLE);
+            item.setChecked(true);
+            freqPlotFragment.plotSignals(amps, phases, freqs);
+        }
+        vars.put(view1, itemId);
+
+        Configuration config = getResources().getConfiguration();
+        if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            /**
+             * Portrait mode of the device
+             */
+            int menuId = vars.get(view2);
+
+            int fragmentId = R.id.fragment_container_1;
+
+            if (menuId == R.id.amp_sliders_top || menuId == R.id.amp_sliders_bottom) {
+                fragmentId = R.id.fragment_container_1;
+            } else if (menuId == R.id.phase_sliders_top || menuId == R.id.phase_sliders_bottom) {
+                fragmentId = R.id.fragment_container_2;
+            } else if (menuId == R.id.time_plot_top || menuId == R.id.time_plot_bottom) {
+                fragmentId = R.id.fragment_container_3;
+            } else if (menuId == R.id.frequency_plot_top || menuId == R.id.frequency_plot_bottom) {
+                fragmentId = R.id.fragment_container_4;
+            }
+
+            findViewById(fragmentId).setVisibility(View.VISIBLE);
+
+        }
+
 
     }
 
@@ -577,26 +599,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             //Transmitter
             menu.findItem(R.id.start).setVisible(false);
             menu.findItem(R.id.reset).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(false);
-            menu.findItem(R.id.preset).setVisible(false);
-            menu.findItem(R.id.bandwidth).setVisible(false);
-            menu.findItem(R.id.channel).setVisible(false);
-            menu.findItem(R.id.idft).setVisible(false);
-            menu.findItem(R.id.type).setVisible(false);
-            findViewById(R.id.jammingPower).setVisibility(View.GONE);
-            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
-            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
-            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
-            findViewById(R.id.fragment_container_4).setVisibility(View.VISIBLE);
-            findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
-            findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
-        } else if (app == 2) {
-            //Receiver
-            menu.findItem(R.id.start).setVisible(true);
-            menu.findItem(R.id.reset).setVisible(true);
-            menu.findItem(R.id.amp_phase).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(false);
+            menu.findItem(R.id.view).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
             menu.findItem(R.id.bandwidth).setVisible(false);
             menu.findItem(R.id.channel).setVisible(false);
@@ -609,12 +612,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_5).setVisibility(View.VISIBLE);
             findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
-        } else if (app == 3) {
-            //About
-            menu.findItem(R.id.start).setVisible(false);
-            menu.findItem(R.id.reset).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(false);
+            findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
+        } else if (app == 2) {
+            //Receiver
+            menu.findItem(R.id.start).setVisible(true);
+            menu.findItem(R.id.reset).setVisible(true);
+            menu.findItem(R.id.view).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
             menu.findItem(R.id.bandwidth).setVisible(false);
             menu.findItem(R.id.channel).setVisible(false);
@@ -627,11 +630,30 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_6).setVisibility(View.VISIBLE);
+            findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
+        } else if (app == 3) {
+            //About
+            menu.findItem(R.id.start).setVisible(false);
+            menu.findItem(R.id.reset).setVisible(false);
+            menu.findItem(R.id.view).setVisible(false);
+            menu.findItem(R.id.preset).setVisible(false);
+            menu.findItem(R.id.bandwidth).setVisible(false);
+            menu.findItem(R.id.channel).setVisible(false);
+            menu.findItem(R.id.idft).setVisible(false);
+            menu.findItem(R.id.type).setVisible(false);
+            findViewById(R.id.jammingPower).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_7).setVisibility(View.VISIBLE);
         } else {
             //Jammer
             menu.findItem(R.id.start).setVisible(false);
             menu.findItem(R.id.reset).setVisible(false);
-            menu.findItem(R.id.amp_phase).setVisible(true);
+            menu.findItem(R.id.view).setVisible(true);
             menu.findItem(R.id.preset).setVisible(true);
             menu.findItem(R.id.bandwidth).setVisible(true);
             menu.findItem(R.id.channel).setVisible(true);
@@ -645,8 +667,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 /**
                  * Landscape mode of the device
                  */
-                menu.findItem(R.id.amp_phase).setVisible(true);
-                menu.findItem(R.id.amp_phase).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                menu.findItem(R.id.view).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.preset).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -661,6 +682,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
                         break;
                     case R.id.phase_sliders_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
@@ -669,6 +691,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
                         break;
                     case R.id.time_plot_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
@@ -677,6 +700,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
                 }
 
             } else {
@@ -684,13 +708,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                  * Portrait mode of the device
                  **/
                 //menu.findItem(R.id.amp_phase).setVisible(false);
-                menu.findItem(R.id.amp_phase).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                menu.findItem(R.id.view).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.preset).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 System.out.println("Entering Portrait Mode");
-                switch (vars.get("amp_phase")) {
+                switch (vars.get("view_top")) {
                     case R.id.time_plot_top:
                         findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
@@ -698,6 +722,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
                         break;
                     default:
                         findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
@@ -706,6 +731,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
                         findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+                        findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
                         break;
 
                 }
