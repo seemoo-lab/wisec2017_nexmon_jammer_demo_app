@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -514,8 +512,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     public void onClick(DialogInterface dialog1, int id) {
                         int value = Integer.parseInt(seekBarText.getText().toString());
                         if (value != vars.get("idft size")) {
-                            if (value > 512) value = 512;
-                            if (value < 1) value = 1;
+                            if (value > Constants.MAX_IDFT_SIZE) value = Constants.MAX_IDFT_SIZE;
+                            if (value < Constants.MIN_IDFT_SIZE) value = Constants.MIN_IDFT_SIZE;
                             vars.put("idft size", value);
                             amps = new double[value];
                             freqs = new double[value];
