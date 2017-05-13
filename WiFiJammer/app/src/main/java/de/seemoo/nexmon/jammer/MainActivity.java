@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 
 public class MainActivity extends AppCompatActivity implements SeekBarFragment.FragmentListener {
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public double phases[];
     public double freqs[] = new double[128];
     public HashMap<String, Integer> vars;
-
+    public LinkedList<Integer> checkedViews = new LinkedList<>();
     public AlertDialog idftDialog;
     public AlertDialog channelDialog;
     public AlertDialog helpDialog;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public TransmitterFragment transmitterFragment;
     public ReceiverFragment receiverFragment;
     public AboutUsFragment aboutUsFragment;
+    public boolean startup;
+    public boolean jammer_in_background;
+    public boolean first_run;
 
 
     public void onUserAction(Bundle bundle) {
@@ -71,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         setContentView(R.layout.main);
 
@@ -109,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     @Override
     public void onStart() {
         super.onStart();
+        startup = true;
+        jammer_in_background = false;
+        first_run = true;
         Log.d("D", "onStart: enter");
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -126,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                 case "Transmitter":
                                     vars.put("App", 1);
                                     setTitle("Transmitter");
+                                    jammer_in_background = true;
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                                 case "Jammer":
@@ -136,11 +146,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                 case "Receiver":
                                     vars.put("App", 2);
                                     setTitle("Receiver");
+                                    jammer_in_background = true;
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                                 case "About":
                                     vars.put("App", 3);
                                     setTitle("About Us");
+                                    jammer_in_background = true;
                                     onConfigurationChanged(getResources().getConfiguration());
                                     break;
                             }
@@ -258,11 +270,14 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        String orientation = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? "landscape" : "portrait";
-        menu.findItem(R.id.amp_sliders).setChecked(vars.get("amp_sliders_" + orientation) == 1);
+
+        //String orientation = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? "landscape" : "portrait";
+
+        /*menu.findItem(R.id.amp_sliders).setChecked(vars.get("amp_sliders_" + orientation) == 1);
         menu.findItem(R.id.phase_sliders).setChecked(vars.get("phase_sliders_" + orientation) == 1);
         menu.findItem(R.id.time_plot).setChecked(vars.get("time_plot_" + orientation) == 1);
-        menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);
+        menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);*/
+
 
         // initialize activity variables
         int i = 1;
@@ -331,8 +346,16 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 break;
             }
         }
+
+        //Application finished initializing
+        if (startup) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            startup = false;
+        }
+
         Configuration config = getResources().getConfiguration();
         onConfigurationChanged(config);
+
         return true;
     }
 
@@ -355,7 +378,40 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         }
 
         if (item.getGroupId() == R.id.group_view) {
-            String orientation = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? "landscape" : "portrait";
+
+            int max_size = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? 1 : 2;
+
+            if (item.isChecked()) {
+                checkedViews.remove(item.getItemId());
+                item.setChecked(false);
+                findViewById(getFragmentId(item)).setVisibility(View.GONE);
+
+            } else {
+                checkedViews.add(item.getItemId());
+                item.setChecked(true);
+                findViewById(getFragmentId(item)).setVisibility(View.VISIBLE);
+
+                if (checkedViews.size() > max_size) {
+                    MenuItem firstItem = menu.findItem(checkedViews.getFirst());
+                    //System.out.println(firstItem.getTitle());
+                    int fragmentId = getFragmentId(firstItem);
+                    System.out.println(fragmentId);
+                    findViewById(fragmentId).setVisibility(View.GONE);
+                    firstItem.setChecked(false);
+                    checkedViews.removeFirst();
+                }
+            }
+
+            /*
+            String orientation;
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                orientation = "landescape";
+                ViewGroup viewGroup = (ViewGroup) menu.findItem(R.id.group_view);
+
+            }else{
+                orientation = "portrait";
+            }
+            //String orientation = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? "landscape" : "portrait";
 
             switch (item.getItemId()) {
                 case R.id.amp_sliders:
@@ -407,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         freqPlotFragment.plotSignals(amps, phases, freqs);
                     }
                     return true;
-            }
+            }*/
         } else if (!item.isChecked()) {
             switch (item.getGroupId()) {
                 case R.id.group_type:
@@ -665,9 +721,16 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        // Do nothing if app has not initialized
+        if (startup) return;
+
+
         /**
          * Check the device orientation and act accordingly
          */
+
+        Configuration config = getResources().getConfiguration();
+
         int app = vars.get("App");
         if (app == 1) {
             //Transmitter
@@ -747,8 +810,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.help_jammer).setVisible(true);
             findViewById(R.id.jammingPower).setVisibility(View.VISIBLE);
 
-            Configuration config = getResources().getConfiguration();
-            String orientation;
+            findViewById(R.id.fragment_container_5).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_6).setVisibility(View.GONE);
+            findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
+
 
             if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 /**
@@ -760,8 +825,39 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
+                if (first_run) {
+                    // First time during initialization
+                    findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                    findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
+                    findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                    findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+
+                    MenuItem firstItem = menu.getItem(0).getSubMenu().getItem(0);
+
+                    firstItem.setChecked(true);
+
+                    checkedViews.add(firstItem.getItemId());
+
+                } else if (jammer_in_background) {
+                    //changing from other app
+                    for (Integer viewId : checkedViews) {
+                        MenuItem item = menu.getItem(0).getSubMenu().findItem(viewId);
+                        int fragmentId = getFragmentId(item);
+                        findViewById(fragmentId).setVisibility(View.VISIBLE);
+                        jammer_in_background = false;
+                    }
+
+                } else {
+                    //normal mode
+                    MenuItem firstItem = menu.getItem(0).getSubMenu().findItem(checkedViews.getFirst());
+                    int fragmentId = getFragmentId(firstItem);
+                    findViewById(fragmentId).setVisibility(View.GONE);
+                    firstItem.setChecked(false);
+                    checkedViews.removeFirst();
+                }
+
                 System.out.println("Entering Landscape Mode");
-                orientation = "landscape";
+                //orientation = "landscape";
             } else {
                 /**
                  * Portrait mode of the device
@@ -772,11 +868,49 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                System.out.println("Entering Portrait Mode");
-                orientation = "portrait";
+
+                if (first_run) {
+                    // First time during initialization
+
+                    findViewById(R.id.fragment_container_1).setVisibility(View.VISIBLE);
+                    findViewById(R.id.fragment_container_2).setVisibility(View.VISIBLE);
+                    findViewById(R.id.fragment_container_3).setVisibility(View.GONE);
+                    findViewById(R.id.fragment_container_4).setVisibility(View.GONE);
+
+                    MenuItem firstItem = menu.getItem(0).getSubMenu().getItem(0);
+                    MenuItem secondItem = menu.getItem(0).getSubMenu().getItem(1);
+
+                    firstItem.setChecked(true);
+                    secondItem.setChecked(true);
+
+                    checkedViews.add(firstItem.getItemId());
+                    checkedViews.add(secondItem.getItemId());
+
+                } else if (jammer_in_background) {
+                    //changing from other app
+                    for (Integer viewId : checkedViews) {
+                        MenuItem item = menu.getItem(0).getSubMenu().findItem(viewId);
+                        int fragmentId = getFragmentId(item);
+                        findViewById(fragmentId).setVisibility(View.VISIBLE);
+                        jammer_in_background = false;
+                    }
+                } else {
+                    //normal mode
+
+                    int index = getMenuItemIndex(menu.getItem(0).getSubMenu().findItem(checkedViews.getFirst()));
+                    MenuItem newItem = menu.getItem(0).getSubMenu().getItem((index + 1) % 4);
+                    checkedViews.add(newItem.getItemId());
+                    newItem.setChecked(true);
+                    findViewById(getFragmentId(newItem)).setVisibility(View.VISIBLE);
+
+                    System.out.println("Entering Portrait Mode");
+                    //orientation = "portrait";
+                }
+
             }
 
-            findViewById(R.id.fragment_container_1).setVisibility((vars.get("amp_sliders_" + orientation) == 1) ? View.VISIBLE : View.GONE);
+
+            /*findViewById(R.id.fragment_container_1).setVisibility((vars.get("amp_sliders_" + orientation) == 1) ? View.VISIBLE : View.GONE);
             findViewById(R.id.fragment_container_2).setVisibility((vars.get("phase_sliders_" + orientation) == 1) ? View.VISIBLE : View.GONE);
             findViewById(R.id.fragment_container_3).setVisibility((vars.get("time_plot_" + orientation) == 1) ? View.VISIBLE : View.GONE);
             findViewById(R.id.fragment_container_4).setVisibility((vars.get("frequency_plot_" + orientation) == 1) ? View.VISIBLE : View.GONE);
@@ -787,10 +921,32 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.amp_sliders).setChecked(vars.get("amp_sliders_" + orientation) == 1);
             menu.findItem(R.id.phase_sliders).setChecked(vars.get("phase_sliders_" + orientation) == 1);
             menu.findItem(R.id.time_plot).setChecked(vars.get("time_plot_" + orientation) == 1);
-            menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);
+            menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);*/
 
             createAlertDialogs();
         }
+
+
+        // take care of changed views, when jammer in background and orientation changes
+        if (app != 0) {
+            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                MenuItem firstItem = menu.getItem(0).getSubMenu().findItem(checkedViews.getFirst());
+                firstItem.setChecked(false);
+                checkedViews.removeFirst();
+
+            } else {
+
+                int index = getMenuItemIndex(menu.getItem(0).getSubMenu().findItem(checkedViews.getFirst()));
+                MenuItem newItem = menu.getItem(0).getSubMenu().getItem((index + 1) % 4);
+                checkedViews.add(newItem.getItemId());
+                newItem.setChecked(true);
+            }
+
+        }
+
+        first_run = false;
+
     }
 
     public void setPresetPilots(int value) {
@@ -833,6 +989,36 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             default:
                 return -1;
         }
+    }
+
+    public int getFragmentId(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.amp_sliders:
+                return R.id.fragment_container_1;
+            case R.id.phase_sliders:
+                return R.id.fragment_container_2;
+            case R.id.time_plot:
+                return R.id.fragment_container_3;
+            case R.id.frequency_plot:
+                return R.id.fragment_container_4;
+        }
+        return 0;
+    }
+
+    public int getMenuItemIndex(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.amp_sliders:
+                return 0;
+            case R.id.phase_sliders:
+                return 1;
+            case R.id.time_plot:
+                return 2;
+            case R.id.frequency_plot:
+                return 3;
+        }
+        return -1;
     }
 
 
