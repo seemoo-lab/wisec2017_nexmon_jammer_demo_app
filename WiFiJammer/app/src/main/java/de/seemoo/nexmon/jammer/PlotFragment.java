@@ -26,13 +26,9 @@ public class PlotFragment extends android.app.Fragment {
     public int mode;
     public double[] amps;
     public double[] phases;
-    public double[] time_i;
-    public double[] time_q;
     public double[] freqs;
     public Double[] times;
     public ArrayList<double[]> data = new ArrayList<>();
-    Complex[] complexFrequencySignal;
-    Complex[] complexTimeSignal;
     private XYPlot timePlot;
     private XYPlot freqPlot;
     private XYSeries series1;
@@ -81,41 +77,6 @@ public class PlotFragment extends android.app.Fragment {
         super.onSaveInstanceState(outState);
     }
 
-
-    public void constructIQSamples() {
-
-        int fs = 40000000;
-        int size = amps.length;
-
-        times = new Double[size];
-
-        for (int j = 0; j < size; j++) {
-            times[j] = (j * 1.0) / fs;
-        }
-        System.out.println(Arrays.toString(times));
-
-        double i;
-        double q;
-
-        complexFrequencySignal = new Complex[size];
-
-        for (int j = 0; j < size; j++) {
-            i = amps[j] * cos(phases[j]);
-            q = (-1) * amps[j] * sin(phases[j]);
-            complexFrequencySignal[j] = new Complex(i, q);
-        }
-        /*Complex[] x = new Complex[7];
-
-        // original data
-        for (int k = 0; k < 7; k++) {
-            x[k] = new Complex(k+1, k+1);
-        }
-        Complex[] y = FFT.fftshift(x);
-        FFT.show(y, "hi");*/
-
-//        complexTimeSignal = FFT.ifft(complexFrequencySignal);
-    }
-
     public void constructFFTPlotData() {
 
         int size = amps.length;
@@ -148,14 +109,36 @@ public class PlotFragment extends android.app.Fragment {
         this.phases = phases_new;
         this.freqs = freqs_new;
 
-        constructIQSamples();
-
         if (mode == 0) {
             // Time Plot
 
+            // TODO update idft_size according to setting
+            int idft_size = 128;
+
+            // TODO update bandwidth according to settings
+            double bandwidth = 20e6;
+            double fs = bandwidth * Constants.OVERSAMPLING_RATE;
+
+            Double timeI[] = new Double[idft_size];
+            Double timeQ[] = new Double[idft_size];
+            times = new Double[idft_size];
+
+            for (int n = 0; n < idft_size; n++) {
+                timeI[n] = 0.0;
+                timeQ[n] = 0.0;
+            }
+
+            for (int k = 0; k < amps.length; k++) {
+                for (int n = 0; n < idft_size; n++) {
+                    times[n] = n / fs;
+                    timeI[n] -= amps[k] * Math.sin(2*Math.PI*freqs[k]*times[n] + phases[k]);
+                    timeQ[n] += amps[k] * Math.cos(2*Math.PI*freqs[k]*times[n] + phases[k]);
+                }
+            }
+
             List<? extends Number> xVals = Arrays.asList(times);
-            List<? extends Number> yValsReal = Arrays.asList(extractPart(complexTimeSignal, 0));
-            List<? extends Number> yValsImag = Arrays.asList(extractPart(complexTimeSignal, 1));
+            List<? extends Number> yValsReal = Arrays.asList(timeI);
+            List<? extends Number> yValsImag = Arrays.asList(timeQ);
 
             timePlot.removeSeries(series1);
             timePlot.removeSeries(series2);
@@ -169,21 +152,4 @@ public class PlotFragment extends android.app.Fragment {
         }
 
     }
-
-    public Double[] extractPart(Complex[] complex, int part) {
-        Double[] data = new Double[complex.length];
-        if (part == 0) {
-            //Real
-            for (int j = 0; j < data.length; j++) {
-                data[j] = complex[j].re();
-            }
-        } else {
-            //Imaginary
-            for (int j = 0; j < data.length; j++) {
-                data[j] = complex[j].im();
-            }
-        }
-        return data;
-    }
-
 }

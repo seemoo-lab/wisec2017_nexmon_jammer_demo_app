@@ -283,8 +283,11 @@ public class SeekBarFragment extends android.app.Fragment {
                 public void run() {
                     int tag = Integer.parseInt(((String) verticalSeekBar.getTag()).replaceAll("[^0-9]", ""));
                     double value;
-                    if (name.equals("Amplitudes")) value = data[tag] * 100.0;
-                    else value = round((data[tag] * 2 * Math.PI) / 100 + 50, 3);
+                    if (name.equals("Amplitudes")) {
+                        value = data[tag] * 100.0;
+                    } else {
+                        value = round((data[tag] * 2 * Math.PI) / 100 + 50, 3);
+                    }
                     verticalSeekBar.setProgress((int) value);
                 }
             });
