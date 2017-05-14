@@ -899,7 +899,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public void setPresetPilots(int value, int power) {
 
         int maxSize = Variables.amps.length;
-        VerticalSeekBar seekBar;
+        SeekBar seekBar;
         switch (value) {
             case 20:
                 int sc_minus_7 = Variables.amps.length / 2 - 7;
@@ -907,19 +907,19 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 int sc_minus_21 = Variables.amps.length / 2 - 21;
                 int sc_plus_21 = Variables.amps.length / 2 + 21;
 
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
                 if (seekBar != null && sc_minus_7 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
                 if (seekBar != null && sc_plus_7 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
                 if (seekBar != null && sc_minus_21 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
                 if (seekBar != null && sc_plus_21 < maxSize) {
                     seekBar.setProgress(power);
                 }
@@ -932,27 +932,27 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 int sc_minus_53 = Variables.amps.length / 2 - 53;
                 int sc_plus_53 = Variables.amps.length / 2 + 53;
 
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
                 if (seekBar != null && sc_minus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
                 if (seekBar != null && sc_plus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
                 if (seekBar != null && sc_minus_25 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_25);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_25);
                 if (seekBar != null && sc_plus_25 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
                 if (seekBar != null && sc_minus_53 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_53);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_53);
                 if (seekBar != null && sc_plus_53 < maxSize) {
                     seekBar.setProgress(power);
                 }
@@ -969,35 +969,35 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 sc_minus_11 = Variables.amps.length / 2 - 11;
 
 
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
                 if (seekBar != null && sc_minus_7 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
                 if (seekBar != null && sc_plus_7 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
                 if (seekBar != null && sc_minus_21 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
                 if (seekBar != null && sc_plus_21 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
                 if (seekBar != null && sc_minus_39 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
                 if (seekBar != null && sc_minus_25 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
                 if (seekBar != null && sc_minus_53 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
                 if (seekBar != null && sc_minus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
@@ -1012,35 +1012,35 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 int sc_plus_75 = Variables.amps.length / 2 + 75;
                 int sc_minus_103 = Variables.amps.length / 2 - 103;
                 int sc_plus_103 = Variables.amps.length / 2 + 103;
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
                 if (seekBar != null && sc_minus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
                 if (seekBar != null && sc_plus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
                 if (seekBar != null && sc_minus_39 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_39);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_39);
                 if (seekBar != null && sc_plus_39 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
                 if (seekBar != null && sc_minus_75 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_75);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_75);
                 if (seekBar != null && sc_plus_75 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
                 if (seekBar != null && sc_minus_103 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_103);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_103);
                 if (seekBar != null && sc_plus_103 < maxSize) {
                     seekBar.setProgress(power);
                 }
@@ -1050,19 +1050,19 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 int sc_minus_98 = Variables.amps.length / 2 - 98;
                 sc_minus_103 = Variables.amps.length / 2 - 103;
                 int sc_minus_117 = Variables.amps.length / 2 - 117;
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
                 if (seekBar != null && sc_minus_75 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_98);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_98);
                 if (seekBar != null && sc_minus_98 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
                 if (seekBar != null && sc_minus_103 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
                 if (seekBar != null && sc_minus_117 < maxSize) {
                     seekBar.setProgress(power);
                 }
@@ -1074,27 +1074,27 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 sc_minus_75 = Variables.amps.length / 2 - 75;
                 int sc_minus_89 = Variables.amps.length / 2 - 89;
                 sc_minus_117 = Variables.amps.length / 2 - 117;
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
                 if (seekBar != null && sc_minus_11 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
                 if (seekBar != null && sc_minus_39 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
                 if (seekBar != null && sc_minus_53 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
                 if (seekBar != null && sc_minus_75 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_89);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_89);
                 if (seekBar != null && sc_minus_89 < maxSize) {
                     seekBar.setProgress(power);
                 }
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
                 if (seekBar != null && sc_minus_117 < maxSize) {
                     seekBar.setProgress(power);
                 }

@@ -294,6 +294,7 @@ public class PlotFragment extends android.app.Fragment {
         set.setDrawVerticalHighlightIndicator(false);
         set.setDrawHorizontalHighlightIndicator(false);
         set.setDrawValues(false);
+        set.setLineWidth(2f);
         return set;
     }
 
