@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean startup;
     public boolean jammer_in_background;
     public boolean first_run;
+    public HashSet<Integer> presets = new HashSet<>();
 
 
     public void onUserAction() {
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             vars = new HashMap<String, Integer>();
             vars.put("jammingPower", 50);
-            vars.put("Preset", 20);
+            presets.add(20);
             vars.put("WiFi Channel", 1);
             vars.put("JammerType", 0);
             vars.put("App", 0);
@@ -284,10 +286,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                 }
                                 break;
                             case "Preset":
-                                if (item.getTitle().toString().replace("in", "").contains(vars.get("Preset").toString() + " ")) {
-                                    setPresetPilots(vars.get("Preset"));
-                                    item.setChecked(true);
+                                for (Integer preset : presets) {
+                                    if (item.getTitle().toString().replace("in", "").contains(preset.toString() + " ")) {
+                                        setPresetPilots(preset, 100);
+                                        item.setChecked(true);
+                                    }
                                 }
+
                                 break;
                             case "Type":
                                 int type = vars.get("JammerType");
@@ -361,6 +366,19 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 }
             }
 
+        } else if (item.getGroupId() == R.id.group_preset) {
+            int value = Integer.parseInt(item.getTitle().toString().replaceAll("[^0-9]", ""));
+            if (item.isChecked()) {
+                item.setChecked(false);
+                setPresetPilots(value, 0);
+                presets.remove(value);
+            } else {
+                item.setChecked(true);
+                presets.add(value);
+                setPresetPilots(value, 100);
+            }
+            return true;
+
         } else if (!item.isChecked()) {
             switch (item.getGroupId()) {
                 case R.id.group_type:
@@ -368,19 +386,18 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     int value = getJammerType(item.getTitle().toString());
                     vars.put("JammerType", value);
                     return true;
-                case R.id.group_preset:
-                    item.setChecked(true);
-                    value = Integer.parseInt(item.getTitle().toString().replaceAll("[^0-9]", ""));
-                    vars.put("Preset", value);
-                    setPresetPilots(value);
-                    return true;
                 case R.id.group_bandwidth:
                     item.setChecked(true);
                     value = Integer.parseInt(item.getTitle().toString().replaceAll("[^0-9]", ""));
                     Variables.bandwidth = value;
                     ampFragment.updateFrequencies();
                     phaseFragment.updateFrequencies();
-                    vars.put("Preset", value);
+                    for (Integer preset : presets) {
+                        setPresetPilots(preset, 0);
+                    }
+                    presets = new HashSet<>();
+                    presets.add(value);
+                    setPresetPilots(value, 100);
                     switch (value) {
                         case 20:
                             menu.findItem(R.id.pre_20).setVisible(true).setChecked(true);
@@ -389,7 +406,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             menu.findItem(R.id.pre_80).setVisible(false);
                             menu.findItem(R.id.pre_20in80).setVisible(false);
                             menu.findItem(R.id.pre_40in80).setVisible(false);
-                            setPresetPilots(20);
                             break;
                         case 40:
                             menu.findItem(R.id.pre_20).setVisible(false);
@@ -398,7 +414,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             menu.findItem(R.id.pre_80).setVisible(false);
                             menu.findItem(R.id.pre_20in80).setVisible(false);
                             menu.findItem(R.id.pre_40in80).setVisible(false);
-                            setPresetPilots(40);
                             break;
                         case 80:
                             menu.findItem(R.id.pre_20).setVisible(false);
@@ -407,7 +422,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             menu.findItem(R.id.pre_80).setVisible(true).setChecked(true);
                             menu.findItem(R.id.pre_20in80).setVisible(true);
                             menu.findItem(R.id.pre_40in80).setVisible(true);
-                            setPresetPilots(80);
                             break;
                     }
                     if (!startup) {
@@ -501,10 +515,14 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             Variables.idft_size = newIdftSize;
                             Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
                             Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
-                            ampFragment.setVerticalSeekBars();
                             Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
+                            ampFragment.setVerticalSeekBars();
                             phaseFragment.setVerticalSeekBars();
-                            setPresetPilots(vars.get("Preset"));
+
+                            for (Integer preset : presets) {
+                                setPresetPilots(preset, 100);
+                            }
+
                             if (!startup) {
                                 timePlotFragment.plotSignals();
                                 freqPlotFragment.plotSignals();
@@ -840,31 +858,135 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
     }
 
-    public void setPresetPilots(int value) {
+    public void setPresetPilots(int value, int power) {
+
+        int maxSize = Variables.amps.length;
+        VerticalSeekBar seekBar;
         switch (value) {
             case 20:
-                VerticalSeekBar seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_0");
-                seekBar.setProgress(100);
+                int sc_minus_7 = Variables.amps.length / 2 - 7;
+                int sc_plus_7 = Variables.amps.length / 2 + 7;
+                int sc_minus_21 = Variables.amps.length / 2 - 21;
+                int sc_plus_21 = Variables.amps.length / 2 + 21;
+
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
+                if (seekBar != null && sc_minus_7 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
+                if (seekBar != null && sc_plus_7 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
+                if (seekBar != null && sc_minus_21 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
+                if (seekBar != null && sc_plus_21 < maxSize) {
+                    seekBar.setProgress(power);
+                }
                 break;
             case 40:
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_1");
-                seekBar.setProgress(100);
+
                 break;
             case 2040:
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_2");
-                seekBar.setProgress(100);
+
                 break;
             case 80:
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_3");
-                seekBar.setProgress(100);
+                int sc_minus_11 = Variables.amps.length / 2 - 11;
+                int sc_plus_11 = Variables.amps.length / 2 + 11;
+                int sc_minus_39 = Variables.amps.length / 2 - 39;
+                int sc_plus_39 = Variables.amps.length / 2 + 39;
+                int sc_minus_75 = Variables.amps.length / 2 - 75;
+                int sc_plus_75 = Variables.amps.length / 2 + 75;
+                int sc_minus_103 = Variables.amps.length / 2 - 103;
+                int sc_plus_103 = Variables.amps.length / 2 + 103;
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                if (seekBar != null && sc_minus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
+                if (seekBar != null && sc_plus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                if (seekBar != null && sc_minus_39 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_39);
+                if (seekBar != null && sc_plus_39 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                if (seekBar != null && sc_minus_75 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_75);
+                if (seekBar != null && sc_plus_75 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
+                if (seekBar != null && sc_minus_103 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_103);
+                if (seekBar != null && sc_plus_103 < maxSize) {
+                    seekBar.setProgress(power);
+                }
                 break;
             case 2080:
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_4");
-                seekBar.setProgress(100);
+                sc_minus_75 = Variables.amps.length / 2 - 75;
+                int sc_minus_98 = Variables.amps.length / 2 - 98;
+                sc_minus_103 = Variables.amps.length / 2 - 103;
+                int sc_minus_117 = Variables.amps.length / 2 - 117;
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                if (seekBar != null && sc_minus_75 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_98);
+                if (seekBar != null && sc_minus_98 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_103);
+                if (seekBar != null && sc_minus_103 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
+                if (seekBar != null && sc_minus_117 < maxSize) {
+                    seekBar.setProgress(power);
+                }
                 break;
             case 4080:
-                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_5");
-                seekBar.setProgress(100);
+                sc_minus_11 = Variables.amps.length / 2 - 11;
+                sc_minus_39 = Variables.amps.length / 2 - 39;
+                int sc_minus_53 = Variables.amps.length / 2 - 53;
+                sc_minus_75 = Variables.amps.length / 2 - 75;
+                int sc_minus_89 = Variables.amps.length / 2 - 89;
+                sc_minus_117 = Variables.amps.length / 2 - 117;
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                if (seekBar != null && sc_minus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                if (seekBar != null && sc_minus_39 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                if (seekBar != null && sc_minus_53 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_75);
+                if (seekBar != null && sc_minus_75 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_89);
+                if (seekBar != null && sc_minus_89 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_117);
+                if (seekBar != null && sc_minus_117 < maxSize) {
+                    seekBar.setProgress(power);
+                }
                 break;
         }
     }

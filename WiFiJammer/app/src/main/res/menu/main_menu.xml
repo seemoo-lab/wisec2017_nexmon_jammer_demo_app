@@ -29,7 +29,9 @@
         android:title="Preset"
         app:showAsAction="ifRoom">
         <menu xmlns:android="http://schemas.android.com/apk/res/android">
-            <group android:id="@+id/group_preset" android:checkableBehavior="single">
+            <group
+                android:id="@+id/group_preset"
+                android:checkableBehavior="all">
                 <item android:id="@+id/pre_20" android:title="20 MHz Pilots" />
 
                 <item android:id="@+id/pre_40" android:title="40 MHz Pilots" />
