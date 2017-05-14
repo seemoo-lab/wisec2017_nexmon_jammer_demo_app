@@ -28,7 +28,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -391,7 +390,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             dataSets.add(set);
 
             BarData data = new BarData(dataSets);
-            data.setValueFormatter(new LargeValueFormatter());
+            data.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
 
             mChart.setData(data);
         }

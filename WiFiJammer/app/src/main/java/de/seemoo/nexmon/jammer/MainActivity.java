@@ -348,10 +348,15 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 return true;
             case R.id.pre_reset:
                 //Reset Presets when changing Bandwidth
-                for (Integer preset : presets) {
-                    setPresetPilots(preset, 0);
-                }
+                Variables.amps = new double[Variables.freqs.length];
+                Variables.phases = new double[Variables.freqs.length];
+                ampFragment.updateFrequencies();
+                phaseFragment.updateFrequencies();
                 presets = new HashSet<>();
+                if (!startup) {
+                    timePlotFragment.plotSignals();
+                    freqPlotFragment.plotSignals();
+                }
                 switch (Variables.bandwidth) {
                     case 20:
                         menu.findItem(R.id.pre_20).setVisible(true).setChecked(false);

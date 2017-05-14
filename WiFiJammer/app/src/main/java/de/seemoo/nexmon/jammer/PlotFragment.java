@@ -14,7 +14,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -114,6 +113,8 @@ public class PlotFragment extends android.app.Fragment {
         TextView title = (TextView) getView().findViewById(R.id.plot_title);
         title.setText("Time Domain Plot");
         title.setBackgroundColor(Color.LTGRAY);
+        TextView range = (TextView) getView().findViewById(R.id.plot_range);
+        range.setBackgroundColor(Color.LTGRAY);
 
         mChart = (LineChart) getView().findViewById(R.id.chart1);
 
@@ -174,6 +175,8 @@ public class PlotFragment extends android.app.Fragment {
         TextView title = (TextView) getView().findViewById(R.id.plot_title);
         title.setText("Frequency Domain Plot");
         title.setBackgroundColor(Color.LTGRAY);
+        TextView range = (TextView) getView().findViewById(R.id.plot_range);
+        range.setBackgroundColor(Color.LTGRAY);
 
         mChart = (LineChart) getView().findViewById(R.id.chart1);
 
@@ -196,7 +199,6 @@ public class PlotFragment extends android.app.Fragment {
         mChart.setBackgroundColor(Color.LTGRAY);
 
         LineData data = new LineData();
-        data.setValueTextColor(Color.WHITE);
 
         // add empty data
         mChart.setData(data);
@@ -220,7 +222,6 @@ public class PlotFragment extends android.app.Fragment {
 
         YAxis leftAxis = mChart.getAxisLeft();
 
-        leftAxis.setTextColor(Color.BLACK);
         leftAxis.setDrawGridLines(true);
         leftAxis.setDrawAxisLine(true);
         YAxis rightAxis = mChart.getAxisRight();
