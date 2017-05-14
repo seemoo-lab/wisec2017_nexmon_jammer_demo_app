@@ -179,13 +179,18 @@ public class SeekBarFragment extends android.app.Fragment {
                         value = progress / 100.0;
                         value = round(value, 3);
                         Variables.amps[tag] = value;
+                        sliderText.setText("" + value);
                     } else {
                         value = (progress - 50) / 100.0 * 2 * Math.PI;
                         value = round(value, 3);
                         Variables.phases[tag] = value;
+                        value = value / Math.PI * 180;
+                        value = round(value, 2);
+                        sliderText.setText(value + "°");
+
                     }
 
-                    sliderText.setText("" + value);
+
 
 
                     // notify Activity
@@ -257,8 +262,12 @@ public class SeekBarFragment extends android.app.Fragment {
 
             freq.setText("SC " + subcarrierNumber + " at\n" + subcarrierFrequency + freqUnit);
 
-            if (name.equals("Amplitudes")) sliderText.setText("" + Variables.amps[j]);
-            else sliderText.setText("" + round(Variables.phases[j], 3));
+            if (name.equals("Amplitudes")) {
+                sliderText.setText("" + Variables.amps[j]);
+            } else {
+                double phase_in_degrees = Variables.phases[j] / Math.PI * 180;
+                sliderText.setText(round(phase_in_degrees, 2) + "°");
+            }
 
             final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) getView().getRootView().findViewWithTag(name + "_seekBar_" + j);
 
