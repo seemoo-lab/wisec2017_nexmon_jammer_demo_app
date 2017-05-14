@@ -19,7 +19,6 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -245,7 +244,6 @@ public class PlotFragment extends android.app.Fragment {
 
         constructIQSamples();
 
-        System.out.println(Arrays.toString(times));
 
         for (int i = 0; i < times.length; i++) {
 

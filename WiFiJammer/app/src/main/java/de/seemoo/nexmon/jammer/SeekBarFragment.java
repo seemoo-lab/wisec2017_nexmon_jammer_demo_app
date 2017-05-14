@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
@@ -126,36 +125,11 @@ public class SeekBarFragment extends android.app.Fragment {
 
             TextView sliderText = (TextView) layout.findViewById(R.id.verticalSeekbarText);
 
-            freq.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public synchronized boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        HorizontalScrollView scrollView = (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
-                        // enable scrolling
-                        scrollView.setOnTouchListener(null);
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-            sliderText.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public synchronized boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        HorizontalScrollView scrollView = (HorizontalScrollView) getView().findViewById(R.id.horizontalScrollView);
-                        // enable scrolling
-                        scrollView.setOnTouchListener(null);
-                        return true;
-                    }
-                    return false;
-                }
-            });
 
             sliderText.setTag(name + "_tag_" + i);
 
 
-            final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) layout.findViewById(R.id.verticalSeekbar);
+            final SeekBar verticalSeekBar = (SeekBar) layout.findViewById(R.id.verticalSeekbar);
             verticalSeekBar.setTag(name + "_seekBar_" + i);
 
             verticalSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -269,7 +243,7 @@ public class SeekBarFragment extends android.app.Fragment {
                 sliderText.setText(round(phase_in_degrees, 2) + "°");
             }
 
-            final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) getView().getRootView().findViewWithTag(name + "_seekBar_" + j);
+            final SeekBar verticalSeekBar = (SeekBar) getView().getRootView().findViewWithTag(name + "_seekBar_" + j);
 
             Handler mHandler = new Handler();
             mHandler.post(new Runnable() {

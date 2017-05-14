@@ -489,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 vars.put("jammerStart", 1);
                 startBtn.setText("stop");
                 //Disable Interface
+                
                 break;
             case 1: // started -> now stopping
                 vars.put("jammerStart", 0);

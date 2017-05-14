@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+    compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'eu.chainfire:libsuperuser:1.0.0.+'
     compile 'com.androidplot:androidplot-core:1.4.2'
