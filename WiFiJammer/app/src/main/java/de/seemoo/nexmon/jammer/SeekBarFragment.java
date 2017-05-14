@@ -22,17 +22,15 @@ import static java.lang.Math.ceil;
  */
 
 public class SeekBarFragment extends android.app.Fragment {
-    public double data[];
-    public double freqs[];
+
     public String name;
     public int color;
-    public int bandwidth;
     public LinearLayout container;
     public LayoutInflater inflater;
     public boolean started = false;
 
     // Interface to pass data to Activity
-    Bundle bundle = new Bundle();
+
     FragmentListener mCallback;
 
     @Override
@@ -55,18 +53,6 @@ public class SeekBarFragment extends android.app.Fragment {
         setHasOptionsMenu(true);
     }
 
-    public void setData(double[] data) {
-        this.data = data;
-    }
-
-    public void setFreqs(double[] freqs) {
-        this.freqs = freqs;
-    }
-
-    public void setBandwidth(int band) {
-        this.bandwidth = band;
-        updateFrequencies();
-    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -79,22 +65,17 @@ public class SeekBarFragment extends android.app.Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (data == null) {
+        if (name == null) {
             if (savedInstanceState != null) {
                 //Restore the fragment's state here
-                data = savedInstanceState.getDoubleArray("data");
                 name = savedInstanceState.getString("name");
                 color = savedInstanceState.getInt("color");
-                bandwidth = savedInstanceState.getInt("Bandwidth");
-                if (name == "Amplitudes") freqs = savedInstanceState.getDoubleArray("data");
             } else {
                 name = getArguments().getString("name");
-                data = getArguments().getDoubleArray(name);
                 color = getArguments().getInt("color");
-                bandwidth = getArguments().getInt("Bandwidth");
-                if (name == "Amplitudes") freqs = getArguments().getDoubleArray("freqs");
             }
         }
+
 
         ((TextView) getView().findViewById(R.id.fragment_header)).setText(name);
         (getView().findViewById(R.id.fragment_header)).setBackgroundColor(color);
@@ -112,14 +93,13 @@ public class SeekBarFragment extends android.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putDoubleArray("data", data);
         outState.putString("name", name);
         outState.putInt("color", color);
-        outState.putInt("Bandwidth", bandwidth);
+
     }
 
     public void setVerticalSeekBars() {
-        final int sliders_count = data.length;
+        final int sliders_count = Variables.amps.length;
         for (int j = 0; j < Constants.MAX_SLIDERS_COUNT; j++) {
             LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
             if (j < sliders_count) layout.setVisibility(View.VISIBLE);
@@ -127,9 +107,10 @@ public class SeekBarFragment extends android.app.Fragment {
         }
         updateFrequencies();
         setScrollToMiddle();
-        if (name.equals("Amplitudes")) passFreqs();
-        bundle.putBoolean("setup", true);
-        mCallback.onUserAction(bundle);
+
+        //frequencies changed
+        if (name.equals("Amplitudes")) mCallback.onUserAction();
+
 
     }
 
@@ -138,8 +119,6 @@ public class SeekBarFragment extends android.app.Fragment {
 
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.verticalseekbar, container, false);
             layout.setTag(name + "_layout_" + i);
-            //container.addView(layout);
-
 
             TextView freq = (TextView) layout.findViewById(R.id.verticalSeekbarFreq);
 
@@ -196,16 +175,21 @@ public class SeekBarFragment extends android.app.Fragment {
 
                     TextView sliderText = (TextView) getView().findViewWithTag(name + "_tag_" + tag);
                     double value;
-                    if (name == "Amplitudes") value = progress / 100.0;
-                    else value = (progress - 50) / 100.0 * 2 * Math.PI;
+                    if (name == "Amplitudes") {
+                        value = progress / 100.0;
+                        value = round(value, 3);
+                        Variables.amps[tag] = value;
+                    } else {
+                        value = (progress - 50) / 100.0 * 2 * Math.PI;
+                        value = round(value, 3);
+                        Variables.phases[tag] = value;
+                    }
 
-                    value = round(value, 3);
                     sliderText.setText("" + value);
-                    data[tag] = value;
 
-                    // send new data to Activity
-                    bundle.putDoubleArray(name, data);
-                    mCallback.onUserAction(bundle);
+
+                    // notify Activity
+                    mCallback.onUserAction();
                 }
             });
 
@@ -240,11 +224,10 @@ public class SeekBarFragment extends android.app.Fragment {
     }
 
     public void updateFrequencies() {
-        int slidersCount = data.length;
-        // TODO Make this idft_size depend on the real idft_size setting
-        int idft_size = 128;
 
-        double subcarrierSpacing = round((bandwidth * Constants.OVERSAMPLING_RATE / (double) idft_size) * 1000, 3);
+        int slidersCount = Variables.amps.length;
+
+        double subcarrierSpacing = round((Variables.bandwidth * Constants.OVERSAMPLING_RATE / (double) Variables.idft_size) * 1000, 3);
 
         for (int j = 0; j < slidersCount; j++) {
             final LinearLayout layout = (LinearLayout) getView().getRootView().findViewWithTag(name + "_layout_" + j);
@@ -253,13 +236,14 @@ public class SeekBarFragment extends android.app.Fragment {
 
             double subcarrierFrequency = round(subcarrierSpacing * (slidersCount / 2 - j) * (-1), 4);
 
-            if (Math.abs(subcarrierFrequency) <= bandwidth * 500) layout.setBackgroundColor(color);
+            if (Math.abs(subcarrierFrequency) <= Variables.bandwidth * 500)
+                layout.setBackgroundColor(color);
             else layout.setBackgroundColor(Color.WHITE);
 
             // hide minus from zero
             if (subcarrierFrequency == 0) subcarrierFrequency = 0;
 
-            if (name.equals("Amplitudes")) freqs[j] = subcarrierFrequency * 1000;
+            if (name.equals("Amplitudes")) Variables.freqs[j] = subcarrierFrequency * 1000;
 
             final String freqUnit;
             if (Math.abs(subcarrierFrequency) >= 1000) {
@@ -273,8 +257,8 @@ public class SeekBarFragment extends android.app.Fragment {
 
             freq.setText("SC " + subcarrierNumber + " at\n" + subcarrierFrequency + freqUnit);
 
-            if (name.equals("Amplitudes")) sliderText.setText("" + data[j]);
-            else sliderText.setText("" + round(data[j], 3));
+            if (name.equals("Amplitudes")) sliderText.setText("" + Variables.amps[j]);
+            else sliderText.setText("" + round(Variables.phases[j], 3));
 
             final VerticalSeekBar verticalSeekBar = (VerticalSeekBar) getView().getRootView().findViewWithTag(name + "_seekBar_" + j);
 
@@ -284,9 +268,9 @@ public class SeekBarFragment extends android.app.Fragment {
                     int tag = Integer.parseInt(((String) verticalSeekBar.getTag()).replaceAll("[^0-9]", ""));
                     double value;
                     if (name.equals("Amplitudes")) {
-                        value = data[tag] * 100.0;
+                        value = Variables.amps[tag] * 100.0;
                     } else {
-                        value = round((data[tag] * 2 * Math.PI) / 100 + 50, 3);
+                        value = round((Variables.phases[tag] * 2 * Math.PI) / 100 + 50, 3);
                     }
                     verticalSeekBar.setProgress((int) value);
                 }
@@ -306,7 +290,7 @@ public class SeekBarFragment extends android.app.Fragment {
     public void setScrollToMiddle() {
         HorizontalScrollView scrollView = (HorizontalScrollView) getView().getRootView().findViewById(R.id.horizontalScrollView);
 
-        int slidersCount = data.length;
+        int slidersCount = Variables.amps.length;
         if (slidersCount % 2 != 0) slidersCount--;
         TextView freq = (TextView) getView().getRootView().findViewById(R.id.main).findViewWithTag(name + "_freq_" + 1);
         //System.out.println(x);
@@ -315,12 +299,8 @@ public class SeekBarFragment extends android.app.Fragment {
         scrollView.scrollTo(freq.getWidth() * slidersCount / 2 - (scrollView.getWidth() / 2 - freq.getWidth() / 2), 0);
     }
 
-    public void passFreqs() {
-        bundle.putDoubleArray("freqs", freqs);
-        mCallback.onUserAction(bundle);
-    }
 
     public interface FragmentListener {
-        void onUserAction(Bundle bundle);
+        void onUserAction();
     }
 }

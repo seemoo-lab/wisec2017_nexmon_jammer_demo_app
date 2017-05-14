@@ -27,9 +27,6 @@ import java.util.ArrayList;
 
 public class PlotFragment extends android.app.Fragment {
     public int mode;
-    public double[] amps;
-    public double[] phases;
-    public double[] freqs;
     public float[] times;
     public ArrayList<double[]> data = new ArrayList<>();
     public float[] timeI;
@@ -44,14 +41,9 @@ public class PlotFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             //Restore the fragment's state here
-            amps = savedInstanceState.getDoubleArray("amps");
-            phases = savedInstanceState.getDoubleArray("phases");
-            freqs = savedInstanceState.getDoubleArray("freqs");
             mode = savedInstanceState.getInt("mode");
         } else {
-            amps = getArguments().getDoubleArray("amps");
-            phases = getArguments().getDoubleArray("phases");
-            freqs = getArguments().getDoubleArray("freqs");
+
             mode = getArguments().getInt("mode");
         }
         /**
@@ -80,12 +72,11 @@ public class PlotFragment extends android.app.Fragment {
 
     public void constructIQSamples() {
 
-        // TODO update idft_size according to setting
-        int idft_size = 128;
+        double bandwidth = Variables.bandwidth * 10e6;
 
-        // TODO update bandwidth according to settings
-        double bandwidth = 20e6;
         double fs = bandwidth * Constants.OVERSAMPLING_RATE;
+
+        int idft_size = Variables.idft_size;
 
         timeI = new float[idft_size];
         timeQ = new float[idft_size];
@@ -96,21 +87,17 @@ public class PlotFragment extends android.app.Fragment {
             timeQ[n] = 0.0f;
         }
 
-        for (int k = 0; k < amps.length; k++) {
+        for (int k = 0; k < Variables.amps.length; k++) {
             for (int n = 0; n < idft_size; n++) {
                 times[n] = (float) (n / fs);
-                timeI[n] -= amps[k] * Math.sin(2*Math.PI*freqs[k]*times[n] + phases[k]);
-                timeQ[n] += amps[k] * Math.cos(2*Math.PI*freqs[k]*times[n] + phases[k]);
+                timeI[n] -= Variables.amps[k] * Math.sin(2 * Math.PI * Variables.freqs[k] * times[n] + Variables.phases[k]);
+                timeQ[n] += Variables.amps[k] * Math.cos(2 * Math.PI * Variables.freqs[k] * times[n] + Variables.phases[k]);
             }
         }
 
     }
 
-    public void plotSignals(double[] amps_new, double[] phases_new, double[] freqs_new) {
-        this.amps = amps_new;
-        this.phases = phases_new;
-        this.freqs = freqs_new;
-
+    public void plotSignals() {
 
         if (mode == 0) {
             // Time Plot
@@ -284,8 +271,8 @@ public class PlotFragment extends android.app.Fragment {
         data.addDataSet(set_freq);
 
 
-        for (int i = 0; i < freqs.length; i++) {
-            data.addEntry(new Entry((float) freqs[i], (float) amps[i]), 0);
+        for (int i = 0; i < Variables.amps.length; i++) {
+            data.addEntry(new Entry((float) Variables.freqs[i], (float) Variables.amps[i]), 0);
         }
 
 

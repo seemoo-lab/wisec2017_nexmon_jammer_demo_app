@@ -37,9 +37,7 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity implements SeekBarFragment.FragmentListener {
     private static final String TAG = "MainActivity";
-    public double amps[];
-    public double phases[];
-    public double freqs[] = new double[128];
+
     public HashMap<String, Integer> vars;
     public LinkedList<Integer> checkedViews = new LinkedList<>();
     public AlertDialog idftDialog;
@@ -58,20 +56,11 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean first_run;
 
 
-    public void onUserAction(Bundle bundle) {
-        if (bundle.containsKey("Amplitudes")) {
-            amps = bundle.getDoubleArray("Amplitudes");
+    public void onUserAction() {
 
-        }
-        if (bundle.containsKey("Phases")) {
-
-        }
-        if (bundle.containsKey("freqs")) {
-            freqs = bundle.getDoubleArray("freqs");
-        }
         if (!startup) {
-            timePlotFragment.plotSignals(amps, phases, freqs);
-            freqPlotFragment.plotSignals(amps, phases, freqs);
+            timePlotFragment.plotSignals();
+            freqPlotFragment.plotSignals();
         }
 
     }
@@ -86,26 +75,25 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         if (savedInstanceState != null) {
             vars = (HashMap<String, Integer>) savedInstanceState.getSerializable("vars");
-            amps = savedInstanceState.getDoubleArray("AMPS");
-            phases = savedInstanceState.getDoubleArray("PHASES");
-            freqs = savedInstanceState.getDoubleArray("FREQS");
 
         } else {
+
             vars = new HashMap<String, Integer>();
             vars.put("jammingPower", 50);
-            vars.put("idft size", 128);
             vars.put("Preset", 20);
             vars.put("WiFi Channel", 1);
-            vars.put("Bandwidth", 20);
             vars.put("JammerType", 0);
             vars.put("App", 0);
             vars.put("jammerStart", 0);
-            amps = new double[Constants.getSlidersCount(vars.get("idft size"))];
-            phases = new double[Constants.getSlidersCount(vars.get("idft size"))];
-            freqs = new double[Constants.getSlidersCount(vars.get("idft size"))];
+
+            Variables.idft_size = 128;
+            Variables.bandwidth = 20;
+            double[] amps = new double[Constants.getSlidersCount(Variables.idft_size)];
+            double[] phases = new double[Constants.getSlidersCount(Variables.idft_size)];
+            double[] freqs = new double[Constants.getSlidersCount(Variables.idft_size)];
+
+            new Variables(amps, phases, freqs, 128, 20);
         }
-
-
     }
 
     @Override
@@ -190,9 +178,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             phaseFragment = new SeekBarFragment();
             Bundle args = new Bundle();
             args.putInt("color", Color.LTGRAY);
-            args.putInt("Bandwidth", vars.get("Bandwidth"));
             args.putString("name", "Phases");
-            args.putDoubleArray("Phases", phases);
             phaseFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_2, phaseFragment, "ph");
         }
@@ -201,10 +187,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             ampFragment = new SeekBarFragment();
             Bundle args = new Bundle();
             args.putInt("color", Color.GRAY);
-            args.putInt("Bandwidth", vars.get("Bandwidth"));
             args.putString("name", "Amplitudes");
-            args.putDoubleArray("Amplitudes", amps);
-            args.putDoubleArray("freqs", freqs);
             ampFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_1, ampFragment, "amp");
         }
@@ -212,9 +195,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         if (timePlotFragment == null) {
             timePlotFragment = new PlotFragment();
             Bundle args = new Bundle();
-            args.putDoubleArray("amps", amps);
-            args.putDoubleArray("phases", phases);
-            args.putDoubleArray("freqs", freqs);
             args.putInt("mode", 0);
             timePlotFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_3, timePlotFragment, "timeplot");
@@ -224,9 +204,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         if (freqPlotFragment == null) {
             freqPlotFragment = new PlotFragment();
             Bundle args = new Bundle();
-            args.putDoubleArray("amps", amps);
-            args.putDoubleArray("phases", phases);
-            args.putDoubleArray("freqs", freqs);
             args.putInt("mode", 1);
             freqPlotFragment.setArguments(args);
             fragmentTransaction.add(R.id.fragment_container_4, freqPlotFragment, "freqplot");
@@ -256,22 +233,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable("vars", vars);
-        savedInstanceState.putDoubleArray("AMPS", amps);
-        savedInstanceState.putDoubleArray("PHASES", phases);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-
-        //String orientation = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ? "landscape" : "portrait";
-
-        /*menu.findItem(R.id.amp_sliders).setChecked(vars.get("amp_sliders_" + orientation) == 1);
-        menu.findItem(R.id.phase_sliders).setChecked(vars.get("phase_sliders_" + orientation) == 1);
-        menu.findItem(R.id.time_plot).setChecked(vars.get("time_plot_" + orientation) == 1);
-        menu.findItem(R.id.frequency_plot).setChecked(vars.get("frequency_plot_" + orientation) == 1);*/
-
 
         // initialize activity variables
         int i = 1;
@@ -285,8 +252,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         MenuItem item = submenu.getItem(j);
                         switch (title) {
                             case "Bandwidth":
-                                if (item.getTitle().toString().contains(vars.get("Bandwidth").toString())) {
-                                    int value = vars.get("Bandwidth");
+                                int value = Variables.bandwidth;
+                                if (item.getTitle().toString().contains(String.valueOf(value))) {
                                     switch (value) {
                                         case 20:
                                             menu.findItem(R.id.pre_20).setVisible(true);
@@ -410,9 +377,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 case R.id.group_bandwidth:
                     item.setChecked(true);
                     value = Integer.parseInt(item.getTitle().toString().replaceAll("[^0-9]", ""));
-                    vars.put("Bandwidth", value);
-                    ampFragment.setBandwidth(value);
-                    phaseFragment.setBandwidth(value);
+                    Variables.bandwidth = value;
+                    ampFragment.updateFrequencies();
+                    phaseFragment.updateFrequencies();
                     vars.put("Preset", value);
                     switch (value) {
                         case 20:
@@ -443,6 +410,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             setPresetPilots(80);
                             break;
                     }
+                    if (!startup) {
+                        timePlotFragment.plotSignals();
+                        freqPlotFragment.plotSignals();
+                    }
                     return true;
 
             }
@@ -455,9 +426,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         //Start Jamming
         System.out.println("Jamming started with following parameters");
         System.out.println(vars.toString());
-        System.out.println("Amplitudes: " + Arrays.toString(amps));
-        System.out.println("Phases: " + Arrays.toString(phases));
-        System.out.println("Frequencies: " + Arrays.toString(freqs));
+        System.out.println("Amplitudes: " + Arrays.toString(Variables.amps));
+        System.out.println("Phases: " + Arrays.toString(Variables.phases));
+        System.out.println("Frequencies: " + Arrays.toString(Variables.freqs));
         Button startBtn = (Button) view;
         switch (vars.get("jammerStart")) {
             case 0: // not started -> now starting
@@ -492,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             }
         });
 
-        int value = vars.get("idft size");
+        int value = Variables.idft_size;
         seekBarText.setText(String.valueOf(value));
         seekBar.setProgress(value);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -521,20 +492,23 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 .setCancelable(false)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
+
                         int newIdftSize = Integer.parseInt(seekBarText.getText().toString());
-                        if (newIdftSize != vars.get("idft size")) {
+
+                        if (newIdftSize != Variables.idft_size) {
                             if (newIdftSize > Constants.MAX_IDFT_SIZE) newIdftSize = Constants.MAX_IDFT_SIZE;
                             if (newIdftSize < Constants.MIN_IDFT_SIZE) newIdftSize = Constants.MIN_IDFT_SIZE;
-                            vars.put("idft size", newIdftSize);
-                            amps = new double[Constants.getSlidersCount(newIdftSize)];
-                            freqs = new double[Constants.getSlidersCount(newIdftSize)];
-                            ampFragment.setData(amps);
-                            ampFragment.setFreqs(freqs);
+                            Variables.idft_size = newIdftSize;
+                            Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
+                            Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
                             ampFragment.setVerticalSeekBars();
-                            phases = new double[Constants.getSlidersCount(newIdftSize)];
-                            phaseFragment.setData(phases);
+                            Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
                             phaseFragment.setVerticalSeekBars();
                             setPresetPilots(vars.get("Preset"));
+                            if (!startup) {
+                                timePlotFragment.plotSignals();
+                                freqPlotFragment.plotSignals();
+                            }
 
                         }
 
@@ -542,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        seekBarText.setText(String.valueOf(vars.get("idft size")));
+                        seekBarText.setText(String.valueOf(Variables.idft_size));
                         dialog.cancel();
                     }
                 });
