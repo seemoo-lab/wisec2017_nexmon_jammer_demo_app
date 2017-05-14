@@ -4,11 +4,13 @@ package de.seemoo.nexmon.jammer;
  * Created by stathis on 5/11/17.
  */
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 
 
@@ -37,19 +39,32 @@ public class LicenseDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_license_dialog, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        getDialog().setTitle("Licenses");
+        //Set all the title, button etc. for the AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Licences");
 
-        wvLicense = (WebView) view.findViewById(R.id.wvLicense);
+        //Get LayoutInflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        wvLicense.loadUrl("file:///android_asset/html/licenses.html");
+        //Inflate the layout but ALSO store the returned view to allow us to call findViewById
+        View view = inflater.inflate(R.layout.fragment_license_dialog, null);
 
-        return view;
+
+        //Finally, give the custom view to the AlertDialog builder
+        builder.setView(view);
+
+        builder.setCancelable(false)
+                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        return builder.create();
     }
 
 

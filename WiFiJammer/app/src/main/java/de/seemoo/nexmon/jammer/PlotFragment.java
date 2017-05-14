@@ -2,7 +2,6 @@ package de.seemoo.nexmon.jammer;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +14,12 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 
 /**
  * Created by Stathis on 03-May-17.
@@ -33,16 +29,17 @@ public class PlotFragment extends android.app.Fragment {
     public int mode;
     public double[] amps;
     public double[] phases;
-    public double[] time_i;
-    public double[] time_q;
     public double[] freqs;
-    public double[] times;
+    public float[] times;
     public ArrayList<double[]> data = new ArrayList<>();
-    public double[] timeI;
-    public double[] timeQ;
+    public float[] timeI;
+    public float[] timeQ;
 
 
     private LineChart mChart;
+    private ILineDataSet set_real;
+    private ILineDataSet set_imag;
+    private ILineDataSet set_freq;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -69,7 +66,6 @@ public class PlotFragment extends android.app.Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        createTimePlot();
         if (mode == 0) createTimePlot();
         else createFreqPlot();
 
@@ -91,46 +87,22 @@ public class PlotFragment extends android.app.Fragment {
         double bandwidth = 20e6;
         double fs = bandwidth * Constants.OVERSAMPLING_RATE;
 
-        timeI = new double[idft_size];
-        timeQ = new double[idft_size];
-        times = new double[idft_size];
+        timeI = new float[idft_size];
+        timeQ = new float[idft_size];
+        times = new float[idft_size];
 
         for (int n = 0; n < idft_size; n++) {
-            timeI[n] = 0.0;
-            timeQ[n] = 0.0;
+            timeI[n] = 0.0f;
+            timeQ[n] = 0.0f;
         }
 
         for (int k = 0; k < amps.length; k++) {
             for (int n = 0; n < idft_size; n++) {
-                times[n] = n / fs;
+                times[n] = (float) (n / fs);
                 timeI[n] -= amps[k] * Math.sin(2*Math.PI*freqs[k]*times[n] + phases[k]);
                 timeQ[n] += amps[k] * Math.cos(2*Math.PI*freqs[k]*times[n] + phases[k]);
             }
         }
-
-    }
-    public void constructFFTPlotData() {
-
-        int size = amps.length;
-        Double values[] = new Double[size];
-
-        Log.d("D", "size: " + size);
-
-        for (int i = 0; i < size; i++) {
-            //values[i] = (size / 2 - i) * (-1);
-            values[i] = freqs[i];
-        }
-        System.out.println(Arrays.toString(values));
-
-        Double mags[] = new Double[size];
-
-        for (int i = 0; i < size; i++) {
-            mags[i] = amps[i];
-        }
-
-        List<? extends Number> xVals = Arrays.asList(values);
-        List<? extends Number> yVals = Arrays.asList(mags);
-
 
     }
 
@@ -146,7 +118,6 @@ public class PlotFragment extends android.app.Fragment {
         } else {
             // Frequency Plot
             updateFreqPlot();
-            //constructFFTPlotData();
         }
 
     }
@@ -155,12 +126,13 @@ public class PlotFragment extends android.app.Fragment {
 
         TextView title = (TextView) getView().findViewById(R.id.plot_title);
         title.setText("Time Domain Plot");
+        title.setBackgroundColor(Color.LTGRAY);
 
         mChart = (LineChart) getView().findViewById(R.id.chart1);
 
 
-        // enable description text
-        mChart.getDescription().setEnabled(true);
+        // disable description text
+        mChart.getDescription().setEnabled(false);
 
         // enable touch gestures
         mChart.setTouchEnabled(true);
@@ -182,30 +154,31 @@ public class PlotFragment extends android.app.Fragment {
         // add empty data
         mChart.setData(data);
 
+
         // get the legend (only possible after setting data)
         Legend l = mChart.getLegend();
-
-        // modify the legend ...
+        l.setEnabled(true);
         l.setForm(Legend.LegendForm.LINE);
-        //l.setTypeface(mTfLight);
-        l.setTextColor(Color.WHITE);
+
 
         XAxis xl = mChart.getXAxis();
-        //xl.setTypeface(mTfLight);
-        xl.setTextColor(Color.WHITE);
-        xl.setDrawGridLines(false);
+        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xl.setDrawAxisLine(true);
+        xl.setTextColor(Color.BLACK);
+        xl.setDrawGridLines(true);
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
+        xl.setValueFormatter(new SmallValueFormatter("s"));
+
 
         YAxis leftAxis = mChart.getAxisLeft();
-        //leftAxis.setTypeface(mTfLight);
-        leftAxis.setTextColor(Color.WHITE);
-        leftAxis.setAxisMaximum(0.04f);
-        leftAxis.setAxisMinimum(-0.04f);
-        leftAxis.setDrawGridLines(true);
 
+        leftAxis.setTextColor(Color.BLACK);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setDrawAxisLine(true);
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
+
 
         updateTimePlot();
     }
@@ -213,74 +186,129 @@ public class PlotFragment extends android.app.Fragment {
     public void createFreqPlot() {
         TextView title = (TextView) getView().findViewById(R.id.plot_title);
         title.setText("Frequency Domain Plot");
+        title.setBackgroundColor(Color.LTGRAY);
+
+        mChart = (LineChart) getView().findViewById(R.id.chart1);
+
+
+        // disable description text
+        mChart.getDescription().setEnabled(false);
+
+        // enable touch gestures
+        mChart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        mChart.setPinchZoom(true);
+
+        // set an alternative background color
+        mChart.setBackgroundColor(Color.LTGRAY);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        mChart.setData(data);
+
+
+        // get the legend (only possible after setting data)
+        Legend l = mChart.getLegend();
+        l.setEnabled(true);
+        l.setForm(Legend.LegendForm.LINE);
+
+
+        XAxis xl = mChart.getXAxis();
+        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xl.setDrawAxisLine(true);
+        xl.setTextColor(Color.BLACK);
+        xl.setDrawGridLines(true);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+        xl.setValueFormatter(new LargeValueFormatter("Hz"));
+
+
+        YAxis leftAxis = mChart.getAxisLeft();
+
+        leftAxis.setTextColor(Color.BLACK);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setDrawAxisLine(true);
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+
+        updateFreqPlot();
     }
 
     public void updateTimePlot() {
+
         mChart.clearValues();
 
         LineData data = mChart.getData();
 
-        if (data != null) {
-
-            ILineDataSet set_real = data.getDataSetByIndex(0);
-            ILineDataSet set_imag = data.getDataSetByIndex(1);
-            // set.addEntry(...); // can be called as well
-
-            if (set_real == null) {
-                set_real = createSet();
-                data.addDataSet(set_real);
-                //set_imag = createSet();
-                //data.addDataSet(set_imag);
-            }
-
-            constructIQSamples();
+        set_real = createSet(ColorTemplate.rgb("#75c4f2"), "I");
+        set_imag = createSet(ColorTemplate.rgb("#efef47"), "Q");
+        data.addDataSet(set_real);
+        data.addDataSet(set_imag);
 
 
-            double[] real = timeI;
-            double[] imag = timeQ;
-
-            //System.out.println(Arrays.toString(real));
-            //System.out.println(Arrays.toString(imag));
+        constructIQSamples();
 
 
-            for (int i = 0; i < times.length; i++) {
+        for (int i = 0; i < times.length; i++) {
 
 
-                data.addEntry(new Entry((float) times[i], (float) real[i]), 0);
-                //data.addEntry(new Entry(times[i], imag[i]), 1);
-
-            }
-
-
-            data.notifyDataChanged();
-
-            // let the chart know it's data has changed
-            mChart.notifyDataSetChanged();
-
+            data.addEntry(new Entry(times[i], timeI[i]), 0);
+            data.addEntry(new Entry(times[i], timeQ[i]), 1);
 
         }
 
+
+        data.notifyDataChanged();
+
+        // let the chart know it's data has changed
+        mChart.notifyDataSetChanged();
+        mChart.fitScreen();
     }
 
     public void updateFreqPlot() {
 
+        mChart.clearValues();
+
+        LineData data = mChart.getData();
+
+        set_freq = createSet(ColorTemplate.rgb("#75c4f2"), "Frequencies");
+        data.addDataSet(set_freq);
+
+
+        for (int i = 0; i < freqs.length; i++) {
+            data.addEntry(new Entry((float) freqs[i], (float) amps[i]), 0);
+        }
+
+
+        data.notifyDataChanged();
+
+        // let the chart know it's data has changed
+        mChart.notifyDataSetChanged();
+        mChart.fitScreen();
+
     }
 
-    private LineDataSet createSet() {
-
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+    private LineDataSet createSet(int color, String legend) {
+        LineDataSet set = new LineDataSet(null, legend);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
-        set.setCircleColor(Color.WHITE);
-        set.setLineWidth(2f);
-        set.setCircleRadius(4f);
-        set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.rgb(244, 117, 117));
-        set.setValueTextColor(Color.WHITE);
-        set.setValueTextSize(9f);
+        set.setDrawFilled(false);
+        set.setDrawCircles(false);
+        set.setColor(color);
+        set.setHighlightEnabled(false);
+        set.setDrawVerticalHighlightIndicator(false);
+        set.setDrawHorizontalHighlightIndicator(false);
         set.setDrawValues(false);
         return set;
     }
+
 
 }

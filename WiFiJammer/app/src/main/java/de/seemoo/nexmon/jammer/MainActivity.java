@@ -16,7 +16,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,12 +61,17 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public void onUserAction(Bundle bundle) {
         if (bundle.containsKey("Amplitudes")) {
             amps = bundle.getDoubleArray("Amplitudes");
+
         }
         if (bundle.containsKey("Phases")) {
-            phases = bundle.getDoubleArray("Phases");
+
         }
         if (bundle.containsKey("freqs")) {
             freqs = bundle.getDoubleArray("freqs");
+        }
+        if (!startup) {
+            timePlotFragment.plotSignals(amps, phases, freqs);
+            freqPlotFragment.plotSignals(amps, phases, freqs);
         }
 
     }
@@ -88,14 +92,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         } else {
             vars = new HashMap<String, Integer>();
-            vars.put("amp_sliders_portrait", 1);
-            vars.put("amp_sliders_landscape", 1);
-            vars.put("phase_sliders_portrait", 1);
-            vars.put("phase_sliders_landscape", 0);
-            vars.put("time_plot_portrait", 0);
-            vars.put("time_plot_landscape", 0);
-            vars.put("frequency_plot_portrait", 0);
-            vars.put("frequency_plot_landscape", 0);
             vars.put("jammingPower", 50);
             vars.put("idft size", 128);
             vars.put("Preset", 20);
@@ -118,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         startup = true;
         jammer_in_background = false;
         first_run = true;
-        Log.d("D", "onStart: enter");
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -255,7 +250,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             fragmentTransaction.add(R.id.fragment_container_7, aboutUsFragment, "aboutUs");
         }
         fragmentTransaction.commit();
-        Log.d("D", "onStart: exit");
     }
 
     @Override
@@ -393,9 +387,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
                 if (checkedViews.size() > max_size) {
                     MenuItem firstItem = menu.findItem(checkedViews.getFirst());
-                    //System.out.println(firstItem.getTitle());
                     int fragmentId = getFragmentId(firstItem);
-                    System.out.println(fragmentId);
                     findViewById(fragmentId).setVisibility(View.GONE);
                     firstItem.setChecked(false);
                     checkedViews.removeFirst();
@@ -776,6 +768,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
                     checkedViews.add(firstItem.getItemId());
 
+
                 } else if (jammer_in_background) {
                     //changing from other app
                     for (Integer viewId : checkedViews) {
@@ -795,12 +788,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 }
 
                 System.out.println("Entering Landscape Mode");
-                //orientation = "landscape";
+
             } else {
                 /**
                  * Portrait mode of the device
                  **/
-                //menu.findItem(R.id.view).setVisible(false);
+
                 menu.findItem(R.id.view).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.preset).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -842,7 +835,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     findViewById(getFragmentId(newItem)).setVisibility(View.VISIBLE);
 
                     System.out.println("Entering Portrait Mode");
-                    //orientation = "portrait";
+
                 }
 
             }
