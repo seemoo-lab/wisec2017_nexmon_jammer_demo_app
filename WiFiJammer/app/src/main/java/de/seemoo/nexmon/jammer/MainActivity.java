@@ -489,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 vars.put("jammerStart", 1);
                 startBtn.setText("stop");
                 //Disable Interface
-                
+
                 break;
             case 1: // started -> now stopping
                 vars.put("jammerStart", 0);
@@ -700,8 +700,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.reset).setVisible(false);
             menu.findItem(R.id.view).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
-            menu.findItem(R.id.bandwidth).setVisible(false);
-            menu.findItem(R.id.channel).setVisible(false);
+            menu.findItem(R.id.bandwidth).setVisible(true);
+            menu.findItem(R.id.channel).setVisible(true);
             menu.findItem(R.id.idft).setVisible(false);
             menu.findItem(R.id.type).setVisible(false);
             menu.findItem(R.id.help_transmitter).setVisible(true);
@@ -721,8 +721,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.reset).setVisible(true);
             menu.findItem(R.id.view).setVisible(false);
             menu.findItem(R.id.preset).setVisible(false);
-            menu.findItem(R.id.bandwidth).setVisible(false);
-            menu.findItem(R.id.channel).setVisible(false);
+            menu.findItem(R.id.bandwidth).setVisible(true);
+            menu.findItem(R.id.channel).setVisible(true);
             menu.findItem(R.id.idft).setVisible(false);
             menu.findItem(R.id.type).setVisible(false);
             menu.findItem(R.id.help_transmitter).setVisible(false);

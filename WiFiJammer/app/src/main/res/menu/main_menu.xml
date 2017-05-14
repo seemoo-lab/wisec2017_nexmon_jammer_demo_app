@@ -51,6 +51,17 @@
    <item android:id="@+id/idft"
         android:title="IDFT Size"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/start"
+        android:title="Start"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/reset"
+        android:title="Reset"
+        app:showAsAction="ifRoom" />
+
     <item android:id="@+id/bandwidth"
         android:title="Bandwidth"
         app:showAsAction="ifRoom">
@@ -66,15 +77,7 @@
         android:title="WiFi Channel"
         app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/start"
-        android:title="Start"
-        app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/reset"
-        android:title="Reset"
-        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/help_jammer"
         android:title="Help"
