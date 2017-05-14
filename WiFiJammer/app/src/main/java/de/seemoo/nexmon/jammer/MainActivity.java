@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean startup;
     public boolean jammer_in_background;
     public boolean first_run;
+    public int oldOrientation;
+
     public HashSet<Integer> presets = new HashSet<>();
 
 
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         startup = true;
         jammer_in_background = false;
         first_run = true;
+        oldOrientation = -1;
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -117,27 +120,39 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             menuItem.setChecked(true);
                             switch (menuItem.getTitle().toString()) {
                                 case "Transmitter":
-                                    vars.put("App", 1);
-                                    setTitle("Transmitter");
-                                    jammer_in_background = true;
-                                    onConfigurationChanged(getResources().getConfiguration());
+                                    if (vars.get("App") != 1) {
+                                        vars.put("App", 1);
+                                        setTitle("Transmitter");
+                                        jammer_in_background = true;
+                                        oldOrientation = getResources().getConfiguration().orientation;
+                                        onConfigurationChanged(getResources().getConfiguration());
+                                    }
+
                                     break;
                                 case "Jammer":
-                                    vars.put("App", 0);
-                                    setTitle("Jammer");
-                                    onConfigurationChanged(getResources().getConfiguration());
+                                    if (vars.get("App") != 0) {
+                                        vars.put("App", 0);
+                                        setTitle("Jammer");
+                                        onConfigurationChanged(getResources().getConfiguration());
+                                    }
                                     break;
                                 case "Receiver":
-                                    vars.put("App", 2);
-                                    setTitle("Receiver");
-                                    jammer_in_background = true;
-                                    onConfigurationChanged(getResources().getConfiguration());
+                                    if (vars.get("App") != 2) {
+                                        vars.put("App", 2);
+                                        setTitle("Receiver");
+                                        jammer_in_background = true;
+                                        oldOrientation = getResources().getConfiguration().orientation;
+                                        onConfigurationChanged(getResources().getConfiguration());
+                                    }
                                     break;
                                 case "About":
-                                    vars.put("App", 3);
-                                    setTitle("About Us");
-                                    jammer_in_background = true;
-                                    onConfigurationChanged(getResources().getConfiguration());
+                                    if (vars.get("App") != 3) {
+                                        vars.put("App", 3);
+                                        setTitle("About Us");
+                                        jammer_in_background = true;
+                                        oldOrientation = getResources().getConfiguration().orientation;
+                                        onConfigurationChanged(getResources().getConfiguration());
+                                    }
                                     break;
                             }
                             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
@@ -671,12 +686,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // Do nothing if app has not initialized
         if (startup) return;
 
-
         /**
          * Check the device orientation and act accordingly
          */
-
-        Configuration config = getResources().getConfiguration();
 
         int app = vars.get("App");
         if (app == 1) {
@@ -762,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             findViewById(R.id.fragment_container_7).setVisibility(View.GONE);
 
 
-            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 /**
                  * Landscape mode of the device
                  */
@@ -850,10 +862,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     checkedViews.add(newItem.getItemId());
                     newItem.setChecked(true);
                     findViewById(getFragmentId(newItem)).setVisibility(View.VISIBLE);
-
-                    System.out.println("Entering Portrait Mode");
-
                 }
+                System.out.println("Entering Portrait Mode");
 
             }
 
@@ -862,8 +872,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
 
         // take care of changed views, when jammer in background and orientation changes
-        if (app != 0) {
-            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (app != 0 && newConfig.orientation != oldOrientation) {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                 MenuItem firstItem = menu.getItem(0).getSubMenu().findItem(checkedViews.getFirst());
                 firstItem.setChecked(false);
