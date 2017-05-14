@@ -488,10 +488,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             case 0: // not started -> now starting
                 vars.put("jammerStart", 1);
                 startBtn.setText("stop");
+                //Disable Interface
                 break;
             case 1: // started -> now stopping
                 vars.put("jammerStart", 0);
                 startBtn.setText("start");
+                //Enable Interface
                 break;
             default:
                 vars.put("jammerStart", 0);
@@ -781,7 +783,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 menu.findItem(R.id.view).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.preset).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                menu.findItem(R.id.channel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 menu.findItem(R.id.idft).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
                 if (first_run) {
@@ -922,14 +924,67 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 }
                 break;
             case 40:
+                int sc_minus_11 = Variables.amps.length / 2 - 11;
+                int sc_plus_11 = Variables.amps.length / 2 + 11;
+                int sc_minus_25 = Variables.amps.length / 2 - 25;
+                int sc_plus_25 = Variables.amps.length / 2 + 25;
+                int sc_minus_53 = Variables.amps.length / 2 - 53;
+                int sc_plus_53 = Variables.amps.length / 2 + 53;
+
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                if (seekBar != null && sc_minus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_11);
+                if (seekBar != null && sc_plus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
+                if (seekBar != null && sc_minus_25 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_25);
+                if (seekBar != null && sc_plus_25 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                if (seekBar != null && sc_minus_53 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_53);
+                if (seekBar != null && sc_plus_53 < maxSize) {
+                    seekBar.setProgress(power);
+                }
 
                 break;
             case 2040:
+                sc_minus_7 = Variables.amps.length / 2 - 7;
+                sc_plus_7 = Variables.amps.length / 2 + 7;
+                sc_minus_21 = Variables.amps.length / 2 - 21;
+                sc_plus_21 = Variables.amps.length / 2 + 21;
+
+
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
+                if (seekBar != null && sc_minus_7 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
+                if (seekBar != null && sc_plus_7 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
+                if (seekBar != null && sc_minus_21 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
+                if (seekBar != null && sc_plus_21 < maxSize) {
+                    seekBar.setProgress(power);
+                }
 
                 break;
             case 80:
-                int sc_minus_11 = Variables.amps.length / 2 - 11;
-                int sc_plus_11 = Variables.amps.length / 2 + 11;
+                sc_minus_11 = Variables.amps.length / 2 - 11;
+                sc_plus_11 = Variables.amps.length / 2 + 11;
                 int sc_minus_39 = Variables.amps.length / 2 - 39;
                 int sc_plus_39 = Variables.amps.length / 2 + 39;
                 int sc_minus_75 = Variables.amps.length / 2 - 75;
@@ -994,7 +1049,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             case 4080:
                 sc_minus_11 = Variables.amps.length / 2 - 11;
                 sc_minus_39 = Variables.amps.length / 2 - 39;
-                int sc_minus_53 = Variables.amps.length / 2 - 53;
+                sc_minus_53 = Variables.amps.length / 2 - 53;
                 sc_minus_75 = Variables.amps.length / 2 - 75;
                 int sc_minus_89 = Variables.amps.length / 2 - 89;
                 sc_minus_117 = Variables.amps.length / 2 - 117;
