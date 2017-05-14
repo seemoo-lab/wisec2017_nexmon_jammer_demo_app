@@ -962,6 +962,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 sc_plus_7 = Variables.amps.length / 2 + 7;
                 sc_minus_21 = Variables.amps.length / 2 - 21;
                 sc_plus_21 = Variables.amps.length / 2 + 21;
+                int sc_minus_39 = Variables.amps.length / 2 - 39;
+                sc_minus_25 = Variables.amps.length / 2 - 25;
+                sc_minus_53 = Variables.amps.length / 2 - 53;
+                sc_minus_11 = Variables.amps.length / 2 - 11;
 
 
                 seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
@@ -980,12 +984,28 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 if (seekBar != null && sc_plus_21 < maxSize) {
                     seekBar.setProgress(power);
                 }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_39);
+                if (seekBar != null && sc_minus_39 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_25);
+                if (seekBar != null && sc_minus_25 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_53);
+                if (seekBar != null && sc_minus_53 < maxSize) {
+                    seekBar.setProgress(power);
+                }
+                seekBar = (VerticalSeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_11);
+                if (seekBar != null && sc_minus_11 < maxSize) {
+                    seekBar.setProgress(power);
+                }
 
                 break;
             case 80:
                 sc_minus_11 = Variables.amps.length / 2 - 11;
                 sc_plus_11 = Variables.amps.length / 2 + 11;
-                int sc_minus_39 = Variables.amps.length / 2 - 39;
+                sc_minus_39 = Variables.amps.length / 2 - 39;
                 int sc_plus_39 = Variables.amps.length / 2 + 39;
                 int sc_minus_75 = Variables.amps.length / 2 - 75;
                 int sc_plus_75 = Variables.amps.length / 2 + 75;
