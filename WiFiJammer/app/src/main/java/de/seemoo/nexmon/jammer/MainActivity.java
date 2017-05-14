@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             vars = new HashMap<String, Integer>();
             vars.put("jammingPower", 50);
-            presets.add(20);
             vars.put("WiFi Channel", 1);
             vars.put("JammerType", 0);
             vars.put("App", 0);
@@ -285,15 +284,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                     item.setChecked(true);
                                 }
                                 break;
-                            case "Preset":
-                                for (Integer preset : presets) {
-                                    if (item.getTitle().toString().replace("in", "").contains(preset.toString() + " ")) {
-                                        setPresetPilots(preset, 100);
-                                        item.setChecked(true);
-                                    }
-                                }
-
-                                break;
                             case "Type":
                                 int type = vars.get("JammerType");
                                 if (getJammerType(item.getTitle().toString()) == type) {
@@ -340,6 +330,40 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 return true;
             case R.id.help_jammer:
                 helpDialog.show();
+                return true;
+            case R.id.pre_reset:
+                //Reset Presets when changing Bandwidth
+                for (Integer preset : presets) {
+                    setPresetPilots(preset, 0);
+                }
+                presets = new HashSet<>();
+                switch (Variables.bandwidth) {
+                    case 20:
+                        menu.findItem(R.id.pre_20).setVisible(true).setChecked(false);
+                        menu.findItem(R.id.pre_40).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_20in40).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_80).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_20in80).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_40in80).setVisible(false).setChecked(false);
+                        break;
+                    case 40:
+                        menu.findItem(R.id.pre_20).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_40).setVisible(true).setChecked(false);
+                        menu.findItem(R.id.pre_20in40).setVisible(true).setChecked(false);
+                        menu.findItem(R.id.pre_80).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_20in80).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_40in80).setVisible(false).setChecked(false);
+                        break;
+                    case 80:
+                        menu.findItem(R.id.pre_20).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_40).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_20in40).setVisible(false).setChecked(false);
+                        menu.findItem(R.id.pre_80).setVisible(true).setChecked(false);
+                        menu.findItem(R.id.pre_20in80).setVisible(true).setChecked(false);
+                        menu.findItem(R.id.pre_40in80).setVisible(true).setChecked(false);
+                        break;
+                }
+
                 return true;
         }
 
@@ -392,36 +416,37 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     Variables.bandwidth = value;
                     ampFragment.updateFrequencies();
                     phaseFragment.updateFrequencies();
+
+                    //Reset Presets when changing Bandwidth
                     for (Integer preset : presets) {
                         setPresetPilots(preset, 0);
                     }
                     presets = new HashSet<>();
-                    presets.add(value);
-                    setPresetPilots(value, 100);
+
                     switch (value) {
                         case 20:
-                            menu.findItem(R.id.pre_20).setVisible(true).setChecked(true);
-                            menu.findItem(R.id.pre_40).setVisible(false);
-                            menu.findItem(R.id.pre_20in40).setVisible(false);
-                            menu.findItem(R.id.pre_80).setVisible(false);
-                            menu.findItem(R.id.pre_20in80).setVisible(false);
-                            menu.findItem(R.id.pre_40in80).setVisible(false);
+                            menu.findItem(R.id.pre_20).setVisible(true).setChecked(false);
+                            menu.findItem(R.id.pre_40).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_20in40).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_80).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_20in80).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_40in80).setVisible(false).setChecked(false);
                             break;
                         case 40:
-                            menu.findItem(R.id.pre_20).setVisible(false);
-                            menu.findItem(R.id.pre_40).setVisible(true).setChecked(true);
-                            menu.findItem(R.id.pre_20in40).setVisible(true);
-                            menu.findItem(R.id.pre_80).setVisible(false);
-                            menu.findItem(R.id.pre_20in80).setVisible(false);
-                            menu.findItem(R.id.pre_40in80).setVisible(false);
+                            menu.findItem(R.id.pre_20).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_40).setVisible(true).setChecked(false);
+                            menu.findItem(R.id.pre_20in40).setVisible(true).setChecked(false);
+                            menu.findItem(R.id.pre_80).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_20in80).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_40in80).setVisible(false).setChecked(false);
                             break;
                         case 80:
-                            menu.findItem(R.id.pre_20).setVisible(false);
-                            menu.findItem(R.id.pre_40).setVisible(false);
-                            menu.findItem(R.id.pre_20in40).setVisible(false);
-                            menu.findItem(R.id.pre_80).setVisible(true).setChecked(true);
-                            menu.findItem(R.id.pre_20in80).setVisible(true);
-                            menu.findItem(R.id.pre_40in80).setVisible(true);
+                            menu.findItem(R.id.pre_20).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_40).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_20in40).setVisible(false).setChecked(false);
+                            menu.findItem(R.id.pre_80).setVisible(true).setChecked(false);
+                            menu.findItem(R.id.pre_20in80).setVisible(true).setChecked(false);
+                            menu.findItem(R.id.pre_40in80).setVisible(true).setChecked(false);
                             break;
                     }
                     if (!startup) {
