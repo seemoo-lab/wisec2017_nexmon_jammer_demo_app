@@ -2,6 +2,7 @@ package de.seemoo.nexmon.jammer;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ public class PlotFragment extends android.app.Fragment {
     public ArrayList<double[]> data = new ArrayList<>();
     public float[] timeI;
     public float[] timeQ;
+    public float[] freqs;
+    public float[] freqSamps;
 
 
     private LineChart mChart;
@@ -256,6 +259,43 @@ public class PlotFragment extends android.app.Fragment {
         mChart.fitScreen();
     }
 
+    public void constructFreqSamples() {
+        int num_samps = Constants.getSlidersCount(Variables.idft_size) * Constants.FREQ_PLOT_OVERSAMPLING_RATE;
+        //int num_samps = Variables.amps.length * 3;
+
+        freqSamps = new float[num_samps];
+        freqs = new float[num_samps];
+        float freqSpacing = (float) ((Variables.freqs[1] - Variables.freqs[0])) / Constants.FREQ_PLOT_OVERSAMPLING_RATE;
+
+        for (int n = 0; n < num_samps; n++) {
+            freqs[n] = (n - num_samps / 2) * freqSpacing;
+
+            if (((n - Constants.FREQ_PLOT_OVERSAMPLING_RATE/2) % Constants.FREQ_PLOT_OVERSAMPLING_RATE) == 0) {
+                float value = (float) (10 * Math.log10(Math.pow(Variables.amps[(n - Constants.FREQ_PLOT_OVERSAMPLING_RATE / 2) / Constants.FREQ_PLOT_OVERSAMPLING_RATE],2)));
+
+                if (!Float.isInfinite(value)) {
+                    // a = (sin(2*pi.*(-4:4)/10)./(2*pi.*(-4:4)/10)).^2;
+                    // a(5) = 1;
+                    // a = 10*log10(a);
+                    freqSamps[n - 4] = value - 12.620423487820865f;
+                    freqSamps[n - 3] = value - 5.941895950655292f;
+                    freqSamps[n - 2] = value - 2.420070769541667f;
+                    freqSamps[n - 1] = value - 0.579223661261618f;
+                    freqSamps[n] = value;
+                    freqSamps[n + 1] = value - 0.579223661261618f;
+                    freqSamps[n + 2] = value - 2.420070769541667f;
+                    freqSamps[n + 3] = value - 5.941895950655292f;
+                    freqSamps[n + 4] = value - 12.620423487820865f;
+                } else {
+                    freqSamps[n] = -60;
+                }
+            } else if (freqSamps[n] == 0) {
+                freqSamps[n] = -60;
+            }
+        }
+
+    }
+
     public void updateFreqPlot() {
 
         mChart.clearValues();
@@ -265,8 +305,12 @@ public class PlotFragment extends android.app.Fragment {
         set_freq = createSet(ColorTemplate.rgb("#005AA9"), "Frequencies");
         data.addDataSet(set_freq);
 
-        for (int i = 0; i < Variables.amps.length; i++) {
-            data.addEntry(new Entry((float) Variables.freqs[i], (float) Variables.amps[i]), 0);
+        constructFreqSamples();
+
+        for (int i = 0; i < freqs.length; i++) {
+        //for (int i = 0; i < Variables.amps.length; i++) {
+            data.addEntry(new Entry(freqs[i], freqSamps[i]), 0);
+            //data.addEntry(new Entry((float) Variables.freqs[i], (float) Variables.amps[i]), 0);
         }
 
         data.notifyDataChanged();
