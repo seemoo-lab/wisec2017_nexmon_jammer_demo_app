@@ -237,23 +237,17 @@ public class PlotFragment extends android.app.Fragment {
 
         LineData data = mChart.getData();
 
-        set_real = createSet(ColorTemplate.rgb("#75c4f2"), "I");
-        set_imag = createSet(ColorTemplate.rgb("#efef47"), "Q");
+        set_real = createSet(ColorTemplate.rgb("#005AA9"), "I");
+        set_imag = createSet(ColorTemplate.rgb("#E6001A"), "Q");
         data.addDataSet(set_real);
         data.addDataSet(set_imag);
 
-
         constructIQSamples();
 
-
         for (int i = 0; i < times.length; i++) {
-
-
             data.addEntry(new Entry(times[i], timeI[i]), 0);
             data.addEntry(new Entry(times[i], timeQ[i]), 1);
-
         }
-
 
         data.notifyDataChanged();
 
@@ -268,14 +262,12 @@ public class PlotFragment extends android.app.Fragment {
 
         LineData data = mChart.getData();
 
-        set_freq = createSet(ColorTemplate.rgb("#75c4f2"), "Frequencies");
+        set_freq = createSet(ColorTemplate.rgb("#005AA9"), "Frequencies");
         data.addDataSet(set_freq);
-
 
         for (int i = 0; i < Variables.amps.length; i++) {
             data.addEntry(new Entry((float) Variables.freqs[i], (float) Variables.amps[i]), 0);
         }
-
 
         data.notifyDataChanged();
 
