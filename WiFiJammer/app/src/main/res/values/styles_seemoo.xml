@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="EditTextseemoo" parent="android:Widget.EditText">
+	  <item name="android:background">@drawable/seemoo_edit_text_holo_light</item>
+	  <item name="android:textColor">#000000</item>
+  </style>
+
+  <style name="AutoCompleteTextViewseemoo" parent="android:Widget.AutoCompleteTextView">
+      <item name="android:dropDownSelector">@drawable/seemoo_list_selector_holo_light</item>
+	  <item name="android:background">@drawable/seemoo_edit_text_holo_light</item>
+	  <item name="android:textColor">#000000</item>
+  </style>
+
+  <style name="CheckBoxseemoo" parent="android:Widget.CompoundButton.CheckBox">
+      <item name="android:button">@drawable/seemoo_btn_check_holo_light</item>
+  </style>
+
+  <style name="RadioButtonseemoo" parent="android:Widget.CompoundButton.RadioButton">
+      <item name="android:button">@drawable/seemoo_btn_radio_holo_light</item>
+  </style>
+
+  <style name="Buttonseemoo" parent="android:Widget.Button">
+	  <item name="android:background">@drawable/seemoo_btn_default_holo_light</item>
+	  <item name="android:minHeight">48dip</item>
+	  <item name="android:minWidth">64dip</item>
+	  <item name="android:textColor">#000000</item>
+  </style>
+
+  <style name="ImageButtonseemoo" parent="android:Widget.ImageButton">
+	  <item name="android:background">@drawable/seemoo_btn_default_holo_light</item>
+  </style>
+
+  <style name="Spinnerseemoo" parent="android:Widget.Spinner">
+      <item name="android:background">@drawable/seemoo_spinner_background_holo_light</item>
+      <item name="android:dropDownSelector">@drawable/seemoo_list_selector_holo_light</item>
+  </style>
+
+  <style name="SpinnerDropDownItemseemoo" parent="android:Widget.DropDownItem.Spinner">
+      <item name="android:checkMark">@drawable/seemoo_btn_radio_holo_light</item>
+  </style>
+  <style name="Tabseemoo">
+      <item name="android:gravity">center_horizontal</item>
+      <item name="android:paddingLeft">16dip</item>
+      <item name="android:paddingRight">16dip</item>
+      <item name="android:background">@drawable/seemoo_tab_indicator_holo</item>
+      <item name="android:layout_width">0dip</item>
+      <item name="android:layout_weight">1</item>
+      <item name="android:minWidth">80dip</item>
+  </style>
+
+  <style name="TabTextseemoo">
+	  <item name="android:textColor">#000000</item>
+      <item name="android:textSize">12sp</item>
+      <item name="android:textStyle">bold</item>
+      <!-- v14 <item name="android:textAllCaps">true</item> -->
+      <item name="android:ellipsize">marquee</item>
+      <item name="android:maxLines">2</item>
+      <item name="android:maxWidth">180dip</item>
+  </style>
+
+  <style name="ProgressBarseemoo" parent="android:Widget.ProgressBar.Horizontal">
+      <item name="android:progressDrawable">@drawable/seemoo_progress_horizontal_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/seemoo_progress_indeterminate_horizontal_holo_light</item>
+      <item name="android:minHeight">16dip</item>
+      <item name="android:maxHeight">16dip</item>
+  </style>
+
+  <style name="SeekBarseemoo" parent="android:Widget.SeekBar">
+      <item name="android:progressDrawable">@drawable/seemoo_scrubber_progress_horizontal_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/seemoo_scrubber_progress_horizontal_holo_light</item>
+      <item name="android:minHeight">13dip</item>
+      <item name="android:maxHeight">13dip</item>
+      <item name="android:thumb">@drawable/seemoo_scrubber_control_selector_holo_light</item>
+      <item name="android:thumbOffset">16dip</item>
+      <item name="android:paddingLeft">16dip</item>
+      <item name="android:paddingRight">16dip</item>
+  </style>
+
+  <style name="RatingBarseemoo" parent="android:Widget.RatingBar">
+      <item name="android:progressDrawable">@drawable/seemoo_ratingbar_full_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/seemoo_ratingbar_full_holo_light</item>
+  </style>
+
+  <style name="RatingBarBigseemoo" parent="android:Widget.RatingBar">
+      <item name="android:progressDrawable">@drawable/seemoo_ratingbar_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/seemoo_ratingbar_holo_light</item>
+      <item name="android:minHeight">35dip</item>
+      <item name="android:maxHeight">35dip</item>
+  </style>
+
+  <style name="RatingBarSmallseemoo" parent="android:Widget.RatingBar">
+      <item name="android:progressDrawable">@drawable/seemoo_ratingbar_small_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/seemoo_ratingbar_small_holo_light</item>
+      <item name="android:minHeight">16dip</item>
+      <item name="android:maxHeight">16dip</item>
+  </style>
+
+  <style name="Toggleseemoo" parent="android:Widget.Button.Toggle">
+      <item name="android:background">@drawable/seemoo_btn_toggle_holo_light</item>
+      <item name="android:minHeight">48dip</item>
+	  <item name="android:textColor">#000000</item>
+  </style>
+
+  <style name="ListViewseemoo" parent="android:Widget.ListView">
+      <item name="android:listSelector">@drawable/seemoo_list_selector_holo_light</item>
+  </style>
+
+  <style name="ListViewseemoo.White" parent="android:Widget.ListView.White">
+      <item name="android:listSelector">@drawable/seemoo_list_selector_holo_light</item>
+  </style>
+
+  <style name="SpinnerItemseemoo" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+      <item name="android:textColor">#000000</item>
+  </style>
+
+    <style name="DialogSeemoo" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:colorAccent">@color/colorAccent</item>
+    </style>
+
+</resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="seemoo" parent="@style/_seemoo"/>
+
+  <style name="_seemoo" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <item name="android:editTextStyle">@style/EditTextseemoo</item>
+
+    <item name="android:textColorHighlight">#99ec6500</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewseemoo</item>
+
+    <item name="android:checkboxStyle">@style/CheckBoxseemoo</item>
+
+    <item name="android:radioButtonStyle">@style/RadioButtonseemoo</item>
+
+    <item name="android:buttonStyle">@style/Buttonseemoo</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonseemoo</item>
+
+    <item name="android:spinnerStyle">@style/Spinnerseemoo</item>
+
+    <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemseemoo</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarseemoo</item>
+
+    <item name="android:seekBarStyle">@style/SeekBarseemoo</item>
+
+    <item name="android:ratingBarStyle">@style/RatingBarseemoo</item>
+
+    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigseemoo</item>
+
+    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallseemoo</item>
+
+    <item name="android:buttonStyleToggle">@style/Toggleseemoo</item>
+
+    <item name="android:listViewStyle">@style/ListViewseemoo</item>
+
+    <item name="android:listViewWhiteStyle">@style/ListViewseemoo.White</item>
+
+    <item name="android:spinnerItemStyle">@style/SpinnerItemseemoo</item>
+
+  </style>
+
+</resources>
