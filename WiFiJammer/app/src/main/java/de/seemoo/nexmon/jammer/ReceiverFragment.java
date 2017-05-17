@@ -1,7 +1,6 @@
 package de.seemoo.nexmon.jammer;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -39,8 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,15 +52,13 @@ import eu.chainfire.libsuperuser.Shell;
 //MAC, IP Address, new graph button
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
-    static Boolean isRootAvailable;
+    private static Shell.Interactive rootShell;
+    private static boolean isInitialised = false;
     public HashMap<Integer, int[]> data = new HashMap<>();
     ViewGroup container;
     AlertDialog helpDialog;
-    int dstPort;
-    InetAddress ipAddress;
     Menu menu;
-    private ProgressDialog progressbox;
-    private PlotThread plotThread;
+    private UDPReceiver udpReceiver;
     private HorizontalBarChart mChart;
     private ArrayList<Integer> ports = new ArrayList<>();
 
@@ -81,57 +75,28 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
-        dstPort = 1234;
-        try {
-            ipAddress = Inet4Address.getByName("192.168.1.2");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        progressbox = new ProgressDialog(getActivity());
-        progressbox.setTitle("Initialising");
-        progressbox.setMessage("Requesting root permissions..");
-        progressbox.setIndeterminate(true);
-        progressbox.setCancelable(false);
-        progressbox.show();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                isRootAvailable = Shell.SU.available();
-                Boolean processExists = false;
-                String pid = null;
-                if (isRootAvailable) {
-
-                    initializePlot();
-
-                    List<String> out = Shell.SH.run("ps | grep tcpdump");
-                    if (out.size() == 1) {
-                        processExists = true;
-                        TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
-                    } else if (out.size() == 0) {
-                        if (loadTcpdumpFromAssets() != 0)
-                            throw new RuntimeException("Copying tcpdump binary failed.");
-                    } else
-                        throw new RuntimeException("Searching for running process returned unexpected result.");
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
+        initializePlot();
+        //installCustomWiFiFirmware();
+        udpReceiver = new UDPReceiver();
+        rootShell = new Shell.Builder().
+                useSU().
+                setWantSTDERR(false).
+                setMinimalLogging(true).
+                open(new Shell.OnCommandResultListener() {
                     @Override
-                    public void run() {
-                        if (!isRootAvailable) {
-                            ((TextView) getView().findViewById(R.id.main_tv)).setText("Root permission denied or phone is not rooted!");
+                    public void onCommandResult(int commandVal, int exitVal, List<String> out) {
+                        //Callback checking successful shell start.
+                        if (exitVal == Shell.OnCommandResultListener.SHELL_RUNNING) {
+                            isInitialised = true;
+
                         } else {
-                            ((TextView) getView().findViewById(R.id.main_tv)).setText("Receiver Ready");
+                            Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or try again.", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 });
-                progressbox.dismiss();
-            }
-        };
-        new Thread(runnable).start();
+
     }
 
     @Override
@@ -140,91 +105,52 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private final class UDPReceiver extends Thread {
+    private int installCustomWiFiFirmware() {
+        int retval = 0;
+        // updating progress message from other thread causes exception.
+        // progressbox.setMessage("Setting up data..");
+        String rootDataPath = "/vendor/firmware/";
+        String filePath = "/vendor/firmware/fw_bcmdhd.bin";
+        File file = new File(filePath);
+        AssetManager assetManager = getActivity().getAssets();
 
-        private static final String TAG = "UDPReceiverThread";
-        private boolean mContinueRunning = true;
-        private DatagramSocket mSocket = null;
-        public static final int RECV_BUFFER_SIZE = 1000;
-
-        private final char[] hexArray = "0123456789ABCDEF".toCharArray();
-        public String bytesToHex(byte[] bytes) {
-            char[] hexChars = new char[bytes.length * 2];
-            for ( int j = 0; j < bytes.length; j++ ) {
-                int v = bytes[j] & 0xFF;
-                hexChars[j * 2] = hexArray[v >>> 4];
-                hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        try {
+            if (file.exists()) {
+                //return retval;
             }
-            return new String(hexChars);
+            new File(rootDataPath).mkdirs();
+            retval = copyFileFromAsset(assetManager, "fw_bcmdhd.bin", filePath);
+
+            List<String> out = Shell.SH.run("ifconfig wlan0 down && ifconfig wlan0 up");
+            Log.d("Shell", out.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            retval = -1;
         }
+        return retval;
+    }
 
-        public void run() {
-            Log.d(TAG, "Thread run");
-            mContinueRunning = true;
-
-            try {
-                mSocket = new DatagramSocket(5500);
-            } catch (SocketException e) {
-                // TODO: Handle address already in use.
-                Log.d(TAG, "Error opening the UDP socket.");
-                e.printStackTrace();
-                return;
+    private int copyFileFromAsset(AssetManager assetManager, String sourcePath, String destPath) {
+        byte[] buff = new byte[1024];
+        int len;
+        InputStream in;
+        OutputStream out;
+        try {
+            in = assetManager.open(sourcePath);
+            new File(destPath).createNewFile();
+            out = new FileOutputStream(destPath);
+            // write file
+            while ((len = in.read(buff)) != -1) {
+                out.write(buff, 0, len);
             }
-
-            byte[] buffer = new byte[RECV_BUFFER_SIZE];
-            DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-
-            while (mContinueRunning) {
-                try {
-                    mSocket.receive(p);
-                    // TODO: Check source address of packet and/or validate it with other means
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (!mContinueRunning) {
-                    Log.d(TAG, "Stop thread activity...");
-                    break;
-                }
-                int length = p.getLength();
-                p.getData();
-
-                byte[] timestampbytes = new byte[8];
-                timestampbytes[0] = 0;
-                timestampbytes[1] = 0;
-                timestampbytes[2] = 0;
-                timestampbytes[3] = 0;
-                timestampbytes[4] = buffer[3];
-                timestampbytes[5] = buffer[2];
-                timestampbytes[6] = buffer[1];
-                timestampbytes[7] = buffer[0];
-                long timestamp = java.nio.ByteBuffer.wrap(timestampbytes).getLong();
-
-                byte[] portbytes = new byte[4];
-                portbytes[0] = 0;
-                portbytes[1] = 0;
-                portbytes[2] = buffer[4];
-                portbytes[3] = buffer[5];
-                int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
-
-                int fcs_error = buffer[6];
-
-                if (!data.containsKey(port)) {
-                    data.put(port, new int[2]);
-                }
-                data.get(port)[fcs_error]++;
-
-                updatePlot();
-
-                Log.d(TAG, "timestamp: " + timestamp + " port: " + port + " fcs error: " + fcs_error);
-            }
-
-            Log.d(TAG, "Thread afterrun");
+            in.close();
+            out.flush();
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return -1;
         }
-
-        public void shutdown() {
-            mContinueRunning = false;
-            mSocket.close();
-        }
+        return 0;
     }
 
     @Override
@@ -232,54 +158,29 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         switch (item.getItemId()) {
             case R.id.start:
-                if (isRootAvailable) {
                     if (item.getTitle().toString().equals("Stop")) {
-                        //Using progress dialogue from main. See comment in: TcpdumpPacketCapture.stopTcpdumpCapture
-                        progressbox.setMessage("Killing Tcpdump process.");
-                        progressbox.show();
-                        TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
-                        stopPlotThread();
+                        udpReceiver.shutdown();
                         item.setTitle("Start");
-                        ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture stopped.");
-                        progressbox.dismiss();
 
                     } else {
-
-                        TcpdumpPacketCapture.setIpAddress(ipAddress);
-                        TcpdumpPacketCapture.setPort(dstPort);
-                        TcpdumpPacketCapture.initialiseCapture(getActivity());
-                        startPlotThread();
+                        udpReceiver = new UDPReceiver();
+                        udpReceiver.start();
                         item.setTitle("Stop");
                     }
-                } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
-                }
                 return true;
-
             case R.id.reset:
-                if (isRootAvailable) {
-                    progressbox.setMessage("Killing Tcpdump process.");
-                    progressbox.show();
-                    TcpdumpPacketCapture.stopTcpdumpCapture(getActivity());
-                    stopPlotThread();
-                    TcpdumpPacketCapture.resetData();
-                    data = new HashMap<>();
-                    ports = new ArrayList<>();
-                    initializePlot();
-                    menu.findItem(R.id.start).setTitle("Start");
-                    ((TextView) getView().findViewById(R.id.main_tv)).setText("Packet capture reseted.");
-                    progressbox.dismiss();
-                } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or root your phone.", Toast.LENGTH_SHORT).show();
-                }
+                udpReceiver.shutdown();
+                initializePlot();
+                menu.findItem(R.id.start).setTitle("Start");
+                getView().findViewById(R.id.x_axis).setVisibility(View.GONE);
+                getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
-                (new UDPReceiver()).start();
-
+                List<String> out = Shell.SH.run("nexutil -g500p");
+                Log.d("Shell", out.toString());
                 //helpDialog.show();
                 return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -350,55 +251,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     }
 
-    private int loadTcpdumpFromAssets() {
-        int retval = 0;
-        // updating progress message from other thread causes exception.
-        // progressbox.setMessage("Setting up data..");
-        String rootDataPath = getActivity().getApplicationInfo().dataDir + "/files";
-        String filePath = rootDataPath + "/tcpdump";
-        File file = new File(filePath);
-        AssetManager assetManager = getActivity().getAssets();
-
-        try {
-            if (file.exists()) {
-                Shell.SH.run("chmod 755 " + filePath);
-                return retval;
-            }
-            new File(rootDataPath).mkdirs();
-            retval = copyFileFromAsset(assetManager, "tcpdump", filePath);
-            // Mark the binary executable
-
-            Shell.SH.run("chmod 755 " + filePath);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            retval = -1;
-        }
-        return retval;
-    }
-
-    private int copyFileFromAsset(AssetManager assetManager, String sourcePath, String destPath) {
-        byte[] buff = new byte[1024];
-        int len;
-        InputStream in;
-        OutputStream out;
-        try {
-            in = assetManager.open(sourcePath);
-            new File(destPath).createNewFile();
-            out = new FileOutputStream(destPath);
-            // write file
-            while ((len = in.read(buff)) != -1) {
-                out.write(buff, 0, len);
-            }
-            in.close();
-            out.flush();
-            out.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return -1;
-        }
-        return 0;
-    }
-
     private void initializePlot() {
         mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
 
@@ -430,13 +282,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setValueFormatter(this);
-        xAxis.setPosition(XAxisPosition.TOP);
+        xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setGranularity(1);
         xAxis.setGranularityEnabled(true);
 
 
         Legend l = mChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
@@ -448,6 +300,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     }
 
     private void updatePlot() {
+
 
         ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
 
@@ -494,6 +347,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                getView().findViewById(R.id.x_axis).setVisibility(View.VISIBLE);
+                getView().findViewById(R.id.y_axis).setVisibility(View.VISIBLE);
                 mChart.invalidate();
             }
         });
@@ -506,8 +361,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         return ports.get((int) value).toString();
     }
-
-
 
     private int[] getColors() {
 
@@ -523,29 +376,83 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         return colors;
     }
 
-    public void startPlotThread() {
+    private final class UDPReceiver extends Thread {
 
-        plotThread = new PlotThread();
-        plotThread.start();
-    }
+        public static final int RECV_BUFFER_SIZE = 1000;
+        private static final String TAG = "UDPReceiverThread";
+        private final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        private boolean mContinueRunning = true;
+        private DatagramSocket mSocket = null;
 
-    private void stopPlotThread() {
-        if (plotThread != null) plotThread.stopThread();
-    }
-
-    private class PlotThread extends Thread {
-        public boolean running;
-
-        public void stopThread() {
-            running = false;
+        public String bytesToHex(byte[] bytes) {
+            char[] hexChars = new char[bytes.length * 2];
+            for (int j = 0; j < bytes.length; j++) {
+                int v = bytes[j] & 0xFF;
+                hexChars[j * 2] = hexArray[v >>> 4];
+                hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+            }
+            return new String(hexChars);
         }
 
-        @Override
         public void run() {
-            running = true;
-            while (running) {
-                data = TcpdumpPacketCapture.getData();
+            Log.d(TAG, "Thread run");
+            mContinueRunning = true;
+
+            try {
+                mSocket = new DatagramSocket(5500);
+            } catch (SocketException e) {
+                // TODO: Handle address already in use.
+                Log.d(TAG, "Error opening the UDP socket.");
+                e.printStackTrace();
+                return;
+            }
+
+            byte[] buffer = new byte[RECV_BUFFER_SIZE];
+            DatagramPacket p = new DatagramPacket(buffer, buffer.length);
+
+            while (mContinueRunning) {
+                try {
+                    mSocket.receive(p);
+                    // TODO: Check source address of packet and/or validate it with other means
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (!mContinueRunning) {
+                    Log.d(TAG, "Stop thread activity...");
+                    break;
+                }
+                int length = p.getLength();
+                p.getData();
+
+                byte[] timestampbytes = new byte[8];
+                timestampbytes[0] = 0;
+                timestampbytes[1] = 0;
+                timestampbytes[2] = 0;
+                timestampbytes[3] = 0;
+                timestampbytes[4] = buffer[3];
+                timestampbytes[5] = buffer[2];
+                timestampbytes[6] = buffer[1];
+                timestampbytes[7] = buffer[0];
+                long timestamp = java.nio.ByteBuffer.wrap(timestampbytes).getLong();
+
+                byte[] portbytes = new byte[4];
+                portbytes[0] = 0;
+                portbytes[1] = 0;
+                portbytes[2] = buffer[4];
+                portbytes[3] = buffer[5];
+                int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
+
+                int fcs_error = buffer[6];
+
+                if (!data.containsKey(port)) {
+                    data.put(port, new int[2]);
+                }
+                Log.d(TAG, String.valueOf(fcs_error));
+                data.get(port)[0]++;
+
                 if (data.size() > 0) updatePlot();
+
+                Log.d(TAG, "timestamp: " + timestamp + " port: " + port + " fcs error: " + fcs_error);
                 try {
                     sleep(1000);
                 } catch (Exception e) {
@@ -553,7 +460,14 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 }
             }
 
+            Log.d(TAG, "Thread afterrun");
+        }
+
+        public void shutdown() {
+            mContinueRunning = false;
+            mSocket.close();
         }
     }
+
 }
 

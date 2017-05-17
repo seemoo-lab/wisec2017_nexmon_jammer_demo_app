@@ -4,28 +4,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="15">
+
+        <de.seemoo.nexmon.jammer.VerticalTextView
+            android:id="@+id/y_axis"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="UDP Port Number"
+            android:textColor="@color/black"
+            android:visibility="gone" />
+
+
+        <com.github.mikephil.charting.charts.HorizontalBarChart
+            android:id="@+id/chart1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="20" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/main_tv"
+        android:id="@+id/x_axis"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:textColor="@color/black" />
-
-
-    <de.seemoo.nexmon.jammer.VerticalTextView
-        android:id="@+id/verticalTextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Amplitude"
-        android:textColor="@color/black" />
-
-    <com.github.mikephil.charting.charts.HorizontalBarChart
-        android:id="@+id/chart1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
+        android:gravity="center_horizontal"
+        android:text="Frame Reception Rate(fps)"
+        android:textColor="@color/black"
+        android:visibility="gone" />
 
 </LinearLayout>
