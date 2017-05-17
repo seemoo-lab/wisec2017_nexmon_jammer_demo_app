@@ -712,6 +712,13 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             menu.findItem(R.id.help_transmitter).setVisible(true);
             menu.findItem(R.id.help_receiver).setVisible(false);
             menu.findItem(R.id.help_jammer).setVisible(false);
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                menu.findItem(R.id.help_transmitter).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            } else {
+                menu.findItem(R.id.bandwidth).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                menu.findItem(R.id.help_transmitter).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            }
             findViewById(R.id.jammingPower).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_1).setVisibility(View.GONE);
             findViewById(R.id.fragment_container_2).setVisibility(View.GONE);
