@@ -44,7 +44,7 @@ public class LicenseDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Set all the title, button etc. for the AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
         builder.setTitle("Licences");
 
         //Get LayoutInflater

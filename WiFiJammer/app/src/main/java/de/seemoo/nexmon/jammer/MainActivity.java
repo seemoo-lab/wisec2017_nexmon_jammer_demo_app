@@ -545,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         });
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         alertDialogBuilder.setView(linear_layout);
 
@@ -610,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         listView.setAdapter(adapter);
         listView.setItemChecked(vars.get("WiFi Channel") - 1, true);
 
-        alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(list_layout);
@@ -672,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             }
         });
 
-        alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(list_layout);
