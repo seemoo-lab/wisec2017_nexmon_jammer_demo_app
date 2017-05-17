@@ -424,7 +424,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 }
                 int length = p.getLength();
                 p.getData();
-                int port = p.getPort();
 
                 byte[] timestampbytes = new byte[8];
                 timestampbytes[0] = 0;
@@ -442,7 +441,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 portbytes[1] = 0;
                 portbytes[2] = buffer[4];
                 portbytes[3] = buffer[5];
-                //int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
+                int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
 
                 int fcs_error = buffer[6];
 
