@@ -7,6 +7,7 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,10 +34,14 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -135,6 +140,93 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private final class UDPReceiver extends Thread {
+
+        private static final String TAG = "UDPReceiverThread";
+        private boolean mContinueRunning = true;
+        private DatagramSocket mSocket = null;
+        public static final int RECV_BUFFER_SIZE = 1000;
+
+        private final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        public String bytesToHex(byte[] bytes) {
+            char[] hexChars = new char[bytes.length * 2];
+            for ( int j = 0; j < bytes.length; j++ ) {
+                int v = bytes[j] & 0xFF;
+                hexChars[j * 2] = hexArray[v >>> 4];
+                hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+            }
+            return new String(hexChars);
+        }
+
+        public void run() {
+            Log.d(TAG, "Thread run");
+            mContinueRunning = true;
+
+            try {
+                mSocket = new DatagramSocket(5500);
+            } catch (SocketException e) {
+                // TODO: Handle address already in use.
+                Log.d(TAG, "Error opening the UDP socket.");
+                e.printStackTrace();
+                return;
+            }
+
+            byte[] buffer = new byte[RECV_BUFFER_SIZE];
+            DatagramPacket p = new DatagramPacket(buffer, buffer.length);
+
+            while (mContinueRunning) {
+                try {
+                    mSocket.receive(p);
+                    // TODO: Check source address of packet and/or validate it with other means
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (!mContinueRunning) {
+                    Log.d(TAG, "Stop thread activity...");
+                    break;
+                }
+                int length = p.getLength();
+                p.getData();
+
+                byte[] timestampbytes = new byte[8];
+                timestampbytes[0] = 0;
+                timestampbytes[1] = 0;
+                timestampbytes[2] = 0;
+                timestampbytes[3] = 0;
+                timestampbytes[4] = buffer[3];
+                timestampbytes[5] = buffer[2];
+                timestampbytes[6] = buffer[1];
+                timestampbytes[7] = buffer[0];
+                long timestamp = java.nio.ByteBuffer.wrap(timestampbytes).getLong();
+
+                byte[] portbytes = new byte[4];
+                portbytes[0] = 0;
+                portbytes[1] = 0;
+                portbytes[2] = buffer[4];
+                portbytes[3] = buffer[5];
+                int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
+
+                int fcs_error = buffer[6];
+
+                if (!data.containsKey(port)) {
+                    data.put(port, new int[2]);
+                }
+                data.get(port)[fcs_error]++;
+
+                updatePlot();
+
+                Log.d(TAG, "timestamp: " + timestamp + " port: " + port + " fcs error: " + fcs_error);
+            }
+
+            Log.d(TAG, "Thread afterrun");
+        }
+
+        public void shutdown() {
+            mContinueRunning = false;
+            mSocket.close();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -182,7 +274,9 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 }
                 return true;
             case R.id.help_receiver:
-                helpDialog.show();
+                (new UDPReceiver()).start();
+
+                //helpDialog.show();
                 return true;
         }
 
