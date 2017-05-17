@@ -13,9 +13,8 @@
             android:id="@+id/plot_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
-            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:padding="4dp"
             android:text="Time Domain Plot"
             android:textColor="@color/black"
@@ -25,25 +24,14 @@
             android:id="@+id/plot_papr"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/papr_value"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="PAPR:"
-            android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/papr_value"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:ems="3"
             android:gravity="center"
-            android:inputType="number"
-            android:text="0"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:padding="2dp"
+            android:text="PAPR: 100"
+            android:textColor="@color/black" />
+
     </RelativeLayout>
 
     <LinearLayout
