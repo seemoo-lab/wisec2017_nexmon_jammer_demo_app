@@ -13,6 +13,14 @@
         android:textColor="@color/black" />
 
 
+    <de.seemoo.nexmon.jammer.VerticalTextView
+        android:id="@+id/verticalTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Amplitude"
+        android:textColor="@color/black" />
+
     <com.github.mikephil.charting.charts.HorizontalBarChart
         android:id="@+id/chart1"
         android:layout_width="match_parent"
