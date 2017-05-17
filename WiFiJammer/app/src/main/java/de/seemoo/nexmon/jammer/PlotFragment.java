@@ -2,10 +2,10 @@ package de.seemoo.nexmon.jammer;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -119,6 +119,8 @@ public class PlotFragment extends android.app.Fragment {
         TextView range = (TextView) getView().findViewById(R.id.plot_range);
         range.setBackgroundColor(Color.LTGRAY);
 
+        RelativeLayout relativeLayout = (RelativeLayout) getView().findViewById(R.id.time_plot_rel);
+        relativeLayout.setBackgroundColor(Color.LTGRAY);
         mChart = (LineChart) getView().findViewById(R.id.chart1);
 
 

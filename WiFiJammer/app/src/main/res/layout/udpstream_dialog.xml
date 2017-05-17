@@ -39,9 +39,44 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-
     <SeekBar
         android:id="@+id/udpSeekbar"
+        style="@style/SeekBarSeemoo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:padding="5sp"
+        android:progress="50" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="5sp"
+            android:text="Number of UDP Packets:"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/numbPaSeekbarText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ems="3"
+            android:gravity="center"
+            android:inputType="number"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+    <SeekBar
+        android:id="@+id/numbPaSeekbar"
         style="@style/SeekBarSeemoo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
