@@ -176,7 +176,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
-                List<String> out = Shell.SH.run("nexutil -g500p");
+                List<String> out = Shell.SH.run("nexutil -g500");
                 Log.d("Shell", out.toString());
                 //helpDialog.show();
                 return true;
@@ -310,7 +310,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             int key = entry.getKey();
             int[] value = entry.getValue();
 
-            float val1 = value[0];
+            float val1 = value[1];
             float val2 = value[0];
 
             ports.add(i, key);
@@ -331,7 +331,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             set = new BarDataSet(yVals, "");
             set.setDrawIcons(false);
             set.setColors(getColors());
-            set.setStackLabels(new String[]{"FCS correct", "FCS incorrect"});
+            set.setStackLabels(new String[]{"FCS incorrect", "FCS correct"});
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set);
@@ -369,9 +369,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         // have as many colors as stack-values per entry
         int[] colors = new int[stacksize];
 
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = ColorTemplate.MATERIAL_COLORS[i];
-        }
+        colors[0] = ColorsTuDarmstadt.COLOR_1B;
+        colors[1] = ColorsTuDarmstadt.COLOR_6B;
 
         return colors;
     }
@@ -449,7 +448,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     data.put(port, new int[2]);
                 }
                 Log.d(TAG, String.valueOf(fcs_error));
-                data.get(port)[0]++;
+                data.get(port)[fcs_error]++;
 
                 if (data.size() > 0) updatePlot();
 
