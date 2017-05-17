@@ -334,7 +334,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             }
         });
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(list_layout);

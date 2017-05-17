@@ -87,13 +87,16 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         public void run() {
                             while (newUDPStreamDialog.isShowing()) {
                             }
-                            udpStreams.get(udpStreams.size() - 1).alertDialog = newUDPStreamDialog;
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    createNewUDPStreamDialog();
-                                }
-                            });
+                            if (udpStreams.size() > 0) {
+                                udpStreams.get(udpStreams.size() - 1).alertDialog = newUDPStreamDialog;
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        createNewUDPStreamDialog();
+                                    }
+                                });
+                            }
+
 
                         }
                     }).start();
@@ -181,7 +184,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
             }
         });
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(list_layout);
@@ -199,7 +202,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
     public void createNewUDPStreamDialog() {
 
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
 
         final View linear_layout = getActivity().getLayoutInflater().inflate(R.layout.udpstream_dialog, container, false);
 
