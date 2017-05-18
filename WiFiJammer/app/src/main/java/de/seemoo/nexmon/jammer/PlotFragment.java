@@ -20,6 +20,8 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
+import static java.lang.Math.ceil;
+
 
 /**
  * Created by Stathis on 03-May-17.
@@ -239,6 +241,11 @@ public class PlotFragment extends android.app.Fragment {
         updateFreqPlot();
     }
 
+    private double round(double value, int decimals) {
+        double factor = Math.pow(10, decimals);
+        return ceil(value * factor) / factor;
+    }
+
     public void updateTimePlot() {
 
         mChart.clearValues();
@@ -252,10 +259,21 @@ public class PlotFragment extends android.app.Fragment {
 
         constructIQSamples();
 
+        double maxSignalSquare = 0;
+        double sumSignalSquare = 0;
+
         for (int i = 0; i < times.length; i++) {
             data.addEntry(new Entry(times[i], timeI[i]), 0);
             data.addEntry(new Entry(times[i], timeQ[i]), 1);
+            double signalSquare = Math.pow(timeI[i], 2) + Math.pow(timeQ[i], 2);
+            sumSignalSquare += signalSquare;
+            if (signalSquare > maxSignalSquare) maxSignalSquare = signalSquare;
         }
+
+        double paprdb = 10 * Math.log10(maxSignalSquare/(sumSignalSquare/times.length));
+        TextView plot_papr_tv = (TextView) getView().findViewById(R.id.plot_papr);
+        plot_papr_tv.setText("PAPR: " + round(paprdb,3) + " dB");
+
 
         data.notifyDataChanged();
 
