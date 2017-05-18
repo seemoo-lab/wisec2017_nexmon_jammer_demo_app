@@ -1,0 +1,110 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5sp"
+                android:text="Jammer Options"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/jamSignalLength"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="36dp"
+                    android:padding="5sp"
+                    android:text="Jamming Signal Length(?):"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+
+                <TextView
+                    android:id="@+id/type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/jamSignalLength"
+                    android:layout_below="@+id/jamSignalLength"
+                    android:padding="5sp"
+                    android:text="Type:"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/type_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/jamSignalLength"
+                    android:layout_toEndOf="@+id/type"
+                    android:padding="5sp" />
+
+                <TextView
+                    android:id="@+id/portText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/type"
+                    android:layout_below="@+id/type_spinner"
+                    android:padding="3sp"
+                    android:text="Port to Jam:"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <EditText
+
+                    android:id="@+id/portValue"
+                    android:layout_width="70sp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/type"
+                    android:layout_toEndOf="@+id/portText"
+                    android:ems="3"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text="3333"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <EditText
+
+                    android:id="@+id/jamSignalLengthValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/jamSignalLength"
+                    android:ems="3"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:padding="5sp"
+                    android:text="200"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

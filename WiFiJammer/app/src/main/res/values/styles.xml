@@ -25,4 +25,8 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="ToggleSwitchTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>

@@ -25,6 +25,7 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
     TextView txtId;
     TextView txtPort;
     TextView txtPower;
+    TextView txtNumbSamples;
     TextView txtModulation;
     TextView txtRate;
     TextView txtBand;
@@ -92,6 +93,8 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
 
         txtId = (TextView) convertView.findViewById(R.id.streamId);
         txtPort = (TextView) convertView.findViewById(R.id.portValue);
+        // Add new TextView in list item if needed
+        //txtNumbSamples = (TextView) convertView.findViewById(R.id.numbPaSeekbarText);
         txtPower = (TextView) convertView.findViewById(R.id.powerValue);
         txtModulation = (TextView) convertView.findViewById(R.id.modulation_value);
         txtRate = (TextView) convertView.findViewById(R.id.rateValue);
@@ -104,6 +107,7 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
         txtId.setText(String.valueOf(udpStream.id));
         txtPort.setText(String.valueOf(udpStream.destPort));
         txtPower.setText(String.valueOf(udpStream.power));
+        //txtNumbSamples.setText(String.valueOf(udpStream.numbFrames));
         txtModulation.setText(udpStream.modulation);
         switch (udpStream.modulation) {
             case "802.11a/g":

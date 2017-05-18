@@ -18,10 +18,11 @@ public class UDPStream {
     int rate;
     int bandwidth;
     boolean ldpc;
+    int numbFrames;
     AlertDialog alertDialog;
 
 
-    public UDPStream(int id, int port, int power, String modulation, int rate, int bandwidth, boolean ldpc, Activity act) {
+    public UDPStream(int id, int port, int power, String modulation, int rate, int bandwidth, boolean ldpc, int numbFrames, Activity act) {
         this.id = id;
         this.destPort = port;
         this.act = act;
@@ -30,13 +31,8 @@ public class UDPStream {
         this.rate = rate;
         this.bandwidth = bandwidth;
         this.ldpc = ldpc;
+        this.numbFrames = numbFrames;
         running = false;
 
     }
-
-    public void stopThread() {
-        running = false;
-    }
-
-
 }

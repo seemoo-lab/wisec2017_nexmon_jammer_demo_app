@@ -9,7 +9,7 @@ public final class Constants {
     static final int MIN_IDFT_SIZE = 1;
     static final int OVERSAMPLING_RATE = 2;
     static final int OUT_OF_BAND_SUBCARRIER_PERCENTAGE = 10;
-    static final int MAX_SLIDERS_COUNT = (100 + OUT_OF_BAND_SUBCARRIER_PERCENTAGE) * MAX_IDFT_SIZE / OVERSAMPLING_RATE / 100;
+    static final int MAX_SLIDERS_COUNT = (int) Math.ceil((100 + OUT_OF_BAND_SUBCARRIER_PERCENTAGE) * (double) MAX_IDFT_SIZE / OVERSAMPLING_RATE / 100);
     static final int FREQ_PLOT_OVERSAMPLING_RATE = 7;
 
     static int getSlidersCount(int ifft_size) {

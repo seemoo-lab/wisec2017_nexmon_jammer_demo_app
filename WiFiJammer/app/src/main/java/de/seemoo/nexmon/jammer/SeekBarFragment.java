@@ -197,7 +197,7 @@ public class SeekBarFragment extends android.app.Fragment {
 
     }
 
-    private double round(double value, int decimals) {
+    public double round(double value, int decimals) {
         double factor = Math.pow(10, decimals);
         return ceil(value * factor) / factor;
     }
