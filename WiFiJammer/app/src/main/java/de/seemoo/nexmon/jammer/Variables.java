@@ -5,6 +5,7 @@ package de.seemoo.nexmon.jammer;
  */
 
 public final class Variables {
+
     public static double[] amps;
     public static double[] phases;
     public static double[] freqs;

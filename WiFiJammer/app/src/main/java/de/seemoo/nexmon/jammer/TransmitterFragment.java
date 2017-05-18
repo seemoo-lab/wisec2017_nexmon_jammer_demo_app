@@ -423,10 +423,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
                 // attaching data adapter to spinner
                 ((Spinner) view.getRootView().findViewById(R.id.rate_spinner)).setAdapter(rateDataAdapter);
-
-
                 break;
-
         }
     }
 
