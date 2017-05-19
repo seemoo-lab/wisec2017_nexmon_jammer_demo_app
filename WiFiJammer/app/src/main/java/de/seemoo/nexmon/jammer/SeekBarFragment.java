@@ -94,7 +94,6 @@ public class SeekBarFragment extends android.app.Fragment {
         super.onSaveInstanceState(outState);
         outState.putString("name", name);
         outState.putInt("color", color);
-
     }
 
     public void setVerticalSeekBars() {
@@ -106,9 +105,6 @@ public class SeekBarFragment extends android.app.Fragment {
         }
         updateFrequencies();
         setScrollToMiddle();
-
-        //frequencies changed
-        if (name.equals("Amplitudes")) mCallback.onUserAction();
 
 
     }
@@ -163,12 +159,8 @@ public class SeekBarFragment extends android.app.Fragment {
                         sliderText.setText(value + "°");
 
                     }
-
-
-
-
                     // notify Activity
-                    mCallback.onUserAction();
+                    if (fromUser) mCallback.onUserAction();
                 }
             });
 
@@ -259,6 +251,8 @@ public class SeekBarFragment extends android.app.Fragment {
                 }
             });
         }
+        //update plots only once
+        //if (name.equals("Amplitudes")) mCallback.onUserAction();
     }
 
     @Override

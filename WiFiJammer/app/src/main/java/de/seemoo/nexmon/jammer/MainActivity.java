@@ -18,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -435,36 +434,47 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 presets.remove(value);
             } else {
                 item.setChecked(true);
-
+                boolean changed = false;
                 int newIdftSize = Variables.idft_size;
                 switch (Variables.bandwidth) {
                     case 20:
-                        newIdftSize = 128;
+                        if (Variables.idft_size != 128) {
+                            changed = true;
+                            newIdftSize = 128;
+                        }
                         break;
                     case 40:
-                        newIdftSize = 256;
+                        if (Variables.idft_size != 256) {
+                            changed = true;
+                            newIdftSize = 256;
+                        }
                         break;
                     case 80:
-                        newIdftSize = 512;
+                        if (Variables.idft_size != 512) {
+                            changed = true;
+                            newIdftSize = 512;
+                        }
                 }
-                Variables.idft_size = newIdftSize;
-                Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
-                Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
-                Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
-                ampFragment.setVerticalSeekBars();
-                phaseFragment.setVerticalSeekBars();
+                if (changed) {
+                    Variables.idft_size = newIdftSize;
+                    Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
+                    Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
+                    Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
+                    ampFragment.setVerticalSeekBars();
+                    phaseFragment.setVerticalSeekBars();
 
-                for (Integer preset : presets) {
-                    setPresetPilots(preset, 100);
-                }
-
-                if (!startup) {
-                    timePlotFragment.plotSignals();
-                    freqPlotFragment.plotSignals();
+                    for (Integer preset : presets) {
+                        setPresetPilots(preset, 100);
+                    }
+                    createIdftDialog();
                 }
 
                 presets.add(value);
                 setPresetPilots(value, 100);
+            }
+            if (!startup) {
+                timePlotFragment.plotSignals();
+                freqPlotFragment.plotSignals();
             }
             return true;
 
@@ -552,87 +562,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
     private void createAlertDialogs() {
 
-        View linear_layout = getLayoutInflater().inflate(R.layout.idft_size_dialog, null, true);
-        final SeekBar seekBar = (SeekBar) linear_layout.findViewById(R.id.idftSeekbar);
-        final EditText seekBarText = (EditText) linear_layout.findViewById(R.id.idftSeekbarText);
-        seekBarText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    int value = Integer.parseInt(((EditText) v).getText().toString());
-                    if (value > 512) value = 512;
-                    if (value < 1) value = 1;
-                    seekBar.setProgress(value);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        int value = Variables.idft_size;
-        seekBarText.setText(String.valueOf(value));
-        seekBar.setProgress(value);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                seekBarText.setText(String.valueOf(progress));
-            }
-
-        });
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
-
-        alertDialogBuilder.setView(linear_layout);
-
-        // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog1, int id) {
-
-                        int newIdftSize = Integer.parseInt(seekBarText.getText().toString());
-
-                        if (newIdftSize != Variables.idft_size) {
-                            if (newIdftSize > Constants.MAX_IDFT_SIZE) newIdftSize = Constants.MAX_IDFT_SIZE;
-                            if (newIdftSize < Constants.MIN_IDFT_SIZE) newIdftSize = Constants.MIN_IDFT_SIZE;
-                            Variables.idft_size = newIdftSize;
-                            Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
-                            Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
-                            Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
-                            ampFragment.setVerticalSeekBars();
-                            phaseFragment.setVerticalSeekBars();
-
-                            for (Integer preset : presets) {
-                                setPresetPilots(preset, 100);
-                            }
-
-                            if (!startup) {
-                                timePlotFragment.plotSignals();
-                                freqPlotFragment.plotSignals();
-                            }
-
-                        }
-
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        seekBarText.setText(String.valueOf(Variables.idft_size));
-                        dialog.cancel();
-                    }
-                });
-
-        // create alert dialog
-        idftDialog = alertDialogBuilder.create();
-
+        createIdftDialog();
 
         //--------------------------------------------------------------------------------------------
 
@@ -656,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         listView.setAdapter(adapter);
         listView.setItemChecked(Variables.channel - 1, true);
 
-        alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(list_layout);
@@ -788,6 +718,94 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         // create alert dialog
         optionsDialog = alertDialogBuilder.create();
+    }
+
+    private void createIdftDialog() {
+        View linear_layout = getLayoutInflater().inflate(R.layout.idft_size_dialog, null, true);
+        final SeekBar seekBar = (SeekBar) linear_layout.findViewById(R.id.idftSeekbar);
+        seekBar.setProgress(Variables.idft_size);
+        final EditText seekBarText = (EditText) linear_layout.findViewById(R.id.idftSeekbarText);
+        seekBarText.setText(String.valueOf(Variables.idft_size));
+        seekBarText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    int value = Integer.parseInt(((EditText) v).getText().toString());
+                    if (value > 512) value = 512;
+                    if (value < 1) value = 1;
+                    seekBar.setProgress(value);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        int value = Variables.idft_size;
+        seekBarText.setText(String.valueOf(value));
+        seekBar.setProgress(value);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seekBarText.setText(String.valueOf(progress));
+            }
+
+        });
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+
+        alertDialogBuilder.setView(linear_layout);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog1, int id) {
+
+                        int newIdftSize = Integer.parseInt(seekBarText.getText().toString());
+
+                        if (newIdftSize != Variables.idft_size) {
+                            if (newIdftSize > Constants.MAX_IDFT_SIZE)
+                                newIdftSize = Constants.MAX_IDFT_SIZE;
+                            if (newIdftSize < Constants.MIN_IDFT_SIZE)
+                                newIdftSize = Constants.MIN_IDFT_SIZE;
+                            Variables.idft_size = newIdftSize;
+                            Variables.amps = new double[Constants.getSlidersCount(newIdftSize)];
+                            Variables.freqs = new double[Constants.getSlidersCount(newIdftSize)];
+                            Variables.phases = new double[Constants.getSlidersCount(newIdftSize)];
+                            ampFragment.setVerticalSeekBars();
+                            phaseFragment.setVerticalSeekBars();
+
+                            for (Integer preset : presets) {
+                                setPresetPilots(preset, 100);
+                            }
+                            if (!startup) {
+                                timePlotFragment.plotSignals();
+                                freqPlotFragment.plotSignals();
+                            }
+
+
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        seekBarText.setText(String.valueOf(Variables.idft_size));
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        idftDialog = alertDialogBuilder.create();
+
     }
 
     @Override
@@ -997,11 +1015,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             }
         }
-
-        Log.d("App: ", String.valueOf(app));
-        Log.d("Old Orientation: ", String.valueOf(oldOrientation));
-        Log.d("New Orientation: ", String.valueOf(newConfig.orientation));
-
 
         // take care of changed views, when jammer in background and orientation changes
         if (app != 0 && newConfig.orientation != oldOrientation) {
