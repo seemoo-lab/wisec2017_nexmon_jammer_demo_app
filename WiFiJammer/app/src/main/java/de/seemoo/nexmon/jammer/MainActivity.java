@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -119,11 +120,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             new Variables(amps, phases, freqs, 128, 20);
         }
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
         startup = true;
         jammer_in_background = false;
         first_run = true;
@@ -265,11 +262,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             fragmentTransaction.add(R.id.fragment_container_7, aboutUsFragment, "aboutUs");
         }
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -1004,9 +996,11 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 System.out.println("Entering Portrait Mode");
 
             }
-
-            createAlertDialogs();
         }
+
+        Log.d("App: ", String.valueOf(app));
+        Log.d("Old Orientation: ", String.valueOf(oldOrientation));
+        Log.d("New Orientation: ", String.valueOf(newConfig.orientation));
 
 
         // take care of changed views, when jammer in background and orientation changes
@@ -1024,6 +1018,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 checkedViews.add(newItem.getItemId());
                 newItem.setChecked(true);
             }
+            oldOrientation = newConfig.orientation;
 
         }
 

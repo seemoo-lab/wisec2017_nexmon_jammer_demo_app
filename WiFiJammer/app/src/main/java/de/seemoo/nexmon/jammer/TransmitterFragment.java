@@ -430,9 +430,4 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }
