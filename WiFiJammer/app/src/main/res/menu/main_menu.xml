@@ -14,17 +14,11 @@
             </group>
         </menu>
     </item>
-    <item android:id="@+id/type"
-        android:title="Type"
-        app:showAsAction="ifRoom">
-        <menu xmlns:android="http://schemas.android.com/apk/res/android">
-            <group android:id="@+id/group_type" android:checkableBehavior="single">
-                <item android:id="@+id/type_0" android:title="Simple Reactive Jammer" />
-                <item android:id="@+id/type_1" android:title="Acknowledging Jammer" />
-                <item android:id="@+id/type_2" android:title="Adaptive Power Control Jammer" />
-            </group>
-        </menu>
-    </item>
+    <item
+        android:id="@+id/options"
+        android:title="Options"
+        app:showAsAction="ifRoom" />
+
     <item android:id="@+id/preset"
         android:title="Preset"
         app:showAsAction="ifRoom">
@@ -46,6 +40,10 @@
                 android:id="@+id/pre_reset"
                 android:checkable="false"
                 android:title="Reset Presets" />
+            <item
+                android:id="@+id/pre_all"
+                android:checkable="false"
+                android:title="all SCs" />
         </menu>
     </item>
    <item android:id="@+id/idft"

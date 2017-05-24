@@ -80,6 +80,8 @@ public class PlotFragment extends android.app.Fragment {
 
         double fs = bandwidth * Constants.OVERSAMPLING_RATE;
 
+        Variables.samplingRate = fs;
+
         int idft_size = Variables.idft_size;
 
         timeI = new float[idft_size];
@@ -117,12 +119,13 @@ public class PlotFragment extends android.app.Fragment {
 
         TextView title = (TextView) getView().findViewById(R.id.plot_title);
         title.setText("Time Domain Plot");
-        title.setBackgroundColor(Color.LTGRAY);
-        TextView range = (TextView) getView().findViewById(R.id.plot_range);
-        range.setBackgroundColor(Color.LTGRAY);
 
         RelativeLayout relativeLayout = (RelativeLayout) getView().findViewById(R.id.time_plot_rel);
         relativeLayout.setBackgroundColor(Color.LTGRAY);
+        TextView range = (TextView) getView().findViewById(R.id.plot_range);
+        range.setBackgroundColor(Color.LTGRAY);
+
+
         mChart = (LineChart) getView().findViewById(R.id.chart1);
 
 
@@ -277,6 +280,9 @@ public class PlotFragment extends android.app.Fragment {
         // let the chart know it's data has changed
         mChart.notifyDataSetChanged();
         mChart.fitScreen();
+
+        // TODO: ADD PAPR
+        ((TextView) getView().findViewById(R.id.plot_papr)).setText("PAPR: " + "100");
     }
 
     public void constructFreqSamples() {

@@ -241,6 +241,38 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
         });
 
+        final SeekBar numberSamplesSeekBar = (SeekBar) linear_layout.findViewById(R.id.numbPaSeekbar);
+        final EditText numbPaSeekbarText = (EditText) linear_layout.findViewById(R.id.numbPaSeekbarText);
+
+        numbPaSeekbarText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    int value = Integer.parseInt(((EditText) v).getText().toString());
+                    if (value < 0) value = 0;
+                    numberSamplesSeekBar.setProgress(value);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        numberSamplesSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                numbPaSeekbarText.setText(String.valueOf(progress));
+            }
+
+        });
+
         createSpinners(linear_layout);
 
         // set dialog message
@@ -258,6 +290,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         int power = ((SeekBar) linear_layout.findViewById(R.id.udpSeekbar)).getProgress();
                         String modulation = ((Spinner) linear_layout.findViewById(R.id.modulation_spinner)).getSelectedItem().toString();
                         int rate = Integer.valueOf(((Spinner) linear_layout.findViewById(R.id.rate_spinner)).getSelectedItem().toString());
+                        int numbSamples = ((SeekBar) linear_layout.findViewById(R.id.numbPaSeekbar)).getProgress();
                         int bandwidth = 0;
                         boolean ldpc = false;
                         try {
@@ -268,7 +301,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
                         if (existing_dialog_id < 0) {
 
-                        UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, getActivity());
+                            UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, numbSamples, getActivity());
                         udpStreams.add(udpStream);
                         } else {
                             UDPStream udpStream = udpStreams.get(existing_dialog_id);
@@ -278,6 +311,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                             udpStream.rate = rate;
                             udpStream.bandwidth = bandwidth;
                             udpStream.ldpc = ldpc;
+                            udpStream.numbFrames = numbSamples;
                         }
                         adapter.notifyDataSetChanged();
 
@@ -389,22 +423,11 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
                 // attaching data adapter to spinner
                 ((Spinner) view.getRootView().findViewById(R.id.rate_spinner)).setAdapter(rateDataAdapter);
-
-
                 break;
-
         }
-
-        // Showing selected spinner item
-        //Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
     }
 
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 }
