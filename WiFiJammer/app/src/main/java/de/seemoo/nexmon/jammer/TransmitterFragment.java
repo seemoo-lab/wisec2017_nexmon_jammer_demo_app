@@ -42,7 +42,7 @@ import java.util.List;
 
 public class TransmitterFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    private static CustomAdapter adapter;
+    private static UDPStreamAdapter adapter;
     private static List<String> modulations = Arrays.asList("802.11a/g", "802.11b", "802.11n", "802.11ac");
     private static List<String> rates802_11_a_g = Arrays.asList("6", "9", "12", "18", "24", "36", "48", "54");
     private static List<String> rates802_11_b = Arrays.asList("1", "2", "5", "11");
@@ -112,7 +112,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
             udpStreams = new ArrayList<>();
 
 
-            adapter = new CustomAdapter(udpStreams, getActivity().getApplicationContext(), this);
+            adapter = new UDPStreamAdapter(udpStreams, getActivity().getApplicationContext(), this);
 
             listView.setAdapter(adapter);
 
@@ -288,9 +288,10 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                             return;
                         }
                         int power = ((SeekBar) linear_layout.findViewById(R.id.udpSeekbar)).getProgress();
-                        String modulation = ((Spinner) linear_layout.findViewById(R.id.modulation_spinner)).getSelectedItem().toString();
+                        String modulationString = ((Spinner) linear_layout.findViewById(R.id.modulation_spinner)).getSelectedItem().toString();
+                        UDPStream.Modulation modulation = UDPStream.Modulation.getModulationFromString(modulationString);
                         int rate = Integer.valueOf(((Spinner) linear_layout.findViewById(R.id.rate_spinner)).getSelectedItem().toString());
-                        int numbSamples = ((SeekBar) linear_layout.findViewById(R.id.numbPaSeekbar)).getProgress();
+                        int fps = ((SeekBar) linear_layout.findViewById(R.id.numbPaSeekbar)).getProgress();
                         int bandwidth = 0;
                         boolean ldpc = false;
                         try {
@@ -301,7 +302,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
                         if (existing_dialog_id < 0) {
 
-                            UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, numbSamples, getActivity());
+                            UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, fps, getActivity());
                         udpStreams.add(udpStream);
                         } else {
                             UDPStream udpStream = udpStreams.get(existing_dialog_id);
@@ -311,7 +312,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                             udpStream.rate = rate;
                             udpStream.bandwidth = bandwidth;
                             udpStream.ldpc = ldpc;
-                            udpStream.numbFrames = numbSamples;
+                            udpStream.fps = fps;
                         }
                         adapter.notifyDataSetChanged();
 

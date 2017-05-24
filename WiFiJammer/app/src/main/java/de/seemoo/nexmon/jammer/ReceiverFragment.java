@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
 
 /**
@@ -52,7 +51,6 @@ import eu.chainfire.libsuperuser.Shell;
 //MAC, IP Address, new graph button
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
-    private static Shell.Interactive rootShell;
     private static boolean isInitialised = false;
     public HashMap<Integer, int[]> data = new HashMap<>();
     ViewGroup container;
@@ -79,24 +77,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         initializePlot();
         //installCustomWiFiFirmware();
         udpReceiver = new UDPReceiver();
-        rootShell = new Shell.Builder().
-                useSU().
-                setWantSTDERR(false).
-                setMinimalLogging(true).
-                open(new Shell.OnCommandResultListener() {
-                    @Override
-                    public void onCommandResult(int commandVal, int exitVal, List<String> out) {
-                        //Callback checking successful shell start.
-                        if (exitVal == Shell.OnCommandResultListener.SHELL_RUNNING) {
-                            isInitialised = true;
-
-                        } else {
-                            Toast.makeText(getActivity().getApplicationContext(), "Root privileges are needed. Please grant root permissions or try again.", Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                });
-
+        new Nexutil(getActivity());
+        isInitialised = Nexutil.isInitialized();
     }
 
     @Override
@@ -176,8 +158,9 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
-                List<String> out = Shell.SH.run("nexutil -g500");
-                Log.d("Shell", out.toString());
+                //String ret = Nexutil.getIoctl(500);
+                String ret = Nexutil.setIoctl(401, "hello world");
+                Log.d("Shell", ret);
                 //helpDialog.show();
                 return true;
         }

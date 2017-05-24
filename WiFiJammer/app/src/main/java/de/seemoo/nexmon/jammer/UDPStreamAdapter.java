@@ -2,6 +2,7 @@ package de.seemoo.nexmon.jammer;
 
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  */
 
 
-public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener {
+public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener {
 
     Context mContext;
     TextView txtId;
@@ -37,7 +38,7 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
     private ArrayList<UDPStream> dataSet;
 
 
-    public CustomAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
+    public UDPStreamAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
         super(context, R.layout.transmiter_list_item, data);
         this.dataSet = data;
         this.mContext = context;
@@ -67,14 +68,15 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
                      * TODO Stop UDP Stream
                      */
                     udpStream.running = false;
-                    Log.i("TRANSMITTER", "Stopping " + txtId + " at port " + txtPort);
+                    Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
                 } else {
                     /**
                      * TODO Start UDP Stream
                      */
                     udpStream.running = true;
-                    Log.i("TRANSMITTER", "Starting " + txtId + " at port " + txtPort);
+                    Log.i("TRANSMITTER", "starting: " + udpStream.toString());
+                    Log.i("TRANSMITTER", Base64.encodeToString(udpStream.getBytes(), Base64.NO_WRAP));
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;
@@ -108,27 +110,27 @@ public class CustomAdapter extends ArrayAdapter<UDPStream> implements View.OnCli
         txtPort.setText(String.valueOf(udpStream.destPort));
         txtPower.setText(String.valueOf(udpStream.power));
         //txtNumbSamples.setText(String.valueOf(udpStream.numbFrames));
-        txtModulation.setText(udpStream.modulation);
+        txtModulation.setText(udpStream.modulation.toString());
         switch (udpStream.modulation) {
-            case "802.11a/g":
+            case IEEE80211ag:
                 convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
                 convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
                 convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
                 break;
-            case "802.11b":
+            case IEEE80211b:
                 convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
                 convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
                 convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
                 break;
-            case "802.11n":
+            case IEEE80211n:
                 ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
                 ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
                 break;
-            case "802.11ac":
+            case IEEE80211ac:
                 convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
