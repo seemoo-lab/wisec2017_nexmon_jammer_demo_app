@@ -5,6 +5,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -98,6 +99,7 @@ public class UDPStream {
      */
     public byte[] getBytes() {
         ByteBuffer buf = ByteBuffer.allocate(UDPSTREAM_FIRMWARE_IO_STRUCT_SIZE);
+        buf.order(ByteOrder.LITTLE_ENDIAN);
 
         buf.put((byte) (id & 0xff));
         buf.put((byte) (power & 0xff));

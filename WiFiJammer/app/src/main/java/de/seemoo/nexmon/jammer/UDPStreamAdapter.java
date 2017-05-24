@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.seemoo.nexmon.jammer.utils.Nexutil;
+
 /**
  * Created by Stathis on 05-May-17.
  */
@@ -69,6 +71,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                      */
                     udpStream.running = false;
                     Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
+                    Nexutil.setIoctl(511, udpStream.id);
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
                 } else {
                     /**
@@ -76,7 +79,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                      */
                     udpStream.running = true;
                     Log.i("TRANSMITTER", "starting: " + udpStream.toString());
-                    Log.i("TRANSMITTER", Base64.encodeToString(udpStream.getBytes(), Base64.NO_WRAP));
+                    Nexutil.setIoctl(510, udpStream.getBytes());
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
                 }
                 break;

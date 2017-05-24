@@ -301,9 +301,8 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         }
 
                         if (existing_dialog_id < 0) {
-
                             UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, fps, getActivity());
-                        udpStreams.add(udpStream);
+                            udpStreams.add(udpStream);
                         } else {
                             UDPStream udpStream = udpStreams.get(existing_dialog_id);
                             udpStream.destPort = port;
