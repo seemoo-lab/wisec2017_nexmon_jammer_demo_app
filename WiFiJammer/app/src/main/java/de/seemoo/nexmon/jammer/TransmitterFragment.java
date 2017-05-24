@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,7 +33,11 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -50,7 +55,11 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     private static List<String> rates802_11_ac_mcs_index = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
     private static List<String> bands802_11_n = Arrays.asList("20", "40");
     private static List<String> bands802_11_ac = Arrays.asList("20", "40", "80");
+
     ArrayList<UDPStream> udpStreams;
+    SortedSet<Integer> unusedIDs = new TreeSet<Integer>();
+    SortedSet<Integer> usedIDs = new TreeSet<Integer>();
+
     ListView listView;
     ViewGroup container;
     AlertDialog newUDPStreamDialog;
@@ -73,6 +82,8 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        for (int i = 0; i < 10; i++)
+            unusedIDs.add(i);
 
         try {
 
@@ -301,17 +312,30 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
                         }
 
                         if (existing_dialog_id < 0) {
-                            UDPStream udpStream = new UDPStream(udpStreams.size(), port, power, modulation, rate, bandwidth, ldpc, fps, getActivity());
-                            udpStreams.add(udpStream);
+                            try {
+                                Integer freeid = unusedIDs.first();
+                                unusedIDs.remove(freeid);
+                                usedIDs.add(freeid);
+                                UDPStream udpStream = new UDPStream(freeid, port, power, modulation, rate, bandwidth, ldpc, fps, getActivity());
+                                udpStreams.add(udpStream);
+                            } catch (NoSuchElementException e) {
+                                Toast.makeText(getActivity().getApplicationContext(), "UDP Stream limit reached.", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            UDPStream udpStream = udpStreams.get(existing_dialog_id);
-                            udpStream.destPort = port;
-                            udpStream.power = power;
-                            udpStream.modulation = modulation;
-                            udpStream.rate = rate;
-                            udpStream.bandwidth = bandwidth;
-                            udpStream.ldpc = ldpc;
-                            udpStream.fps = fps;
+                            UDPStream udpStream = null;
+                            for(UDPStream stream : udpStreams) {
+                                if (stream.id == existing_dialog_id)
+                                    udpStream = stream;
+                            }
+                            if (udpStream != null) {
+                                udpStream.destPort = port;
+                                udpStream.power = power;
+                                udpStream.modulation = modulation;
+                                udpStream.rate = rate;
+                                udpStream.bandwidth = bandwidth;
+                                udpStream.ldpc = ldpc;
+                                udpStream.fps = fps;
+                            }
                         }
                         adapter.notifyDataSetChanged();
 

@@ -61,6 +61,9 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                  */
                 udpStream.running = false;
                 dataSet.remove(udpStream);
+                Nexutil.setIoctl(511, udpStream.id);
+                fragment.usedIDs.remove(udpStream.id);
+                fragment.unusedIDs.add(udpStream.id);
                 notifyDataSetChanged();
                 break;
             case R.id.item_run_stop:
