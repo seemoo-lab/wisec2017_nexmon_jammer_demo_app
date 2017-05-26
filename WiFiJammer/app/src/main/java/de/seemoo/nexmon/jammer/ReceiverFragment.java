@@ -36,9 +36,13 @@ import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
@@ -52,13 +56,14 @@ import eu.chainfire.libsuperuser.Shell;
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     private static boolean isInitialised = false;
-    public HashMap<Integer, int[]> data = new HashMap<>();
+    public HashMap<Integer, float[]> data = new HashMap<>();
     ViewGroup container;
     AlertDialog helpDialog;
     Menu menu;
     private UDPReceiver udpReceiver;
     private HorizontalBarChart mChart;
     private ArrayList<Integer> ports = new ArrayList<>();
+    private TreeSet<Packet> packetSet = new TreeSet<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -103,7 +108,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             new File(rootDataPath).mkdirs();
             retval = copyFileFromAsset(assetManager, "fw_bcmdhd.bin", filePath);
 
-            List<String> out = Shell.SH.run("ifconfig wlan0 down && ifconfig wlan0 up");
+            List<String> out = Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
             Log.d("Shell", out.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -158,8 +163,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
-                //String ret = Nexutil.getIoctl(500);
-                String ret = Nexutil.setIoctl(401, "hello world");
+                String ret = Nexutil.getIoctl(500);
+
                 Log.d("Shell", ret);
                 //helpDialog.show();
                 return true;
@@ -261,6 +266,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         YAxis leftAxis = mChart.getAxisRight();
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+        leftAxis.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
         mChart.getAxisLeft().setEnabled(false);
 
         XAxis xAxis = mChart.getXAxis();
@@ -284,14 +290,16 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     private void updatePlot() {
 
-
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
         ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
 
         int i = 0;
-        for (HashMap.Entry<Integer, int[]> entry : data.entrySet()) {
+                for (HashMap.Entry<Integer, float[]> entry : data.entrySet()) {
 
             int key = entry.getKey();
-            int[] value = entry.getValue();
+                    float[] value = entry.getValue();
 
             float val1 = value[1];
             float val2 = value[0];
@@ -327,9 +335,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         mChart.setFitBars(true);
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+
                 getView().findViewById(R.id.x_axis).setVisibility(View.VISIBLE);
                 getView().findViewById(R.id.y_axis).setVisibility(View.VISIBLE);
                 mChart.invalidate();
@@ -396,6 +402,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 try {
                     mSocket.receive(p);
 
+
                     // TODO: Check source address of packet and/or validate it with other means
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -407,40 +414,48 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 int length = p.getLength();
                 p.getData();
 
-                byte[] timestampbytes = new byte[8];
-                timestampbytes[0] = 0;
-                timestampbytes[1] = 0;
-                timestampbytes[2] = 0;
-                timestampbytes[3] = 0;
-                timestampbytes[4] = buffer[3];
-                timestampbytes[5] = buffer[2];
-                timestampbytes[6] = buffer[1];
-                timestampbytes[7] = buffer[0];
-                long timestamp = java.nio.ByteBuffer.wrap(timestampbytes).getLong();
 
-                byte[] portbytes = new byte[4];
-                portbytes[0] = 0;
-                portbytes[1] = 0;
-                portbytes[2] = buffer[4];
-                portbytes[3] = buffer[5];
-                int port = java.nio.ByteBuffer.wrap(portbytes).getInt();
+                //TODO add packet length
 
-                int fcs_error = buffer[6];
+                Packet packet = new Packet(buffer);
 
-                if (!data.containsKey(port)) {
-                    data.put(port, new int[2]);
+                packetSet.add(packet);
+
+                long windows_size = 20L;
+                int sum = 0;
+                int sum_length = 0;
+                int count_removes = 0;
+                long current_time = System.nanoTime();
+                long time = current_time - windows_size * 1000000000L;
+                Log.d(TAG, "" + (current_time - time));
+
+
+                for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
+                    Packet pa = i.next();
+                    if (pa.timestamp_android < time) {
+                        i.remove();
+                        count_removes++;
+                    } else if (packet.port == pa.port) {
+                        sum++;
+                        sum_length += packet.length;
+                    }
                 }
-                Log.d(TAG, String.valueOf(fcs_error));
-                data.get(port)[fcs_error]++;
+                Log.d(TAG, " " + sum + " " + sum_length + " " + count_removes);
+
+
+                float throughput = sum_length / windows_size * 8 / 1e6f;
+
+                if (!data.containsKey(packet.port)) {
+                    data.put(packet.port, new float[2]);
+                }
+
+                data.get(packet.port)[packet.fcs ? 1 : 0] = throughput;
 
                 if (data.size() > 0) updatePlot();
 
-                Log.d(TAG, "timestamp: " + timestamp + " port: " + port + " fcs error: " + fcs_error);
-                try {
-                    sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+                Log.d(TAG, "timestamp: " + packet.timestamp_mac + " port: " + packet.port + " fcs error: " + packet.fcs + " length: " + packet.length);
+
             }
 
             Log.d(TAG, "Thread afterrun");
@@ -450,6 +465,55 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             mContinueRunning = false;
             mSocket.close();
         }
+    }
+
+    /*
+    struct jamming_receiver_header {
+    uint32 timestamp;
+    uint16 port;
+    bool fcs_error;
+    uint16 length;
+    uint8 encoding;
+    uint8 bandwidth;
+    uint16 rate;
+    bool ldpc;
+    }
+     */
+
+    public class Packet implements Comparable<Packet> {
+        long timestamp_mac;
+        long timestamp_android;
+        int port;
+        boolean fcs;
+        int length;
+        byte encoding;
+        byte bandwidth;
+        int rate;
+        boolean ldpc;
+        int hash;
+
+
+        public Packet(byte buffer[]) {
+            ByteBuffer buf = ByteBuffer.wrap(buffer);
+            buf.order(ByteOrder.LITTLE_ENDIAN);
+
+            this.timestamp_mac = (long) buf.getInt() & 0xffffffffL;
+            this.timestamp_android = System.nanoTime();
+            this.port = (int) buf.getShort() & 0xffff;
+            this.fcs = ((int) buf.get() & 0xf) == 1;
+            this.length = (int) buf.getShort() & 0xffff;
+            this.encoding = buf.get();
+            this.bandwidth = buf.get();
+            this.rate = (int) buf.getShort() & 0xffff;
+            this.ldpc = ((int) buf.get() & 0xf) == 1;
+
+        }
+
+        public int compareTo(Packet other) {
+            return Long.compare(this.timestamp_android, other.timestamp_android);
+        }
+
+
     }
 
 }
