@@ -67,13 +67,13 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:padding="5sp"
-                    android:text="Number of UDP Packets:"
+                    android:text="Frames per Second (fps):"
                     android:textColor="@color/black"
                     android:textSize="15sp" />
 
                 <EditText
                     android:id="@+id/numbPaSeekbarText"
-                    android:layout_width="wrap_content"
+                    android:layout_width="70sp"
                     android:layout_height="match_parent"
                     android:ems="3"
                     android:gravity="center"
@@ -89,7 +89,7 @@
                 style="@style/SeekBarSeemoo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:max="100"
+                android:max="1000"
                 android:padding="5sp"
                 android:progress="50" />
 
