@@ -58,14 +58,14 @@ import eu.chainfire.libsuperuser.Shell;
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
     private static boolean isInitialised = false;
-    public HashMap<Integer, float[]> data = new HashMap<>();
+    public HashMap<String, float[]> data = new HashMap<>();
     ViewGroup container;
     AlertDialog helpDialog;
     Menu menu;
     private UDPReceiver udpReceiver;
     private Plotter plotter;
     private HorizontalBarChart mChart;
-    private ArrayList<Integer> ports = new ArrayList<>();
+    private ArrayList<String> hashes = new ArrayList<>();
     private SortedSet<Packet> packetSet = new TreeSet<>();
     private Semaphore semaphore;
 
@@ -270,20 +270,23 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         mChart.setDrawBarShadow(false);
 
         mChart.setDrawValueAboveBar(false);
+
         mChart.setHighlightFullBarEnabled(false);
+
 
         // change the position of the y-labels
         YAxis leftAxis = mChart.getAxisRight();
         leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+        // this replaces setStartAtZero(true)
         //leftAxis.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
         mChart.getAxisLeft().setEnabled(false);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setValueFormatter(this);
-        xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setGranularity(1);
         xAxis.setGranularityEnabled(true);
+        xAxis.setPosition(XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
 
 
         Legend l = mChart.getLegend();
@@ -306,14 +309,12 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
 
                 int i = 0;
-                for (HashMap.Entry<Integer, float[]> entry : data.entrySet()) {
+                for (HashMap.Entry<String, float[]> entry : data.entrySet()) {
 
-                    int key = entry.getKey();
                     float[] value = entry.getValue();
 
                     float val1 = value[1];
                     float val2 = value[0];
-
 
                     yVals.add(new BarEntry(i, new float[]{val1, val2}));
                     i++;
@@ -356,8 +357,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         // "value" represents the position of the label on the axis (x or y)
+        String key = hashes.get((int) value);
 
-        return ports.get((int) value).toString();
+        String[] params = key.split("-");
+
+        String text = "Port: " + params[0] + "\nFCS Error: " + params[1] + "\nEncoding: " + params[2] + "\nBandwidth: " + params[3] + "\nRate: " + params[4] + "\nLDPC: " + params[5];
+
+        return text;
     }
 
     private int[] getColors() {
@@ -430,9 +436,9 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                     packetSet.add(packet);
 
-                    if (!data.containsKey(packet.port)) {
-                        ports.add(packet.port);
-                        data.put(packet.port, new float[2]);
+                    if (!data.containsKey(packet.hash)) {
+                        hashes.add(packet.hash);
+                        data.put(packet.hash, new float[2]);
                     }
 
                     semaphore.release();
@@ -473,7 +479,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                 try {
 
-
                     long windows_size = 10L;
                     int sum = 0;
                     int sum_length_fcs_1 = 0;
@@ -493,12 +498,12 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                         }
                     }
 
-                    if (ports.size() > 0) {
-                        for (int port : ports) {
+                    if (hashes.size() > 0) {
+                        for (String hash : hashes) {
 
                             for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
                                 Packet pa = i.next();
-                                if (port == pa.port) {
+                                if (hash.equals(pa.hash)) {
                                     sum++;
                                     if (pa.fcs_error) {
                                         sum_length_fcs_1 += pa.length;
@@ -508,13 +513,12 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                                 }
                             }
 
-
                             float throughput_fcs_0 = sum_length_fcs_0 / windows_size * 8 / 1e6f;
                             float throughput_fcs_1 = sum_length_fcs_1 / windows_size * 8 / 1e6f;
 
 
-                            data.get(port)[0] = throughput_fcs_0;
-                            data.get(port)[1] = throughput_fcs_1;
+                            data.get(hash)[0] = throughput_fcs_0;
+                            data.get(hash)[1] = throughput_fcs_1;
 
                             if (data.size() > 0) updatePlot();
                             Log.d(TAG, "Plotting!!!");
@@ -557,6 +561,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
      */
 
     public class Packet implements Comparable<Packet> {
+
         long timestamp_mac;
         long timestamp_android;
         int port;
@@ -566,7 +571,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         byte bandwidth;
         int rate;
         boolean ldpc;
-        int hash;
+        String hash;
 
 
         public Packet(byte buffer[]) {
@@ -582,6 +587,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             this.bandwidth = buf.get();
             this.rate = (int) buf.getShort() & 0xffff;
             this.ldpc = ((int) buf.get() & 0xf) == 1;
+            this.hash = port + "-" + fcs_error + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
 
         }
 
