@@ -42,7 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Semaphore;
 
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
@@ -61,9 +63,11 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     AlertDialog helpDialog;
     Menu menu;
     private UDPReceiver udpReceiver;
+    private Plotter plotter;
     private HorizontalBarChart mChart;
     private ArrayList<Integer> ports = new ArrayList<>();
-    private TreeSet<Packet> packetSet = new TreeSet<>();
+    private SortedSet<Packet> packetSet = new TreeSet<>();
+    private Semaphore semaphore;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -82,6 +86,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         initializePlot();
         //installCustomWiFiFirmware();
         udpReceiver = new UDPReceiver();
+        plotter = new Plotter();
+        semaphore = new Semaphore(1, true);
         new Nexutil(getActivity());
         isInitialised = Nexutil.isInitialized();
     }
@@ -145,18 +151,22 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         switch (item.getItemId()) {
             case R.id.start:
-                    if (item.getTitle().toString().equals("Stop")) {
-                        udpReceiver.shutdown();
-                        item.setTitle("Start");
+                if (item.getTitle().toString().equals("Stop")) {
+                    udpReceiver.shutdown();
+                    plotter.shutdown();
+                    item.setTitle("Start");
 
-                    } else {
-                        udpReceiver = new UDPReceiver();
-                        udpReceiver.start();
-                        item.setTitle("Stop");
-                    }
+                } else {
+                    udpReceiver = new UDPReceiver();
+                    udpReceiver.start();
+                    plotter = new Plotter();
+                    plotter.start();
+                    item.setTitle("Stop");
+                }
                 return true;
             case R.id.reset:
                 udpReceiver.shutdown();
+                plotter.shutdown();
                 initializePlot();
                 menu.findItem(R.id.start).setTitle("Start");
                 getView().findViewById(R.id.x_axis).setVisibility(View.GONE);
@@ -266,7 +276,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         YAxis leftAxis = mChart.getAxisRight();
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-        leftAxis.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
+        //leftAxis.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
         mChart.getAxisLeft().setEnabled(false);
 
         XAxis xAxis = mChart.getXAxis();
@@ -293,47 +303,46 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-        ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
+                ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
 
-        int i = 0;
+                int i = 0;
                 for (HashMap.Entry<Integer, float[]> entry : data.entrySet()) {
 
-            int key = entry.getKey();
+                    int key = entry.getKey();
                     float[] value = entry.getValue();
 
-            float val1 = value[1];
-            float val2 = value[0];
+                    float val1 = value[1];
+                    float val2 = value[0];
 
-            ports.add(i, key);
 
-            yVals.add(new BarEntry(i, new float[]{val1, val2}));
-            i++;
-        }
+                    yVals.add(new BarEntry(i, new float[]{val1, val2}));
+                    i++;
+                }
 
-        BarDataSet set;
+                BarDataSet set;
 
-        if (mChart.getData() != null &&
-                mChart.getData().getDataSetCount() > 0) {
-            set = (BarDataSet) mChart.getData().getDataSetByIndex(0);
-            set.setValues(yVals);
-            mChart.getData().notifyDataChanged();
-            mChart.notifyDataSetChanged();
-        } else {
-            set = new BarDataSet(yVals, "");
-            set.setDrawIcons(false);
-            set.setColors(getColors());
-            set.setStackLabels(new String[]{"FCS incorrect", "FCS correct"});
+                if (mChart.getData() != null &&
+                        mChart.getData().getDataSetCount() > 0) {
+                    set = (BarDataSet) mChart.getData().getDataSetByIndex(0);
+                    set.setValues(yVals);
+                    mChart.getData().notifyDataChanged();
+                    mChart.notifyDataSetChanged();
+                } else {
+                    set = new BarDataSet(yVals, "");
+                    set.setDrawIcons(false);
+                    set.setColors(getColors());
+                    set.setStackLabels(new String[]{"FCS incorrect", "FCS correct"});
 
-            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-            dataSets.add(set);
+                    ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+                    dataSets.add(set);
 
-            BarData data = new BarData(dataSets);
-            data.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
+                    BarData data = new BarData(dataSets);
+                    //data.setValueFormatter(new com.github.mikephil.charting.formatter.LargeValueFormatter());
 
-            mChart.setData(data);
-        }
+                    mChart.setData(data);
+                }
 
-        mChart.setFitBars(true);
+                mChart.setFitBars(true);
 
 
                 getView().findViewById(R.id.x_axis).setVisibility(View.VISIBLE);
@@ -411,50 +420,29 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     Log.d(TAG, "Stop thread activity...");
                     break;
                 }
-                int length = p.getLength();
-                p.getData();
-
-
-                //TODO add packet length
 
                 Packet packet = new Packet(buffer);
+                Log.d(TAG, "timestamp: " + packet.timestamp_mac + " port: " + packet.port + " fcs_error error: " + packet.fcs_error + " length: " + packet.length);
 
-                packetSet.add(packet);
+                try {
 
-                long windows_size = 20L;
-                int sum = 0;
-                int sum_length = 0;
-                int count_removes = 0;
-                long current_time = System.nanoTime();
-                long time = current_time - windows_size * 1000000000L;
-                Log.d(TAG, "" + (current_time - time));
+                    semaphore.acquire();
 
+                    packetSet.add(packet);
 
-                for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
-                    Packet pa = i.next();
-                    if (pa.timestamp_android < time) {
-                        i.remove();
-                        count_removes++;
-                    } else if (packet.port == pa.port) {
-                        sum++;
-                        sum_length += packet.length;
+                    if (!data.containsKey(packet.port)) {
+                        ports.add(packet.port);
+                        data.put(packet.port, new float[2]);
                     }
-                }
-                Log.d(TAG, " " + sum + " " + sum_length + " " + count_removes);
 
+                    semaphore.release();
 
-                float throughput = sum_length / windows_size * 8 / 1e6f;
-
-                if (!data.containsKey(packet.port)) {
-                    data.put(packet.port, new float[2]);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
-                data.get(packet.port)[packet.fcs ? 1 : 0] = throughput;
-
-                if (data.size() > 0) updatePlot();
 
 
-                Log.d(TAG, "timestamp: " + packet.timestamp_mac + " port: " + packet.port + " fcs error: " + packet.fcs + " length: " + packet.length);
 
             }
 
@@ -467,6 +455,94 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         }
     }
 
+
+    private final class Plotter extends Thread {
+
+
+        private static final String TAG = "PlotterThread";
+
+        private boolean mContinueRunning = true;
+
+
+        public void run() {
+            Log.d(TAG, "Plotter Thread run");
+            mContinueRunning = true;
+
+
+            while (mContinueRunning) {
+
+                try {
+
+
+                    long windows_size = 10L;
+                    int sum = 0;
+                    int sum_length_fcs_1 = 0;
+                    int sum_length_fcs_0 = 0;
+                    int count_removes = 0;
+                    long current_time = System.nanoTime();
+                    long time = current_time - windows_size * 1000000000L;
+
+                    Log.d(TAG, "acquiring Semaphore");
+                    semaphore.acquire();
+
+                    for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
+                        Packet pa = i.next();
+                        if (pa.timestamp_android < time) {
+                            i.remove();
+                            count_removes++;
+                        }
+                    }
+
+                    if (ports.size() > 0) {
+                        for (int port : ports) {
+
+                            for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
+                                Packet pa = i.next();
+                                if (port == pa.port) {
+                                    sum++;
+                                    if (pa.fcs_error) {
+                                        sum_length_fcs_1 += pa.length;
+                                    } else {
+                                        sum_length_fcs_0 += pa.length;
+                                    }
+                                }
+                            }
+
+
+                            float throughput_fcs_0 = sum_length_fcs_0 / windows_size * 8 / 1e6f;
+                            float throughput_fcs_1 = sum_length_fcs_1 / windows_size * 8 / 1e6f;
+
+
+                            data.get(port)[0] = throughput_fcs_0;
+                            data.get(port)[1] = throughput_fcs_1;
+
+                            if (data.size() > 0) updatePlot();
+                            Log.d(TAG, "Plotting!!!");
+
+
+                        }
+                    }
+                    semaphore.release();
+                    Log.d(TAG, "releasing Semaphore");
+                    sleep(1000);
+
+
+                    if (!mContinueRunning) {
+                        Log.d(TAG, "Stop thread activity...");
+                        break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Log.d(TAG, "Plotter afterrun");
+        }
+
+        public void shutdown() {
+            mContinueRunning = false;
+        }
+    }
     /*
     struct jamming_receiver_header {
     uint32 timestamp;
@@ -484,7 +560,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         long timestamp_mac;
         long timestamp_android;
         int port;
-        boolean fcs;
+        boolean fcs_error;
         int length;
         byte encoding;
         byte bandwidth;
@@ -500,7 +576,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             this.timestamp_mac = (long) buf.getInt() & 0xffffffffL;
             this.timestamp_android = System.nanoTime();
             this.port = (int) buf.getShort() & 0xffff;
-            this.fcs = ((int) buf.get() & 0xf) == 1;
+            this.fcs_error = ((int) buf.get() & 0xf) == 1;
             this.length = (int) buf.getShort() & 0xffff;
             this.encoding = buf.get();
             this.bandwidth = buf.get();
