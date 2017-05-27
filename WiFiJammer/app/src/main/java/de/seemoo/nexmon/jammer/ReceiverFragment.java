@@ -154,6 +154,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 if (item.getTitle().toString().equals("Stop")) {
                     udpReceiver.shutdown();
                     plotter.shutdown();
+                    Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
                     item.setTitle("Start");
 
                 } else {
@@ -161,6 +162,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     udpReceiver.start();
                     plotter = new Plotter();
                     plotter.start();
+                    Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 96);
                     item.setTitle("Stop");
                 }
                 return true;
@@ -168,13 +170,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 udpReceiver.shutdown();
                 plotter.shutdown();
                 initializePlot();
+                Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
                 menu.findItem(R.id.start).setTitle("Start");
                 getView().findViewById(R.id.x_axis).setVisibility(View.GONE);
                 getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
                 String ret = Nexutil.getIoctl(500);
-
                 Log.d("Shell", ret);
                 //helpDialog.show();
                 return true;
@@ -361,7 +363,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
         String[] params = key.split("-");
 
-        String text = "Port: " + params[0] + "\nFCS Error: " + params[1] + "\nEncoding: " + params[2] + "\nBandwidth: " + params[3] + "\nRate: " + params[4] + "\nLDPC: " + params[5];
+        String text = "Port: " + params[0] + "\nEncoding: " + params[1] + "\nBandwidth: " + params[2] + "\nRate: " + params[3] + "\nLDPC: " + params[4];
 
         return text;
     }
@@ -428,7 +430,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 }
 
                 Packet packet = new Packet(buffer);
-                Log.d(TAG, "timestamp: " + packet.timestamp_mac + " port: " + packet.port + " fcs_error error: " + packet.fcs_error + " length: " + packet.length);
+                //Log.d(TAG, "timestamp: " + packet.timestamp_mac + " port: " + packet.port + " fcs_error error: " + packet.fcs_error + " length: " + packet.length);
 
                 try {
 
@@ -479,7 +481,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                 try {
 
-                    long windows_size = 10L;
+                    long windows_size = 1L;
                     int sum = 0;
                     int sum_length_fcs_1 = 0;
                     int sum_length_fcs_0 = 0;
@@ -487,7 +489,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     long current_time = System.nanoTime();
                     long time = current_time - windows_size * 1000000000L;
 
-                    Log.d(TAG, "acquiring Semaphore");
+                    //Log.d(TAG, "acquiring Semaphore");
                     semaphore.acquire();
 
                     for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
@@ -521,13 +523,13 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                             data.get(hash)[1] = throughput_fcs_1;
 
                             if (data.size() > 0) updatePlot();
-                            Log.d(TAG, "Plotting!!!");
+                            //Log.d(TAG, "Plotting!!!");
 
 
                         }
                     }
                     semaphore.release();
-                    Log.d(TAG, "releasing Semaphore");
+                    //Log.d(TAG, "releasing Semaphore");
                     sleep(1000);
 
 
@@ -587,7 +589,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             this.bandwidth = buf.get();
             this.rate = (int) buf.getShort() & 0xffff;
             this.ldpc = ((int) buf.get() & 0xf) == 1;
-            this.hash = port + "-" + fcs_error + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
+            this.hash = port + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
 
         }
 

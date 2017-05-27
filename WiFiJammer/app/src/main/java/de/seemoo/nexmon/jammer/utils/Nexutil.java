@@ -72,6 +72,9 @@ import eu.chainfire.libsuperuser.Shell;
  */
 
 public class Nexutil {
+    public final static int WLC_GET_MONITOR = 107;
+    public final static int WLC_SET_MONITOR = 108;
+
     private static Shell.Interactive rootShell;
     private static boolean isInitialised = false;
     private static Context activity;
