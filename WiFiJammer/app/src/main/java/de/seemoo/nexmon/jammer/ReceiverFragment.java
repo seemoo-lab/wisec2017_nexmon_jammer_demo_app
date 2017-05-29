@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -68,6 +69,10 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     private ArrayList<String> hashes = new ArrayList<>();
     private SortedSet<Packet> packetSet = new TreeSet<>();
     private Semaphore semaphore;
+    private TextView xAxisLabel;
+    private TextView yAxisLabel;
+    private TextView streamsDescription;
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -83,8 +88,14 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initializePlot();
+
         //installCustomWiFiFirmware();
+        xAxisLabel = (TextView) getView().findViewById(R.id.x_axis);
+        yAxisLabel = (TextView) getView().findViewById(R.id.y_axis);
+        streamsDescription = (TextView) getView().findViewById(R.id.streamDescription);
+        mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
+        initializePlot();
+
         udpReceiver = new UDPReceiver();
         plotter = new Plotter();
         semaphore = new Semaphore(1, true);
@@ -172,12 +183,20 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             case R.id.reset:
                 udpReceiver.shutdown();
                 plotter.shutdown();
+
+                mChart.clear();
                 initializePlot();
+                data = new HashMap<>();
+                hashes = new ArrayList<>();
+                packetSet = new TreeSet<>();
+
                 Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
                 Nexutil.setIoctl(512, 0); // deactivate filtering for MAC addresses
+
                 menu.findItem(R.id.start).setTitle("Start");
-                getView().findViewById(R.id.x_axis).setVisibility(View.GONE);
-                getView().findViewById(R.id.y_axis).setVisibility(View.GONE);
+                xAxisLabel.setVisibility(View.GONE);
+                yAxisLabel.setVisibility(View.GONE);
+                streamsDescription.setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
                 String ret = Nexutil.getIoctl(500);
@@ -256,7 +275,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     }
 
     private void initializePlot() {
-        mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
 
         mChart.getDescription().setEnabled(false);
 
@@ -278,6 +296,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         mChart.setDrawValueAboveBar(false);
 
         mChart.setHighlightFullBarEnabled(false);
+
+        mChart.setHardwareAccelerationEnabled(true);
 
 
         // change the position of the y-labels
@@ -313,9 +333,17 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             @Override
             public void run() {
                 ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
-
+                String oldDesc = "";
                 int i = 0;
                 for (HashMap.Entry<String, float[]> entry : data.entrySet()) {
+
+                    String key = entry.getKey();
+
+                    String[] params = key.split("-");
+
+                    if (i > 0) oldDesc = streamsDescription.getText().toString() + "\n";
+                    String newDesc = oldDesc + "Stream " + i + ": Port: " + params[0] + " Enc: " + params[1] + " BW: " + params[2] + " Rate: " + params[3] + " LDPC: " + params[4];
+                    streamsDescription.setText(newDesc);
 
                     float[] value = entry.getValue();
 
@@ -351,9 +379,9 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                 mChart.setFitBars(true);
 
-
-                getView().findViewById(R.id.x_axis).setVisibility(View.VISIBLE);
-                getView().findViewById(R.id.y_axis).setVisibility(View.VISIBLE);
+                xAxisLabel.setVisibility(View.VISIBLE);
+                yAxisLabel.setVisibility(View.VISIBLE);
+                streamsDescription.setVisibility(View.VISIBLE);
                 mChart.invalidate();
             }
         });
@@ -363,13 +391,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     @Override
     public String getFormattedValue(float value, AxisBase axis) {
         // "value" represents the position of the label on the axis (x or y)
-        String key = hashes.get((int) value);
 
-        String[] params = key.split("-");
-
-        String text = "Port: " + params[0] + "\nEncoding: " + params[1] + "\nBandwidth: " + params[2] + "\nRate: " + params[3] + "\nLDPC: " + params[4];
-
-        return text;
+        return "Stream " + (int) value;
     }
 
     private int[] getColors() {
