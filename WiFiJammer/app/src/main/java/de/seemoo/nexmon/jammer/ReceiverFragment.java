@@ -155,6 +155,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     udpReceiver.shutdown();
                     plotter.shutdown();
                     Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
+                    Nexutil.setIoctl(512, 0); // deactivate filtering for MAC addresses
                     item.setTitle("Start");
 
                 } else {
@@ -163,6 +164,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     plotter = new Plotter();
                     plotter.start();
                     Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 96);
+                    Nexutil.setIoctl(508); // set NEXMON MAC address
+                    Nexutil.setIoctl(512, 1); // activate filtering for MAC addresses
                     item.setTitle("Stop");
                 }
                 return true;
@@ -171,6 +174,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 plotter.shutdown();
                 initializePlot();
                 Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
+                Nexutil.setIoctl(512, 0); // deactivate filtering for MAC addresses
                 menu.findItem(R.id.start).setTitle("Start");
                 getView().findViewById(R.id.x_axis).setVisibility(View.GONE);
                 getView().findViewById(R.id.y_axis).setVisibility(View.GONE);

@@ -113,6 +113,11 @@ public class Nexutil {
         return out.toString();
     }
 
+    public static String setIoctl(int cmd) {
+        List<String> out = Shell.SU.run("nexutil -s" + cmd);
+        return out.toString();
+    }
+
     public static String setIoctl(int cmd, int value) {
         List<String> out = Shell.SU.run("nexutil -s" + cmd + " -l4 -i -v" + value);
         return out.toString();
