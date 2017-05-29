@@ -1,0 +1,70 @@
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:divider="@drawable/strait_line"
+    android:showDividers="beginning|middle|end">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="Name"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/port"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="Port"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/encoding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="Encoding"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/bandwidth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="3"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="Bandwidth"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="4"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="Rate"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/ldpc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="5"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:text="LDPC"
+        android:textColor="@color/black" />
+</TableRow>

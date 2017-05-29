@@ -37,20 +37,32 @@
         android:textColor="@color/black"
         android:visibility="gone" />
 
+
     <ScrollView
         android:id="@+id/streamDescriptionScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="5"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/streamDescription"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:padding="3sp"
-            android:textColor="@color/black" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TableLayout
+                android:id="@+id/streamDescriptionTable"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:divider="@drawable/strait_line"
+                android:orientation="horizontal"
+                android:showDividers="beginning|middle|end">
+
+            </TableLayout>
+
+        </HorizontalScrollView>
     </ScrollView>
 
 

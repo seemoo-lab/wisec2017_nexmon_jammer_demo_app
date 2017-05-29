@@ -1,0 +1,65 @@
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:divider="@drawable/strait_line"
+    android:showDividers="beginning|middle|end">
+
+    <TextView
+        android:id="@+id/nameValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/portValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/encodingValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/bandwidthValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="3"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/rateValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="4"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/ldpcValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="5"
+        android:gravity="center_horizontal"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:textColor="@color/black" />
+
+</TableRow>

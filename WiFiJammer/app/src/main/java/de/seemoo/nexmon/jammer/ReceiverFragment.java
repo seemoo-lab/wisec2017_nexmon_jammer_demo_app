@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -71,7 +73,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     private Semaphore semaphore;
     private TextView xAxisLabel;
     private TextView yAxisLabel;
-    private TextView streamsDescription;
+    private TableLayout streamDescriptionTable;
     private View streamDescriptionScrollView;
 
 
@@ -93,7 +95,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         //installCustomWiFiFirmware();
         xAxisLabel = (TextView) getView().findViewById(R.id.x_axis);
         yAxisLabel = (TextView) getView().findViewById(R.id.y_axis);
-        streamsDescription = (TextView) getView().findViewById(R.id.streamDescription);
+        streamDescriptionTable = (TableLayout) getView().findViewById(R.id.streamDescriptionTable);
         streamDescriptionScrollView = getView().findViewById(R.id.streamDescriptionScrollView);
         mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
         initializePlot();
@@ -337,7 +339,11 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             @Override
             public void run() {
                 ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
-                String oldDesc = "";
+
+                streamDescriptionTable.removeAllViews();
+                final TableRow tableHeader = (TableRow) getActivity().getLayoutInflater().inflate(R.layout.receiver_plot_table_header, null);
+                //Add row to the table
+                streamDescriptionTable.addView(tableHeader);
                 int i = 0;
                 for (HashMap.Entry<String, float[]> entry : data.entrySet()) {
 
@@ -345,9 +351,30 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                     String[] params = key.split("-");
 
-                    if (i > 0) oldDesc = streamsDescription.getText().toString() + "\n";
-                    String newDesc = oldDesc + "Stream " + i + ": Port: " + params[0] + " Encoding: " + params[1] + " Bandwidth: " + params[2] + " Rate: " + params[3] + " LDPC: " + params[4];
-                    streamsDescription.setText(newDesc);
+                    final TableRow tableRow = (TableRow) getActivity().getLayoutInflater().inflate(R.layout.receiver_plot_table_row, null);
+                    TextView tv;
+
+                    //Filling in cells
+                    tv = (TextView) tableRow.findViewById(R.id.nameValue);
+                    tv.setText("Stream " + i);
+
+                    tv = (TextView) tableRow.findViewById(R.id.portValue);
+                    tv.setText(params[0]);
+
+                    tv = (TextView) tableRow.findViewById(R.id.encodingValue);
+                    tv.setText(params[1]);
+
+                    tv = (TextView) tableRow.findViewById(R.id.bandwidthValue);
+                    tv.setText(params[2]);
+
+                    tv = (TextView) tableRow.findViewById(R.id.rateValue);
+                    tv.setText(params[3]);
+
+                    tv = (TextView) tableRow.findViewById(R.id.ldpcValue);
+                    tv.setText(params[4]);
+
+                    //Add row to the table
+                    streamDescriptionTable.addView(tableRow);
 
                     float[] value = entry.getValue();
 
