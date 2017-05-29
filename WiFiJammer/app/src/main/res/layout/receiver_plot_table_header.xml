@@ -1,5 +1,5 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-    android:divider="@drawable/strait_line"
+    android:divider="@drawable/table_divider"
     android:showDividers="beginning|middle|end">
 
     <TextView
