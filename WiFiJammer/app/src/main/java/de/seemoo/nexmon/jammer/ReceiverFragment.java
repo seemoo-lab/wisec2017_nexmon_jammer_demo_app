@@ -72,6 +72,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     private TextView xAxisLabel;
     private TextView yAxisLabel;
     private TextView streamsDescription;
+    private View streamDescriptionScrollView;
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,6 +94,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         xAxisLabel = (TextView) getView().findViewById(R.id.x_axis);
         yAxisLabel = (TextView) getView().findViewById(R.id.y_axis);
         streamsDescription = (TextView) getView().findViewById(R.id.streamDescription);
+        streamDescriptionScrollView = getView().findViewById(R.id.streamDescriptionScrollView);
         mChart = (HorizontalBarChart) getView().findViewById(R.id.chart1);
         initializePlot();
 
@@ -196,7 +198,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 menu.findItem(R.id.start).setTitle("Start");
                 xAxisLabel.setVisibility(View.GONE);
                 yAxisLabel.setVisibility(View.GONE);
-                streamsDescription.setVisibility(View.GONE);
+                streamDescriptionScrollView.setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
                 String ret = Nexutil.getIoctl(500);
@@ -296,6 +298,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         mChart.setDrawValueAboveBar(false);
 
         mChart.setHighlightFullBarEnabled(false);
+        mChart.setHighlightPerTapEnabled(false);
+        mChart.setHighlightPerDragEnabled(false);
 
         mChart.setHardwareAccelerationEnabled(true);
 
@@ -342,7 +346,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     String[] params = key.split("-");
 
                     if (i > 0) oldDesc = streamsDescription.getText().toString() + "\n";
-                    String newDesc = oldDesc + "Stream " + i + ": Port: " + params[0] + " Enc: " + params[1] + " BW: " + params[2] + " Rate: " + params[3] + " LDPC: " + params[4];
+                    String newDesc = oldDesc + "Stream " + i + ": Port: " + params[0] + " Encoding: " + params[1] + " Bandwidth: " + params[2] + " Rate: " + params[3] + " LDPC: " + params[4];
                     streamsDescription.setText(newDesc);
 
                     float[] value = entry.getValue();
@@ -381,7 +385,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                 xAxisLabel.setVisibility(View.VISIBLE);
                 yAxisLabel.setVisibility(View.VISIBLE);
-                streamsDescription.setVisibility(View.VISIBLE);
+                streamDescriptionScrollView.setVisibility(View.VISIBLE);
                 mChart.invalidate();
             }
         });
