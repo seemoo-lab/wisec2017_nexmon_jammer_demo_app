@@ -1,8 +1,7 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.transmitter;
 
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.seemoo.nexmon.jammer.R;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 

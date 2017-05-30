@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.transmitter;
 
 import android.app.Activity;
 import android.support.v7.app.AlertDialog;

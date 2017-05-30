@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.receiver;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -49,6 +49,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
 
+import de.seemoo.nexmon.jammer.global.ColorsTuDarmstadt;
+import de.seemoo.nexmon.jammer.aboutus.LicenseDialog;
+import de.seemoo.nexmon.jammer.R;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
 

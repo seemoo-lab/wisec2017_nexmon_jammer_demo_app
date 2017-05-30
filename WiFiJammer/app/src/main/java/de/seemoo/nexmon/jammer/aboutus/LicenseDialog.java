@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.aboutus;
 
 /**
  * Created by stathis on 5/11/17.
@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
+
+import de.seemoo.nexmon.jammer.R;
 
 
 public class LicenseDialog extends DialogFragment {

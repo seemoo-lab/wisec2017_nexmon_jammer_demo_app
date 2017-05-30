@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.jammer;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +19,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+
+import de.seemoo.nexmon.jammer.R;
+import de.seemoo.nexmon.jammer.global.Constants;
+import de.seemoo.nexmon.jammer.global.Variables;
 
 import static java.lang.Math.ceil;
 

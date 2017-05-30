@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.global;
 
 /**
  * Created by stathis on 5/14/17.

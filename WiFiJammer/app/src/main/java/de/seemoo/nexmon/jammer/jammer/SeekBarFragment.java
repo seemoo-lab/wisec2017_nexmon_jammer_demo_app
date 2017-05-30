@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.jammer;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,6 +13,10 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import de.seemoo.nexmon.jammer.R;
+import de.seemoo.nexmon.jammer.global.Constants;
+import de.seemoo.nexmon.jammer.global.Variables;
 
 import static java.lang.Math.ceil;
 

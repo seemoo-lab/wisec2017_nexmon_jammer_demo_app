@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

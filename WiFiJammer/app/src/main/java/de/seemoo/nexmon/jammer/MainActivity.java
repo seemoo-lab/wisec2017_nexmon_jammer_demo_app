@@ -42,6 +42,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.seemoo.nexmon.jammer.aboutus.AboutUsFragment;
+import de.seemoo.nexmon.jammer.aboutus.LicenseDialog;
+import de.seemoo.nexmon.jammer.global.Constants;
+import de.seemoo.nexmon.jammer.global.Variables;
+import de.seemoo.nexmon.jammer.jammer.PlotFragment;
+import de.seemoo.nexmon.jammer.jammer.SeekBarFragment;
+import de.seemoo.nexmon.jammer.receiver.ReceiverFragment;
+import de.seemoo.nexmon.jammer.transmitter.TransmitterFragment;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
