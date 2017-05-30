@@ -15,7 +15,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.seemoo.nexmon.jammer.utils.LEDControl;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
+
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -38,6 +41,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
     View parentView;
     TransmitterFragment fragment;
     private ArrayList<UDPStream> dataSet;
+    private static int currentlyActiveCounter = 0;
 
 
     public UDPStreamAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
@@ -57,8 +61,9 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
         switch (v.getId()) {
             case R.id.item_delete:
                 /**
-                 * TODO Stop UDP Stream
+                 * Delete and Stop UDP Stream
                  */
+                currentlyActiveCounter += udpStream.running ? -1 : 0;
                 udpStream.running = false;
                 dataSet.remove(udpStream);
                 Nexutil.setIoctl(511, udpStream.id);
@@ -70,24 +75,33 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                 run_pause = (ImageView) parentView.findViewWithTag(position);
                 if (udpStream.running) {
                     /**
-                     * TODO Stop UDP Stream
+                     * Stop UDP Stream
                      */
                     udpStream.running = false;
                     Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
                     Nexutil.setIoctl(511, udpStream.id);
                     run_pause.setImageResource(android.R.drawable.ic_media_play);
+                    currentlyActiveCounter--;
                 } else {
                     /**
-                     * TODO Start UDP Stream
+                     * Start UDP Stream
                      */
                     udpStream.running = true;
                     Log.i("TRANSMITTER", "starting: " + udpStream.toString());
                     Nexutil.setIoctl(510, udpStream.getBytes());
                     run_pause.setImageResource(android.R.drawable.ic_media_pause);
+                    currentlyActiveCounter++;
                 }
                 break;
         }
 
+        if (currentlyActiveCounter == 0) {
+            LEDControl.deactivateLED();
+        } else if (currentlyActiveCounter == 1) {
+            LEDControl.setBrightnessRGB(rgb("#007f7f"));
+            LEDControl.setOnOffMsRGB(1000, 1000);
+            LEDControl.activateLED();
+        }
     }
 
 
