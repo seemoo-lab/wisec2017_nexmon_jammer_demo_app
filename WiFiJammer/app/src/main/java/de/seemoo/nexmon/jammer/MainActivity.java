@@ -42,6 +42,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.seemoo.nexmon.jammer.utils.LEDControl;
+
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
+
 
 public class MainActivity extends AppCompatActivity implements SeekBarFragment.FragmentListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -545,6 +549,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), false);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), false);
+                LEDControl.setBrightnessRGB(rgb("#ff0000"));
+                LEDControl.setOnOffMsRGB(1000, 1000);
+                LEDControl.activateLED();
                 break;
             case 1: // started -> now stopping
                 Variables.jammerStart = 0;
@@ -553,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
+                LEDControl.deactivateLED();
                 break;
             default:
                 Variables.jammerStart = 0;
