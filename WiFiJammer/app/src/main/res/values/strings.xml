@@ -3,4 +3,19 @@
     <string name="landscape_message">This is Landscape mode fragment</string>
     <string name="portrait_message">This is Portrait mode fragment></string>
     <string name="value">Value</string>
+    <string name="firmware_installation">
+        <big>Firmware Installation Required</big>\n\nTo use this app, you need an Android Smartphone
+        with a Broadcom BCM4339 Wi-Fi chip running firmware version 6.37.34.43. This is for example
+        the case, when using a Nexus 5 with stock firmware version M4B30Z.\n\nIf and only if the
+        above requirement evaluates to true, you may continue to install the jamming firmware. Keep
+        in mind that this firmware might damage your hardware and will void your hardware\'s
+        warranty. You use the firmware as well as this app at your own risk and responsibility. By
+        using our firmware and this app, you agree that you will not hold any of the Nexmon
+        developers responsible for any harm that results from using any of our tools.\n\nIn the
+        following you may create a backup of the original firmware that copies the firmware file
+        from /vendor/firmware/fw_bcmdhd.bin to /sdcard/fw_bcmdhd.orig.bin. Once copied, you may
+        continue to install the jamming firmware. To revert to the original firmware, you have to
+        manually remount your system partition writable and then copy the backup to its original
+        location.\n\n
+    </string>
 </resources>

@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -37,6 +38,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -49,8 +51,10 @@ import de.seemoo.nexmon.jammer.jammer.PlotFragment;
 import de.seemoo.nexmon.jammer.jammer.SeekBarFragment;
 import de.seemoo.nexmon.jammer.receiver.ReceiverFragment;
 import de.seemoo.nexmon.jammer.transmitter.TransmitterFragment;
+import de.seemoo.nexmon.jammer.utils.Assets;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
+import eu.chainfire.libsuperuser.Shell;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
@@ -765,6 +769,42 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     private AlertDialog createFirmwareDialog() {
         View list_layout = getLayoutInflater().inflate(R.layout.firmware_dialog, null, true);
 
+        final Button btnBackupOriginalFirmware = (Button) list_layout.findViewById(R.id.btnBackupOriginalFirmware);
+        final Button btnInstallJammingFirmware = (Button) list_layout.findViewById(R.id.btnInstallJammingFirmware);
+
+        final File file = new File("/sdcard/fw_bcmdhd.orig.bin");
+        if (file.exists()) {
+            btnBackupOriginalFirmware.setEnabled(false);
+            btnInstallJammingFirmware.setEnabled(true);
+        } else {
+            btnBackupOriginalFirmware.setEnabled(true);
+            btnInstallJammingFirmware.setEnabled(false);
+        }
+
+        btnBackupOriginalFirmware.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "creating firmware backup", Toast.LENGTH_SHORT).show();
+
+                Shell.SU.run("cp /vendor/firmware/fw_bcmdhd.bin /sdcard/fw_bcmdhd.orig.bin");
+
+                if (file.exists()) {
+                    btnBackupOriginalFirmware.setEnabled(false);
+                    btnInstallJammingFirmware.setEnabled(true);
+                }
+            }
+        });
+
+        btnInstallJammingFirmware.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "installing jamming firmware", Toast.LENGTH_SHORT).show();
+
+                AssetManager assetManager = getAssets();
+                Assets.copyFileFromAsset(assetManager, "fw_bcmdhd.bin", "/sdcard/fw_bcmdhd.jammer.bin");
+            }
+        });
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
         // set prompts.xml to alertdialog builder
@@ -774,7 +814,6 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         alertDialogBuilder
                 .setCancelable(false)
                 .setPositiveButton("CLOSE", null);
-
 
         // create alert dialog
         return alertDialogBuilder.create();

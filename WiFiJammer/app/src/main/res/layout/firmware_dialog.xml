@@ -12,13 +12,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <TextView
-            android:id="@+id/textView2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
-    </ScrollView>
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvFirmwareDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/firmware_installation" />
+
+            <Button
+                android:id="@+id/btnBackupOriginalFirmware"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:text="Backup Original Firmware" />
+
+            <Button
+                android:id="@+id/btnInstallJammingFirmware"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:text="Install Jamming Firmware" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

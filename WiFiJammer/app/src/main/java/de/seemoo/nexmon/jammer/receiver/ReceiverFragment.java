@@ -111,54 +111,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private int installCustomWiFiFirmware() {
-        int retval = 0;
-        // updating progress message from other thread causes exception.
-        // progressbox.setMessage("Setting up data..");
-        String rootDataPath = "/vendor/firmware/";
-        String filePath = "/vendor/firmware/fw_bcmdhd.bin";
-        File file = new File(filePath);
-        AssetManager assetManager = getActivity().getAssets();
-
-        try {
-            if (file.exists()) {
-                //return retval;
-            }
-            new File(rootDataPath).mkdirs();
-            retval = copyFileFromAsset(assetManager, "fw_bcmdhd.bin", filePath);
-
-            List<String> out = Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
-            Log.d("Shell", out.toString());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            retval = -1;
-        }
-        return retval;
-    }
-
-    private int copyFileFromAsset(AssetManager assetManager, String sourcePath, String destPath) {
-        byte[] buff = new byte[1024];
-        int len;
-        InputStream in;
-        OutputStream out;
-        try {
-            in = assetManager.open(sourcePath);
-            new File(destPath).createNewFile();
-            out = new FileOutputStream(destPath);
-            // write file
-            while ((len = in.read(buff)) != -1) {
-                out.write(buff, 0, len);
-            }
-            in.close();
-            out.flush();
-            out.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return -1;
-        }
-        return 0;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
