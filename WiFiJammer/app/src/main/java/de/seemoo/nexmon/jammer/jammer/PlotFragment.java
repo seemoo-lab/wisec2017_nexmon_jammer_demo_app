@@ -284,9 +284,6 @@ public class PlotFragment extends android.app.Fragment {
         // let the chart know it's data has changed
         mChart.notifyDataSetChanged();
         mChart.fitScreen();
-
-        // TODO: ADD PAPR
-        ((TextView) getView().findViewById(R.id.plot_papr)).setText("PAPR: " + "100");
     }
 
     public void constructFreqSamples() {
