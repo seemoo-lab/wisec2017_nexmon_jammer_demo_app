@@ -689,6 +689,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // attaching data adapter to spinner
         type_spinner.setAdapter(dataAdapter);
 
+        Variables.jamSignalLength = 200;
+        Variables.jammingPort = 3333;
+        Variables.jammerType = "Simple Reactive Jammer";
+
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)

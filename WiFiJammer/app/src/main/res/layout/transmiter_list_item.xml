@@ -11,7 +11,8 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_margin="2sp"
-        android:padding="1sp"
+        android:paddingBottom="15sp"
+        android:paddingTop="15sp"
         android:src="@android:drawable/ic_media_play" />
 
 
@@ -211,7 +212,8 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_margin="2sp"
-        android:padding="1sp"
+        android:paddingBottom="15sp"
+        android:paddingTop="15sp"
         android:src="@android:drawable/ic_menu_delete" />
 
 
