@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -59,10 +60,14 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
 
         switch (v.getId()) {
             case R.id.item_delete:
-                currentlyActiveCounter += udpStream.running ? -1 : 0;
-                udpStream.running = false;
+                try {
+                    Nexutil.getInstance().setIoctl(511, udpStream.id);
+                    currentlyActiveCounter += udpStream.running ? -1 : 0;
+                    udpStream.running = false;
+                } catch (Nexutil.FirmwareNotFoundException e) {
+                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                }
                 dataSet.remove(udpStream);
-                Nexutil.setIoctl(511, udpStream.id);
                 fragment.usedIDs.remove(udpStream.id);
                 fragment.unusedIDs.add(udpStream.id);
                 notifyDataSetChanged();
@@ -70,17 +75,25 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
             case R.id.item_run_stop:
                 run_pause = (ImageView) parentView.findViewWithTag(position);
                 if (udpStream.running) {
-                    udpStream.running = false;
-                    Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
-                    Nexutil.setIoctl(511, udpStream.id);
-                    run_pause.setImageResource(android.R.drawable.ic_media_play);
-                    currentlyActiveCounter--;
+                    try {
+                        Nexutil.getInstance().setIoctl(511, udpStream.id);
+                        udpStream.running = false;
+                        Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
+                        run_pause.setImageResource(android.R.drawable.ic_media_play);
+                        currentlyActiveCounter--;
+                    } catch (Nexutil.FirmwareNotFoundException e) {
+                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    udpStream.running = true;
-                    Log.i("TRANSMITTER", "starting: " + udpStream.toString());
-                    Nexutil.setIoctl(510, udpStream.getBytes());
-                    run_pause.setImageResource(android.R.drawable.ic_media_pause);
-                    currentlyActiveCounter++;
+                    try {
+                        Nexutil.getInstance().setIoctl(510, udpStream.getBytes());
+                        udpStream.running = true;
+                        Log.i("TRANSMITTER", "starting: " + udpStream.toString());
+                        run_pause.setImageResource(android.R.drawable.ic_media_pause);
+                        currentlyActiveCounter++;
+                    } catch (Nexutil.FirmwareNotFoundException e) {
+                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
         }

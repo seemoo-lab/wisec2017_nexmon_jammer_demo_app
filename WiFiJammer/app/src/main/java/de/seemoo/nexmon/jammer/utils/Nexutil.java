@@ -75,65 +75,82 @@ public class Nexutil {
     public final static int WLC_GET_MONITOR = 107;
     public final static int WLC_SET_MONITOR = 108;
 
-    private static Shell.Interactive rootShell;
-    private static boolean isInitialised = false;
-    private static Context activity;
+    protected static Nexutil instance;
+    protected boolean firmwareInstalled = false;
 
-    public Nexutil(Context activity) {
-        this.activity = activity;
-        rootShell = new Shell.Builder().
-                useSU().
-                setWantSTDERR(false).
-                setMinimalLogging(true).
-                open(new Shell.OnCommandResultListener() {
-                    @Override
-                    public void onCommandResult(int commandVal, int exitVal, List<String> out) {
-                        //Callback checking successful shell start.
-                        if (exitVal == Shell.OnCommandResultListener.SHELL_RUNNING) {
-                            isInitialised = true;
-                            Log.i("NEXUTIL", "Superuser initialized");
-                        } else {
-                            Toast.makeText(Nexutil.activity.getApplicationContext(), "Root privileges are needed. Please grant root permissions or try again.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    public class FirmwareNotFoundException extends Exception {
+        public FirmwareNotFoundException() {}
+
+        public FirmwareNotFoundException(String message) {
+            super(message);
+        }
     }
 
-    public static boolean isInitialized() {
-        return isInitialised;
+    protected Nexutil() {
+        this.instance = this;
     }
 
-    public static String getIoctl(int cmd, int length) {
+    public static Nexutil getInstance() {
+        return instance == null ? new Nexutil() : instance;
+    }
+
+    private void checkFirmwareInstalled() throws FirmwareNotFoundException {
+        if (!firmwareInstalled) {
+            throw new FirmwareNotFoundException();
+        }
+    }
+
+    public String getIoctl(int cmd, int length) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         List<String> out = Shell.SU.run("nexutil -l" + length + " -g" + cmd);
         return out.toString();
     }
 
-    public static String getIoctl(int cmd) {
+    public String getIoctl(int cmd) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         List<String> out = Shell.SU.run("nexutil -g" + cmd);
         return out.toString();
     }
 
-    public static String setIoctl(int cmd) {
+    public String setIoctl(int cmd) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         List<String> out = Shell.SU.run("nexutil -s" + cmd);
         return out.toString();
     }
 
-    public static String setIoctl(int cmd, int value) {
+    public String setIoctl(int cmd, int value) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         List<String> out = Shell.SU.run("nexutil -s" + cmd + " -l4 -i -v" + value);
         return out.toString();
     }
 
-    public static String setIoctl(int cmd, String value) {
+    public String setIoctl(int cmd, String value) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         byte[] valueBytes = value.getBytes();
         byte[] valueBytesTerminated = new byte[valueBytes.length + 1];
         System.arraycopy(valueBytes, 0, valueBytesTerminated, 0, valueBytes.length);
         return setIoctl(cmd, valueBytesTerminated);
     }
 
-    public static String setIoctl(int cmd, byte buf[]) {
+    public String setIoctl(int cmd, byte buf[]) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
         String value = Base64.encodeToString(buf, Base64.NO_WRAP);
         Log.i("Nexutil", value);
         List<String> out = Shell.SU.run("nexutil -s" + cmd + " -b -l" + buf.length + " -v\"" + value + "\"");
         return out.toString();
+    }
+
+    public boolean isFirmwareInstalled() {
+        return firmwareInstalled;
+    }
+
+    public void setFirmwareInstalled(boolean firmwareInstalled) {
+        this.firmwareInstalled = firmwareInstalled;
     }
 }

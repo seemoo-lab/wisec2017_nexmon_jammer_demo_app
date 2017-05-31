@@ -66,9 +66,4 @@ import android.content.Context;
 
 public class NexutilJammer extends Nexutil {
 
-    public NexutilJammer(Context activity) {
-        super(activity);
-    }
-
-
 }

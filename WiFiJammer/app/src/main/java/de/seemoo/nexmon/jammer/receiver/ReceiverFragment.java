@@ -1,9 +1,7 @@
 package de.seemoo.nexmon.jammer.receiver;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.content.res.AssetManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -14,11 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -63,7 +60,6 @@ import eu.chainfire.libsuperuser.Shell;
 //MAC, IP Address, new graph button
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
-    private static boolean isInitialised = false;
     public HashMap<String, float[]> data = new HashMap<>();
     ViewGroup container;
     AlertDialog helpDialog;
@@ -106,8 +102,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         udpReceiver = new UDPReceiver();
         plotter = new Plotter();
         semaphore = new Semaphore(1, true);
-        new Nexutil(getActivity());
-        isInitialised = Nexutil.isInitialized();
     }
 
     @Override
@@ -170,26 +164,39 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         switch (item.getItemId()) {
             case R.id.start:
                 if (item.getTitle().toString().equals("Stop")) {
-                    udpReceiver.shutdown();
-                    plotter.shutdown();
-                    Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
-                    Nexutil.setIoctl(512, 0); // deactivate filtering for MAC addresses
-                    item.setTitle("Start");
-
+                    try {
+                        Nexutil.getInstance().setIoctl(Nexutil.WLC_SET_MONITOR, 0);
+                        Nexutil.getInstance().setIoctl(512, 0); // deactivate filtering for MAC addresses
+                        udpReceiver.shutdown();
+                        plotter.shutdown();
+                        item.setTitle("Start");
+                    } catch (Nexutil.FirmwareNotFoundException e) {
+                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    udpReceiver = new UDPReceiver();
-                    udpReceiver.start();
-                    plotter = new Plotter();
-                    plotter.start();
-                    Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 96);
-                    Nexutil.setIoctl(508); // set NEXMON MAC address
-                    Nexutil.setIoctl(512, 1); // activate filtering for MAC addresses
-                    item.setTitle("Stop");
+                    try {
+                        Nexutil.getInstance().setIoctl(Nexutil.WLC_SET_MONITOR, 96);
+                        Nexutil.getInstance().setIoctl(508); // set NEXMON MAC address
+                        Nexutil.getInstance().setIoctl(512, 1); // activate filtering for MAC addresses
+                        udpReceiver = new UDPReceiver();
+                        udpReceiver.start();
+                        plotter = new Plotter();
+                        plotter.start();
+                        item.setTitle("Stop");
+                    } catch (Nexutil.FirmwareNotFoundException e) {
+                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 return true;
             case R.id.reset:
-                udpReceiver.shutdown();
-                plotter.shutdown();
+                try {
+                    Nexutil.getInstance().setIoctl(Nexutil.WLC_SET_MONITOR, 0);
+                    Nexutil.getInstance().setIoctl(512, 0); // deactivate filtering for MAC addresses
+                    udpReceiver.shutdown();
+                    plotter.shutdown();
+                } catch (Nexutil.FirmwareNotFoundException e) {
+                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                }
 
                 mChart.clear();
                 initializePlot();
@@ -197,17 +204,18 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 hashes = new ArrayList<>();
                 packetSet = new TreeSet<>();
 
-                Nexutil.setIoctl(Nexutil.WLC_SET_MONITOR, 0);
-                Nexutil.setIoctl(512, 0); // deactivate filtering for MAC addresses
-
                 menu.findItem(R.id.start).setTitle("Start");
                 xAxisLabel.setVisibility(View.GONE);
                 yAxisLabel.setVisibility(View.GONE);
                 streamDescriptionScrollView.setVisibility(View.GONE);
                 return true;
             case R.id.help_receiver:
-                String ret = Nexutil.getIoctl(500);
-                Log.d("Shell", ret);
+                try {
+                    String ret = Nexutil.getInstance().getIoctl(500);
+                    Log.d("Shell", ret);
+                } catch (Nexutil.FirmwareNotFoundException e) {
+                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                }
                 helpDialog.show();
                 return true;
         }

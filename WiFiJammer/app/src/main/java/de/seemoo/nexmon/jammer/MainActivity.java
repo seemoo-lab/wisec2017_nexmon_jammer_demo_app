@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public AlertDialog channelDialog;
     public AlertDialog helpDialog;
     public AlertDialog optionsDialog;
+    public AlertDialog firmwareDialog;
     public Menu menu;
     public SeekBarFragment ampFragment;
     public SeekBarFragment phaseFragment;
@@ -110,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         setContentView(R.layout.main);
+
+        // TODO only need to be set, when firmware is installed
+        Nexutil.getInstance().setFirmwareInstalled(true);
 
         if (savedInstanceState != null) {
 
@@ -549,16 +553,21 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         Button startBtn = (Button) view;
         switch (Variables.jammerStart) {
             case 0: // not started -> now starting
-                Variables.jammerStart = 1;
-                startBtn.setText("stop");
-                //Disable Interface
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), false);
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), false);
-                LEDControl.setBrightnessRGB(rgb("#ff0000"));
-                LEDControl.setOnOffMsRGB(1000, 1000);
-                LEDControl.activateLED();
-                Nexutil.setIoctl(514, Variables.getBytes());
+                try {
+                    Nexutil.getInstance().setIoctl(514, Variables.getBytes());
+                    Variables.jammerStart = 1;
+
+                    startBtn.setText("stop");
+                    //Disable Interface
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), false);
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), false);
+                    LEDControl.setBrightnessRGB(rgb("#ff0000"));
+                    LEDControl.setOnOffMsRGB(1000, 1000);
+                    LEDControl.activateLED();
+                } catch (Nexutil.FirmwareNotFoundException e) {
+                    Toast.makeText(getApplicationContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case 1: // started -> now stopping
                 Variables.jammerStart = 0;
@@ -567,7 +576,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
-                LEDControl.deactivateLED();
+                if (Nexutil.getInstance().isFirmwareInstalled())
+                    LEDControl.deactivateLED();
                 break;
             default:
                 Variables.jammerStart = 0;
@@ -719,6 +729,24 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         return alertDialogBuilder.create();
     }
 
+    private AlertDialog createFirmwareDialog() {
+        View list_layout = getLayoutInflater().inflate(R.layout.firmware_dialog, null, true);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(list_layout);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("CLOSE", null);
+
+
+        // create alert dialog
+        return alertDialogBuilder.create();
+    }
+
     private AlertDialog createOptionsDialog() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
@@ -783,6 +811,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         channelDialog = createChannelListDialog();
         helpDialog = createHelpDialog();
         optionsDialog = createOptionsDialog();
+        firmwareDialog = createFirmwareDialog();
     }
 
     @Override
