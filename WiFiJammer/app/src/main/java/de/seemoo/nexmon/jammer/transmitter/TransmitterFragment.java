@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.transmitter;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,6 +37,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import de.seemoo.nexmon.jammer.aboutus.LicenseDialog;
+import de.seemoo.nexmon.jammer.R;
 
 /**
  * Created by Stathis on 05-May-17.
@@ -144,51 +148,8 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
 
         View list_layout = getActivity().getLayoutInflater().inflate(R.layout.help_transmitter, null, true);
 
-        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
-        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
-        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
-        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
-
-        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://nexmon.org"));
-                startActivity(intent);
-            }
-        });
-
-        imgTudLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        btnLicenses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LicenseDialog licenseDialog = LicenseDialog.newInstance();
-                licenseDialog.show(getFragmentManager(), "");
-            }
-        });
+        WebView wvHelp = (WebView) list_layout.findViewById(R.id.wvHelp);
+        wvHelp.loadUrl("file:///android_asset/html/help_transmitter.html");
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
 

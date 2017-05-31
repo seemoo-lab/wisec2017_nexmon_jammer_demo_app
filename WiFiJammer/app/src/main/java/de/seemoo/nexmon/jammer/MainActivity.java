@@ -5,12 +5,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,12 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -41,6 +39,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.seemoo.nexmon.jammer.aboutus.AboutUsFragment;
+import de.seemoo.nexmon.jammer.global.Constants;
+import de.seemoo.nexmon.jammer.global.Variables;
+import de.seemoo.nexmon.jammer.jammer.PlotFragment;
+import de.seemoo.nexmon.jammer.jammer.SeekBarFragment;
+import de.seemoo.nexmon.jammer.receiver.ReceiverFragment;
+import de.seemoo.nexmon.jammer.transmitter.TransmitterFragment;
+import de.seemoo.nexmon.jammer.utils.LEDControl;
+import de.seemoo.nexmon.jammer.utils.Nexutil;
+
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
 
 public class MainActivity extends AppCompatActivity implements SeekBarFragment.FragmentListener, AdapterView.OnItemSelectedListener {
@@ -108,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             Variables.jammingPower = 50;
             Variables.channel = 1;
-            Variables.jammerType = "Simple Reactive Jammer";
+            Variables.jammerType = Variables.JammingType.getJammingTypeFromString("Simple Reactive Jammer");
             Variables.app = 0;
             Variables.jammerStart = 0;
             Variables.idft_size = 128;
@@ -545,6 +555,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), false);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), false);
+                LEDControl.setBrightnessRGB(rgb("#ff0000"));
+                LEDControl.setOnOffMsRGB(1000, 1000);
+                LEDControl.activateLED();
+                Nexutil.setIoctl(514, Variables.getBytes());
                 break;
             case 1: // started -> now stopping
                 Variables.jammerStart = 0;
@@ -553,6 +567,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
+                LEDControl.deactivateLED();
                 break;
             default:
                 Variables.jammerStart = 0;
@@ -604,51 +619,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         list_layout = getLayoutInflater().inflate(R.layout.help_jammer, null, true);
 
-        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
-        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
-        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
-        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
-
-        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://nexmon.org"));
-                startActivity(intent);
-            }
-        });
-
-        imgTudLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        btnLicenses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LicenseDialog licenseDialog = LicenseDialog.newInstance();
-                licenseDialog.show(getFragmentManager(), "");
-            }
-        });
+        WebView wvHelp = (WebView) list_layout.findViewById(R.id.wvHelp);
+        wvHelp.loadUrl("file:///android_asset/html/help_jammer.html");
 
         alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 
@@ -699,9 +671,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
 
-                        EditText editText = (EditText) linear_layout_options.findViewById(R.id.jamSignalLengthValue);
-                        Variables.jamSignalLength = Integer.parseInt(editText.getText().toString()) * Variables.idft_size * Variables.samplingRate;
-                        Variables.jammerType = ((Spinner) linear_layout_options.findViewById(R.id.type_spinner)).getSelectedItem().toString();
+                        EditText editText = (EditText) linear_layout_options.findViewById(R.id.jammingSignalRepetitionsValue);
+                        Variables.jammingSignalRepetitions = Integer.parseInt(editText.getText().toString());
+                        Variables.jammerType = Variables.JammingType.getJammingTypeFromString(((Spinner) linear_layout_options.findViewById(R.id.type_spinner)).getSelectedItem().toString());
                         EditText portText = (EditText) linear_layout_options.findViewById(R.id.portValue);
                         int port = Integer.parseInt(portText.getText().toString());
                         if (port > 65535 || port < 0) {

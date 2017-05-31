@@ -1,8 +1,9 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.jammer;
 
 /**
- * Created by stathis on 5/14/17.
+ * Created by stathis on 5/15/17.
  */
+
 
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.data.Entry;
@@ -22,16 +23,16 @@ import java.text.DecimalFormat;
  * @author Philipp Jahoda
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class SmallValueFormatter implements IValueFormatter, IAxisValueFormatter {
+public class LargeValueFormatter implements IValueFormatter, IAxisValueFormatter {
 
     private static final int MAX_LENGTH = 5;
     private static String[] SUFFIX = new String[]{
-            "", "m", "μ", "n", "p"
+            "", "K", "M", "B", "T"
     };
     private DecimalFormat mFormat;
     private String mText = "";
 
-    public SmallValueFormatter() {
+    public LargeValueFormatter() {
         mFormat = new DecimalFormat("###E00");
     }
 
@@ -40,7 +41,7 @@ public class SmallValueFormatter implements IValueFormatter, IAxisValueFormatter
      *
      * @param appendix a text that will be appended
      */
-    public SmallValueFormatter(String appendix) {
+    public LargeValueFormatter(String appendix) {
         this();
         mText = appendix;
     }
@@ -88,8 +89,7 @@ public class SmallValueFormatter implements IValueFormatter, IAxisValueFormatter
         int numericValue2 = Character.getNumericValue(r.charAt(r.length() - 2));
         int combined = Integer.valueOf(numericValue2 + "" + numericValue1);
 
-        r = r.replaceAll("E-[0-9][0-9]", SUFFIX[combined / 3]);
-        r = r.replaceAll("E00", SUFFIX[combined / 3]);
+        r = r.replaceAll("E[0-9][0-9]", SUFFIX[combined / 3]);
 
         while (r.length() > MAX_LENGTH || r.matches("[0-9]+\\.[a-z]")) {
             r = r.substring(0, r.length() - 2) + r.substring(r.length() - 1);

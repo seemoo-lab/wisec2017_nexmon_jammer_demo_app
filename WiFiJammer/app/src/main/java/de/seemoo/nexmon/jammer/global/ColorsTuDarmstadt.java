@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.global;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 

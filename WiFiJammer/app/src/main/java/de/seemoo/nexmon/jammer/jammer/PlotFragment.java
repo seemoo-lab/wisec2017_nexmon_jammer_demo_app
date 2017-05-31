@@ -1,4 +1,4 @@
-package de.seemoo.nexmon.jammer;
+package de.seemoo.nexmon.jammer.jammer;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +19,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+
+import de.seemoo.nexmon.jammer.R;
+import de.seemoo.nexmon.jammer.global.Constants;
+import de.seemoo.nexmon.jammer.global.Variables;
 
 import static java.lang.Math.ceil;
 
@@ -280,9 +284,6 @@ public class PlotFragment extends android.app.Fragment {
         // let the chart know it's data has changed
         mChart.notifyDataSetChanged();
         mChart.fitScreen();
-
-        // TODO: ADD PAPR
-        ((TextView) getView().findViewById(R.id.plot_papr)).setText("PAPR: " + "100");
     }
 
     public void constructFreqSamples() {
