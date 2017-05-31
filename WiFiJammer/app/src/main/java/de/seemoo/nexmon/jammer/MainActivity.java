@@ -5,12 +5,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,12 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -43,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.seemoo.nexmon.jammer.aboutus.AboutUsFragment;
-import de.seemoo.nexmon.jammer.aboutus.LicenseDialog;
 import de.seemoo.nexmon.jammer.global.Constants;
 import de.seemoo.nexmon.jammer.global.Variables;
 import de.seemoo.nexmon.jammer.jammer.PlotFragment;
@@ -620,51 +617,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         list_layout = getLayoutInflater().inflate(R.layout.help_jammer, null, true);
 
-        ImageView imgNexmonLogo = (ImageView) list_layout.findViewById(R.id.imgNexmonLogo);
-        ImageView imgSeemooLogo = (ImageView) list_layout.findViewById(R.id.imgSeemooLogo);
-        ImageView imgTudLogo = (ImageView) list_layout.findViewById(R.id.imgTudLogo);
-        Button btnLicenses = (Button) list_layout.findViewById(R.id.btnLicenses);
-
-        imgSeemooLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://seemoo.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        imgNexmonLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://nexmon.org"));
-                startActivity(intent);
-            }
-        });
-
-        imgTudLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://www.tu-darmstadt.de"));
-                startActivity(intent);
-            }
-        });
-
-        btnLicenses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LicenseDialog licenseDialog = LicenseDialog.newInstance();
-                licenseDialog.show(getFragmentManager(), "");
-            }
-        });
+        WebView wvHelp = (WebView) list_layout.findViewById(R.id.wvHelp);
+        wvHelp.loadUrl("file:///android_asset/html/help_jammer.html");
 
         alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
 

@@ -18,8 +18,6 @@ import de.seemoo.nexmon.jammer.R;
 
 public class LicenseDialog extends DialogFragment {
 
-    WebView wvLicense;
-
     public LicenseDialog() {
         // Required empty public constructor
     }

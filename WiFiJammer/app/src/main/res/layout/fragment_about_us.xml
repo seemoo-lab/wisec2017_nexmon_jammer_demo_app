@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingBottom="10dp"
-                android:text="Developer of the Nexmon framework:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nDaniel Wegemer &lt;dwegemer@seemoo.de&gt;\n\nDeveloper of the Nexmon jammer:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nFrancesco Gringoli &lt;francesco.gringoli@unibs.it&gt;\n\nDeveloper of the Nexmon Jammer app:\nStathis Deligeorgopoulos\n\nNexmon is being developed at the Secure Mobile Networking Lab (SEEMOO) at the Technische Universität Darmstadt (TU Darmstadt) in Germany. All sources are available under https://nexmon.org. You can follow us on Twitter https://twitter.com/nexmon_dev" />
+                android:text="Developer of the Nexmon framework:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nDaniel Wegemer &lt;dwegemer@seemoo.de&gt;\n\nDeveloper of the Nexmon jammer:\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\nFrancesco Gringoli &lt;francesco.gringoli@unibs.it&gt;\n\nDeveloper of the Nexmon Jammer app:\nEfstathios Deligeorgopoulos &lt;edeligeorgopoulos@seemoo.de&gt;\nMatthias Schulz &lt;mschulz@seemoo.de&gt;\n\nNexmon is being developed at the Secure Mobile Networking Lab (SEEMOO) at the Technische Universität Darmstadt (TU Darmstadt) in Germany. All sources are available under https://nexmon.org. You can follow us on Twitter https://twitter.com/nexmon_dev" />
 
             <LinearLayout
                 android:layout_width="match_parent"
