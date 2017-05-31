@@ -75,6 +75,8 @@ public class Nexutil {
     public final static int WLC_GET_MONITOR = 107;
     public final static int WLC_SET_MONITOR = 108;
 
+    public final static int NEX_GET_VERSION_STRING = 413;
+
     protected static Nexutil instance;
     protected boolean firmwareInstalled = false;
 
@@ -104,6 +106,13 @@ public class Nexutil {
         checkFirmwareInstalled();
 
         List<String> out = Shell.SU.run("nexutil -l" + length + " -g" + cmd);
+        return out.toString();
+    }
+
+    public String getStringIoctl(int cmd, int length) throws FirmwareNotFoundException {
+        checkFirmwareInstalled();
+
+        List<String> out = Shell.SU.run("nexutil -r -l" + length + " -g" + cmd + " | strings");
         return out.toString();
     }
 

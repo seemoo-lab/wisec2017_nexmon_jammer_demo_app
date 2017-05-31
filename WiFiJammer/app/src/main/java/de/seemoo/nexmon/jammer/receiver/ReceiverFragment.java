@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
 
+import de.seemoo.nexmon.jammer.MainActivity;
 import de.seemoo.nexmon.jammer.global.ColorsTuDarmstadt;
 import de.seemoo.nexmon.jammer.R;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
@@ -171,7 +172,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                         plotter.shutdown();
                         item.setTitle("Start");
                     } catch (Nexutil.FirmwareNotFoundException e) {
-                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                        MainActivity.getInstance().getFirmwareDialog().show();
                     }
                 } else {
                     try {
@@ -184,7 +185,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                         plotter.start();
                         item.setTitle("Stop");
                     } catch (Nexutil.FirmwareNotFoundException e) {
-                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                        MainActivity.getInstance().getFirmwareDialog().show();
                     }
                 }
                 return true;
@@ -195,7 +196,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     udpReceiver.shutdown();
                     plotter.shutdown();
                 } catch (Nexutil.FirmwareNotFoundException e) {
-                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    MainActivity.getInstance().getFirmwareDialog().show();
                 }
 
                 mChart.clear();
@@ -214,7 +215,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     String ret = Nexutil.getInstance().getIoctl(500);
                     Log.d("Shell", ret);
                 } catch (Nexutil.FirmwareNotFoundException e) {
-                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    MainActivity.getInstance().getFirmwareDialog().show();
                 }
                 helpDialog.show();
                 return true;

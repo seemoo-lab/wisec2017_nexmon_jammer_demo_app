@@ -2,6 +2,7 @@ package de.seemoo.nexmon.jammer.transmitter;
 
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.seemoo.nexmon.jammer.MainActivity;
 import de.seemoo.nexmon.jammer.R;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
@@ -53,7 +55,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                     currentlyActiveCounter += udpStream.running ? -1 : 0;
                     udpStream.running = false;
                 } catch (Nexutil.FirmwareNotFoundException e) {
-                    Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    MainActivity.getInstance().getFirmwareDialog().show();
                 }
                 dataSet.remove(position);
                 fragment.usedIDs.remove(udpStream.id);
@@ -69,7 +71,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                         viewHolder.run_pause.setImageResource(android.R.drawable.ic_media_play);
                         currentlyActiveCounter--;
                     } catch (Nexutil.FirmwareNotFoundException e) {
-                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                        MainActivity.getInstance().getFirmwareDialog().show();
                     }
                 } else {
                     try {
@@ -79,18 +81,30 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                         viewHolder.run_pause.setImageResource(android.R.drawable.ic_media_pause);
                         currentlyActiveCounter++;
                     } catch (Nexutil.FirmwareNotFoundException e) {
-                        Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                        MainActivity.getInstance().getFirmwareDialog().show();
                     }
                 }
                 break;
         }
 
         if (currentlyActiveCounter == 0) {
-            LEDControl.deactivateLED();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(final Void ... params) {
+                    LEDControl.deactivateLED();
+                    return null;
+                }
+            }.execute();
         } else if (currentlyActiveCounter == 1) {
-            LEDControl.setBrightnessRGB(rgb("#007f7f"));
-            LEDControl.setOnOffMsRGB(1000, 1000);
-            LEDControl.activateLED();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(final Void ... params) {
+                    LEDControl.setBrightnessRGB(rgb("#007f7f"));
+                    LEDControl.setOnOffMsRGB(1000, 1000);
+                    LEDControl.activateLED();
+                    return null;
+                }
+            }.execute();
         }
     }
 

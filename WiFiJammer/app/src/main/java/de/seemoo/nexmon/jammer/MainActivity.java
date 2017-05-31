@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public boolean first_run;
     public int oldOrientation;
 
+    public static MainActivity instance;
+
     public HashSet<Integer> presets = new HashSet<>();
 
     /**
@@ -104,16 +108,30 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
     }
 
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        instance = this;
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         setContentView(R.layout.main);
 
-        // TODO only need to be set, when firmware is installed
-        Nexutil.getInstance().setFirmwareInstalled(true);
+        try {
+            Nexutil nexutil = Nexutil.getInstance();
+            nexutil.setFirmwareInstalled(true);
+            String versionString = nexutil.getStringIoctl(Nexutil.NEX_GET_VERSION_STRING, 1000);
+            if (!versionString.contains("nexmon_jammer_ver")) {
+                nexutil.setFirmwareInstalled(false);
+            }
+        } catch (Nexutil.FirmwareNotFoundException e) {
+            // Should never get here
+        }
 
         if (savedInstanceState != null) {
 
@@ -554,19 +572,27 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         switch (Variables.jammerStart) {
             case 0: // not started -> now starting
                 try {
+                    Toast.makeText(getApplicationContext(), "Configuring and starting jammer, please wait ...", Toast.LENGTH_SHORT).show();
                     Nexutil.getInstance().setIoctl(514, Variables.getBytes());
                     Variables.jammerStart = 1;
 
                     startBtn.setText("stop");
+
                     //Disable Interface
                     enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
                     enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), false);
                     enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), false);
-                    LEDControl.setBrightnessRGB(rgb("#ff0000"));
-                    LEDControl.setOnOffMsRGB(1000, 1000);
-                    LEDControl.activateLED();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(final Void ... params) {
+                            LEDControl.setBrightnessRGB(rgb("#ff0000"));
+                            LEDControl.setOnOffMsRGB(1000, 1000);
+                            LEDControl.activateLED();
+                            return null;
+                        }
+                    }.execute();
                 } catch (Nexutil.FirmwareNotFoundException e) {
-                    Toast.makeText(getApplicationContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
+                    getFirmwareDialog().show();
                 }
                 break;
             case 1: // started -> now stopping
@@ -576,8 +602,15 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
-                if (Nexutil.getInstance().isFirmwareInstalled())
-                    LEDControl.deactivateLED();
+                if (Nexutil.getInstance().isFirmwareInstalled()) {
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(final Void... params) {
+                            LEDControl.deactivateLED();
+                            return null;
+                        }
+                    }.execute();
+                }
                 break;
             default:
                 Variables.jammerStart = 0;
@@ -812,6 +845,10 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         helpDialog = createHelpDialog();
         optionsDialog = createOptionsDialog();
         firmwareDialog = createFirmwareDialog();
+    }
+
+    public AlertDialog getFirmwareDialog() {
+        return firmwareDialog;
     }
 
     @Override
