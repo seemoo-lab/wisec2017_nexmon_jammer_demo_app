@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             Variables.jammingPower = 50;
             Variables.channel = 1;
-            Variables.jammerType = Variables.JammingType.getJammingTypeFromString("Simple Reactive Jammer");
+            Variables.jammerType = Variables.JammingType.SIMPLE_REACTIVE_JAMMER;
             Variables.app = 0;
             Variables.jammerStart = 0;
             Variables.idft_size = 128;

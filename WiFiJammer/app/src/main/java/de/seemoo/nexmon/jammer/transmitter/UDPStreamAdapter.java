@@ -28,21 +28,10 @@ import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
 public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.OnClickListener {
 
+    private static int currentlyActiveCounter = 0;
     Context mContext;
-    TextView txtId;
-    TextView txtPort;
-    TextView txtPower;
-    TextView txtModulation;
-    TextView txtRate;
-    TextView txtBand;
-    TextView txtLDPC;
-    ImageView delete;
-    ImageView run_pause;
-    View parentView;
     TransmitterFragment fragment;
     private ArrayList<UDPStream> dataSet;
-    private static int currentlyActiveCounter = 0;
-
 
     public UDPStreamAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
         super(context, R.layout.transmiter_list_item, data);
@@ -51,12 +40,11 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
         this.fragment = frag;
     }
 
-
     @Override
     public void onClick(View v) {
+        ViewHolder viewHolder = (ViewHolder) ((View) v.getParent()).getTag();
         int position = (Integer) v.getTag();
         UDPStream udpStream = getItem(position);
-
 
         switch (v.getId()) {
             case R.id.item_delete:
@@ -67,19 +55,18 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                 } catch (Nexutil.FirmwareNotFoundException e) {
                     Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
                 }
-                dataSet.remove(udpStream);
+                dataSet.remove(position);
                 fragment.usedIDs.remove(udpStream.id);
                 fragment.unusedIDs.add(udpStream.id);
                 notifyDataSetChanged();
                 break;
             case R.id.item_run_stop:
-                run_pause = (ImageView) parentView.findViewWithTag(position);
                 if (udpStream.running) {
                     try {
                         Nexutil.getInstance().setIoctl(511, udpStream.id);
                         udpStream.running = false;
                         Log.i("TRANSMITTER", "stopping: " + udpStream.toString());
-                        run_pause.setImageResource(android.R.drawable.ic_media_play);
+                        viewHolder.run_pause.setImageResource(android.R.drawable.ic_media_play);
                         currentlyActiveCounter--;
                     } catch (Nexutil.FirmwareNotFoundException e) {
                         Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
@@ -89,7 +76,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                         Nexutil.getInstance().setIoctl(510, udpStream.getBytes());
                         udpStream.running = true;
                         Log.i("TRANSMITTER", "starting: " + udpStream.toString());
-                        run_pause.setImageResource(android.R.drawable.ic_media_pause);
+                        viewHolder.run_pause.setImageResource(android.R.drawable.ic_media_pause);
                         currentlyActiveCounter++;
                     } catch (Nexutil.FirmwareNotFoundException e) {
                         Toast.makeText(getContext(), "You need to install the jamming firmware first", Toast.LENGTH_SHORT).show();
@@ -107,81 +94,101 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
         }
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
+        final UDPStream udpStream = getItem(position);
+        // Check if an existing view is being reused, otherwise inflate the view
+        ViewHolder viewHolder; // view lookup cache stored in tag
+
         if (convertView == null) {
-            final UDPStream udpStream = getItem(position);
-            parentView = parent;
+            viewHolder = new ViewHolder();
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.transmiter_list_item, parent, false);
+            viewHolder.parentView = parent;
+            viewHolder.txtId = (TextView) convertView.findViewById(R.id.streamId);
+            viewHolder.txtPort = (TextView) convertView.findViewById(R.id.portValue);
+            viewHolder.txtPower = (TextView) convertView.findViewById(R.id.powerValue);
+            viewHolder.txtModulation = (TextView) convertView.findViewById(R.id.modulation_value);
+            viewHolder.txtRate = (TextView) convertView.findViewById(R.id.rateValue);
+            viewHolder.txtBand = (TextView) convertView.findViewById(R.id.bandValue);
+            viewHolder.txtLDPC = (TextView) convertView.findViewById(R.id.ldpcValue);
+            viewHolder.delete = (ImageView) convertView.findViewById(R.id.item_delete);
+            viewHolder.run_pause = (ImageView) convertView.findViewById(R.id.item_run_stop);
 
-            txtId = (TextView) convertView.findViewById(R.id.streamId);
-            txtPort = (TextView) convertView.findViewById(R.id.portValue);
-            txtPower = (TextView) convertView.findViewById(R.id.powerValue);
-            txtModulation = (TextView) convertView.findViewById(R.id.modulation_value);
-            txtRate = (TextView) convertView.findViewById(R.id.rateValue);
-            txtBand = (TextView) convertView.findViewById(R.id.bandValue);
-            txtLDPC = (TextView) convertView.findViewById(R.id.ldpcValue);
-            delete = (ImageView) convertView.findViewById(R.id.item_delete);
-            run_pause = (ImageView) convertView.findViewById(R.id.item_run_stop);
-
-
-            txtId.setText(String.valueOf(udpStream.id));
-            txtPort.setText(String.valueOf(udpStream.destPort));
-            txtPower.setText(String.valueOf(udpStream.power));
-            txtModulation.setText(udpStream.modulation.toString());
-            switch (udpStream.modulation) {
-                case IEEE80211ag:
-                    convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
-                    break;
-                case IEEE80211b:
-                    convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
-                    break;
-                case IEEE80211n:
-                    ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
-                    ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
-                    break;
-                case IEEE80211ac:
-                    convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
-                    convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
-                    ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
-                    ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
-                    break;
-            }
-
-            txtRate.setText(String.valueOf(udpStream.rate));
-            txtBand.setText(String.valueOf(udpStream.bandwidth));
-            if (udpStream.ldpc) txtLDPC.setText("ON");
-            else txtLDPC.setText("OFF");
-
-            delete.setOnClickListener(this);
-            delete.setTag(position);
-            run_pause.setOnClickListener(this);
-            run_pause.setTag(position);
-
-            RelativeLayout relativeLayout = (RelativeLayout) convertView.findViewById(R.id.transListItem);
-            relativeLayout.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    fragment.existing_dialog_id = udpStream.id;
-                    udpStream.alertDialog.show();
-                    return true;
-                }
-            });
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
+        viewHolder.txtId.setText(String.valueOf(udpStream.id));
+        viewHolder.txtPort.setText(String.valueOf(udpStream.destPort));
+        viewHolder.txtPower.setText(String.valueOf(udpStream.power));
+        viewHolder.txtModulation.setText(udpStream.modulation.toString());
+        switch (udpStream.modulation) {
+            case IEEE80211ag:
+                convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
+                convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
+                convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
+                convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
+                convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
+                break;
+            case IEEE80211b:
+                convertView.findViewById(R.id.band_text).setVisibility(View.GONE);
+                convertView.findViewById(R.id.bandValue).setVisibility(View.GONE);
+                convertView.findViewById(R.id.bandUnit).setVisibility(View.GONE);
+                convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
+                convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
+                break;
+            case IEEE80211n:
+                ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
+                ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
+                break;
+            case IEEE80211ac:
+                convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
+                convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
+                ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
+                ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
+                break;
+        }
+
+        viewHolder.txtRate.setText(String.valueOf(udpStream.rate));
+        viewHolder.txtBand.setText(String.valueOf(udpStream.bandwidth));
+        if (udpStream.ldpc) viewHolder.txtLDPC.setText("ON");
+        else viewHolder.txtLDPC.setText("OFF");
+
+        viewHolder.delete.setOnClickListener(this);
+        viewHolder.delete.setTag(position);
+        viewHolder.run_pause.setOnClickListener(this);
+        viewHolder.run_pause.setTag(position);
+
+        RelativeLayout relativeLayout = (RelativeLayout) convertView.findViewById(R.id.transListItem);
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                fragment.existing_dialog_id = udpStream.id;
+                udpStream.alertDialog.show();
+                return true;
+            }
+        });
+
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    // View lookup cache
+    private static class ViewHolder {
+        TextView txtId;
+        TextView txtPort;
+        TextView txtPower;
+        TextView txtModulation;
+        TextView txtRate;
+        TextView txtBand;
+        TextView txtLDPC;
+        ImageView delete;
+        ImageView run_pause;
+        View parentView;
     }
 
 }
