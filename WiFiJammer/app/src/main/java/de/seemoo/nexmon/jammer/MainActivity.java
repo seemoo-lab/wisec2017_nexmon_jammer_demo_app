@@ -48,6 +48,7 @@ import de.seemoo.nexmon.jammer.jammer.SeekBarFragment;
 import de.seemoo.nexmon.jammer.receiver.ReceiverFragment;
 import de.seemoo.nexmon.jammer.transmitter.TransmitterFragment;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
+import de.seemoo.nexmon.jammer.utils.Nexutil;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
             Variables.jammingPower = 50;
             Variables.channel = 1;
-            Variables.jammerType = "Simple Reactive Jammer";
+            Variables.jammerType = Variables.JammingType.getJammingTypeFromString("Simple Reactive Jammer");
             Variables.app = 0;
             Variables.jammerStart = 0;
             Variables.idft_size = 128;
@@ -557,6 +558,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 LEDControl.setBrightnessRGB(rgb("#ff0000"));
                 LEDControl.setOnOffMsRGB(1000, 1000);
                 LEDControl.activateLED();
+                Nexutil.setIoctl(514, Variables.getBytes());
                 break;
             case 1: // started -> now stopping
                 Variables.jammerStart = 0;
@@ -665,9 +667,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog1, int id) {
 
-                        EditText editText = (EditText) linear_layout_options.findViewById(R.id.jamSignalLengthValue);
-                        Variables.jamSignalLength = Integer.parseInt(editText.getText().toString()) * Variables.idft_size * Variables.samplingRate;
-                        Variables.jammerType = ((Spinner) linear_layout_options.findViewById(R.id.type_spinner)).getSelectedItem().toString();
+                        EditText editText = (EditText) linear_layout_options.findViewById(R.id.jammingSignalRepetitionsValue);
+                        Variables.jammingSignalRepetitions = Integer.parseInt(editText.getText().toString());
+                        Variables.jammerType = Variables.JammingType.getJammingTypeFromString(((Spinner) linear_layout_options.findViewById(R.id.type_spinner)).getSelectedItem().toString());
                         EditText portText = (EditText) linear_layout_options.findViewById(R.id.portValue);
                         int port = Integer.parseInt(portText.getText().toString());
                         if (port > 65535 || port < 0) {
