@@ -127,7 +127,6 @@ public class LEDControl {
     }
 
     public static void deactivateLED() {
-        Shell.SU.run("echo 1 > " + LED_GREEN_PATH + "/" + LED_RGB_START_FILE);
         Shell.SU.run("echo 0 > " + LED_GREEN_PATH + "/" + LED_RGB_START_FILE);
     }
 }
