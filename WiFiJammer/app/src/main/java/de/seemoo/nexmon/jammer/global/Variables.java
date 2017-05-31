@@ -14,7 +14,7 @@ public final class Variables {
     public static double[] freqs;
     public static int idft_size;
     public static int bandwidth;
-    public static double jammingSignalRepetitions;
+    public static int jammingSignalRepetitions;
     public static int jammingPower;
     public static int app;
     public static JammingType jammerType;
@@ -88,7 +88,7 @@ public final class Variables {
         buf.putShort((short) (jammingPort & 0xffff));
         buf.putShort((short) numActiveSubcarriers);
         buf.put((byte) (jammerType.getInt()));
-        buf.putShort((short) ((int) jammingSignalRepetitions & 0xffff));
+        buf.putShort((short) (jammingSignalRepetitions & 0xffff));
 
         for (int i = 0; i < numActiveSubcarriers; i++) {
             buf.putShort((short) (amps[i] * 512));

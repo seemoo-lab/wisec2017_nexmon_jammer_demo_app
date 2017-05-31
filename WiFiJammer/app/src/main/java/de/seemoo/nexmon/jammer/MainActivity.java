@@ -652,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         type_spinner.setOnItemSelectedListener(this);
 
         // Creating adapter for spinner
-        List<String> types = Arrays.asList("Simple Reactive Jammer", "Acknowledging Jammer", "Adaptive Power Control Jammer");
+        List<String> types = Arrays.asList(Variables.JammingType.SIMPLE_REACTIVE_JAMMER.toString(), Variables.JammingType.ACKNOWLEDGING_JAMMER.toString(), Variables.JammingType.ADAPTIVE_POWER_CONTROL_JAMMER.toString());
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, types);
 
         // Drop down layout style - list view with radio button
@@ -661,9 +661,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // attaching data adapter to spinner
         type_spinner.setAdapter(dataAdapter);
 
-        Variables.jamSignalLength = 200;
+        Variables.jammingSignalRepetitions = 200;
         Variables.jammingPort = 3333;
-        Variables.jammerType = "Simple Reactive Jammer";
+        Variables.jammerType = Variables.JammingType.SIMPLE_REACTIVE_JAMMER;
 
         // set dialog message
         alertDialogBuilder
