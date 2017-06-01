@@ -52,6 +52,7 @@ import de.seemoo.nexmon.jammer.jammer.SeekBarFragment;
 import de.seemoo.nexmon.jammer.receiver.ReceiverFragment;
 import de.seemoo.nexmon.jammer.transmitter.TransmitterFragment;
 import de.seemoo.nexmon.jammer.utils.Assets;
+import de.seemoo.nexmon.jammer.utils.Dhdutil;
 import de.seemoo.nexmon.jammer.utils.LEDControl;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     public AlertDialog helpDialog;
     public AlertDialog optionsDialog;
     public AlertDialog firmwareDialog;
+    public AlertDialog consoleDumpDialog;
     public Menu menu;
     public SeekBarFragment ampFragment;
     public SeekBarFragment phaseFragment;
@@ -233,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                     }
                                     break;
                                 case "Dump Chip Console":
-                                    Toast.makeText(getApplicationContext(), "Dump Chip Console", Toast.LENGTH_SHORT).show();
+                                    consoleDumpDialog.show();
                                     break;
                                 case "About Us":
                                     if (Variables.app != 3) {
@@ -947,12 +949,53 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         return alertDialogBuilder.create();
     }
 
+    private AlertDialog createConsoleDumpDialog() {
+        View list_layout = getLayoutInflater().inflate(R.layout.console_dump_dialog, null, true);
+        final TextView tvConsoleOutput = (TextView) list_layout.findViewById(R.id.tvConsoleOutput);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(list_layout);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("CLOSE", null);
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                tvConsoleOutput.setText("waiting for dhdutil to complete ...");
+
+                new AsyncTask<Void, Void, Void>() {
+                    String consoleOutput;
+                    @Override
+                    protected Void doInBackground(final Void ... params) {
+                        consoleOutput = Dhdutil.getInstance(getApplicationContext()).dumpConsole();
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        tvConsoleOutput.setText(consoleOutput);
+                    }
+                }.execute();
+            }
+        });
+
+        // create alert dialog
+        return dialog;
+    }
+
     private void createAlertDialogs() {
         idftDialog = createIdftDialog();
         channelDialog = createChannelListDialog();
         helpDialog = createHelpDialog();
         optionsDialog = createOptionsDialog();
         firmwareDialog = createFirmwareDialog();
+        consoleDumpDialog = createConsoleDumpDialog();
     }
 
     public AlertDialog getFirmwareDialog() {
