@@ -208,7 +208,34 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                                         onConfigurationChanged(getResources().getConfiguration());
                                     }
                                     break;
-                                case "About":
+                                case "Restore Firmware from Backup":
+                                    final File file = new File("/sdcard/fw_bcmdhd.orig.bin");
+                                    if (file.exists()) {
+                                        Toast.makeText(getApplicationContext(), "Restoring firmware from backup ...", Toast.LENGTH_SHORT).show();
+                                        new AsyncTask<Void, Void, Void>() {
+                                            @Override
+                                            protected Void doInBackground(final Void ... params) {
+                                                Shell.SU.run("mount -o rw,remount /system");
+                                                Shell.SU.run("cp /sdcard/fw_bcmdhd.orig.bin /vendor/firmware/fw_bcmdhd.bin");
+                                                Shell.SU.run("mount -o ro,remount /system");
+                                                Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
+                                                return null;
+                                            }
+
+                                            @Override
+                                            protected void onPostExecute(Void result) {
+                                                checkFirmwareVersion();
+                                                Toast.makeText(getApplicationContext(), "Firmware successfully restored from backup.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }.execute();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "No firmware backup exists.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                case "Dump Chip Console":
+                                    Toast.makeText(getApplicationContext(), "Dump Chip Console", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "About Us":
                                     if (Variables.app != 3) {
                                         Variables.app = 3;
                                         setTitle("About Us");
@@ -585,8 +612,8 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         switch (Variables.jammerStart) {
             case 0: // not started -> now starting
                 try {
-                    Toast.makeText(getApplicationContext(), "Configuring and starting jammer, please wait ...", Toast.LENGTH_SHORT).show();
                     Nexutil.getInstance().setIoctl(514, Variables.getBytes());
+                    Toast.makeText(getApplicationContext(), "Configuring and starting jammer, please wait ...", Toast.LENGTH_SHORT).show();
                     Variables.jammerStart = 1;
 
                     startBtn.setText("stop");
@@ -808,17 +835,28 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Installing jamming firmware ...", Toast.LENGTH_SHORT).show();
+                btnInstallJammingFirmware.setEnabled(false);
 
-                Shell.SU.run("mount -o rw,remount /system");
-                Assets.copyFileFromAsset(getApplicationContext(), "fw_bcmdhd.bin", "/vendor/firmware/fw_bcmdhd.bin");
-                Shell.SU.run("mount -o ro,remount /system");
-                Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(final Void ... params) {
+                        Shell.SU.run("mount -o rw,remount /system");
+                        Assets.copyFileFromAsset(getApplicationContext(), "fw_bcmdhd.bin", "/vendor/firmware/fw_bcmdhd.bin");
+                        Shell.SU.run("mount -o ro,remount /system");
+                        Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
+                        return null;
+                    }
 
-                if(checkFirmwareVersion()) {
-                    Toast.makeText(getApplicationContext(), "Firmware successfully installed.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Firmware installation failed.", Toast.LENGTH_SHORT).show();
-                }
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        if(checkFirmwareVersion()) {
+                            Toast.makeText(getApplicationContext(), "Firmware successfully installed.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Firmware installation failed.", Toast.LENGTH_SHORT).show();
+                        }
+                        btnInstallJammingFirmware.setEnabled(true);
+                    }
+                }.execute();
             }
         });
 

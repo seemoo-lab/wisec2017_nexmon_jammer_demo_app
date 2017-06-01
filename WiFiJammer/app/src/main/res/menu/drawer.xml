@@ -14,7 +14,13 @@
             android:title="Receiver"/>
         <item
             android:id="@+id/navigation_item_4"
-            android:title="About" />
+            android:title="Restore Firmware from Backup" />
+        <item
+            android:id="@+id/navigation_item_5"
+            android:title="Dump Chip Console" />
+        <item
+            android:id="@+id/navigation_item_6"
+            android:title="About Us" />
     </group>
 
 

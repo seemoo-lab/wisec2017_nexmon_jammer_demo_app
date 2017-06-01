@@ -14,8 +14,7 @@
         developers responsible for any harm that results from using any of our tools.\n\nIn the
         following you may create a backup of the original firmware that copies the firmware file
         from /vendor/firmware/fw_bcmdhd.bin to /sdcard/fw_bcmdhd.orig.bin. Once copied, you may
-        continue to install the jamming firmware. To revert to the original firmware, you have to
-        manually remount your system partition writable and then copy the backup to its original
-        location.\n\n
+        continue to install the jamming firmware. To restore the original firmware, you can use the
+        "Restore Firmware from Backup" entry in the menu on the left.\n\n
     </string>
 </resources>
