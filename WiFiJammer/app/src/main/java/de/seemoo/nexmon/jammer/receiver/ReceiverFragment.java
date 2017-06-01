@@ -420,6 +420,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     if (!data.containsKey(packet.hash)) {
                         hashes.add(packet.hash);
                         data.put(packet.hash, new float[2]);
+                        Log.d(TAG, "add " + packet.hash);
                     }
 
                     semaphore.release();
@@ -461,9 +462,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                 try {
 
                     long windows_size = 1L;
-                    int sum = 0;
-                    int sum_length_fcs_1 = 0;
-                    int sum_length_fcs_0 = 0;
                     int count_removes = 0;
                     long current_time = System.nanoTime();
                     long time = current_time - windows_size * 1000000000L;
@@ -481,11 +479,12 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                     if (hashes.size() > 0) {
                         for (String hash : hashes) {
+                            int sum_length_fcs_1 = 0;
+                            int sum_length_fcs_0 = 0;
 
                             for (Iterator<Packet> i = packetSet.iterator(); i.hasNext(); ) {
                                 Packet pa = i.next();
                                 if (hash.equals(pa.hash)) {
-                                    sum++;
                                     if (pa.fcs_error) {
                                         sum_length_fcs_1 += pa.length;
                                     } else {

@@ -74,6 +74,7 @@ public final class Variables {
      *     int16 numActiveSubcarriers;
      *     uint8 jammingType;
      *     uint16 jammingSignalRepetitions;
+     *     int8 power;
      *     cint16ap freqDomSamps[];
      * }
      *
@@ -81,7 +82,7 @@ public final class Variables {
      */
     public static byte[] getBytes() {
         int numActiveSubcarriers = amps.length;
-        ByteBuffer buf = ByteBuffer.allocate(2 + 2 + 2 + 1 + 2 + numActiveSubcarriers * 4);
+        ByteBuffer buf = ByteBuffer.allocate(2 + 2 + 2 + 1 + 2 + 1 + numActiveSubcarriers * 4);
         buf.order(ByteOrder.LITTLE_ENDIAN);
 
         buf.putShort((short) (idft_size & 0xffff));
@@ -89,6 +90,7 @@ public final class Variables {
         buf.putShort((short) numActiveSubcarriers);
         buf.put((byte) (jammerType.getInt()));
         buf.putShort((short) (jammingSignalRepetitions & 0xffff));
+        buf.put((byte) ((127 - jammingPower) & 0xff));
 
         for (int i = 0; i < numActiveSubcarriers; i++) {
             buf.putShort((short) (amps[i] * 512));
