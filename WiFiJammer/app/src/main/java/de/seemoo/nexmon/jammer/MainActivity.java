@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
     private boolean checkFirmwareVersion() {
         boolean ret = false;
         try {
-            Nexutil nexutil = Nexutil.getInstance();
+            Nexutil nexutil = Nexutil.getInstance(getApplicationContext());
             nexutil.setFirmwareInstalled(true);
             String versionString = nexutil.getStringIoctl(Nexutil.NEX_GET_VERSION_STRING, 1000);
             if (!versionString.contains("nexmon_jammer_ver")) {
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         setContentView(R.layout.main);
 
+        // Checks for the firmware Version and automatically initializes the Nexmon Object
         checkFirmwareVersion();
 
         if (savedInstanceState != null) {
@@ -809,7 +810,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 Toast.makeText(getApplicationContext(), "Installing jamming firmware ...", Toast.LENGTH_SHORT).show();
 
                 Shell.SU.run("mount -o rw,remount /system");
-                Assets.copyFileFromAsset(getApplicationContext(), getAssets(), "fw_bcmdhd.bin", "/vendor/firmware/fw_bcmdhd.bin");
+                Assets.copyFileFromAsset(getApplicationContext(), "fw_bcmdhd.bin", "/vendor/firmware/fw_bcmdhd.bin");
                 Shell.SU.run("mount -o ro,remount /system");
                 Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
 

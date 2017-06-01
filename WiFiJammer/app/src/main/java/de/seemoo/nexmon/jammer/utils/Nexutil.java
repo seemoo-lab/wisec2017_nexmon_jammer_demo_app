@@ -65,6 +65,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import de.seemoo.nexmon.jammer.MainActivity;
 import eu.chainfire.libsuperuser.Shell;
 
 /**
@@ -79,6 +80,8 @@ public class Nexutil {
 
     protected static Nexutil instance;
     protected boolean firmwareInstalled = false;
+    private String nexutilPath;
+    private Context context;
 
     public class FirmwareNotFoundException extends Exception {
         public FirmwareNotFoundException() {}
@@ -88,12 +91,19 @@ public class Nexutil {
         }
     }
 
-    protected Nexutil() {
+    protected Nexutil(Context context) {
         this.instance = this;
+        this.context = context;
+        nexutilPath = Assets.getAssetsPath(context, "nexutil");
+        Log.d("NEXUTIL", "nexutilPath: " + nexutilPath);
+    }
+
+    public static Nexutil getInstance(Context context) {
+        return instance == null ? new Nexutil(context) : instance;
     }
 
     public static Nexutil getInstance() {
-        return instance == null ? new Nexutil() : instance;
+        return instance;
     }
 
     private void checkFirmwareInstalled() throws FirmwareNotFoundException {
@@ -105,35 +115,35 @@ public class Nexutil {
     public String getIoctl(int cmd, int length) throws FirmwareNotFoundException {
         checkFirmwareInstalled();
 
-        List<String> out = Shell.SU.run("nexutil -l" + length + " -g" + cmd);
+        List<String> out = Shell.SU.run(nexutilPath + " -l" + length + " -g" + cmd);
         return out.toString();
     }
 
     public String getStringIoctl(int cmd, int length) throws FirmwareNotFoundException {
         checkFirmwareInstalled();
 
-        List<String> out = Shell.SU.run("nexutil -r -l" + length + " -g" + cmd + " | strings");
+        List<String> out = Shell.SU.run(nexutilPath + " -r -l" + length + " -g" + cmd + " | strings");
         return out.toString();
     }
 
     public String getIoctl(int cmd) throws FirmwareNotFoundException {
         checkFirmwareInstalled();
 
-        List<String> out = Shell.SU.run("nexutil -g" + cmd);
+        List<String> out = Shell.SU.run(nexutilPath + " -g" + cmd);
         return out.toString();
     }
 
     public String setIoctl(int cmd) throws FirmwareNotFoundException {
         checkFirmwareInstalled();
 
-        List<String> out = Shell.SU.run("nexutil -s" + cmd);
+        List<String> out = Shell.SU.run(nexutilPath + " -s" + cmd);
         return out.toString();
     }
 
     public String setIoctl(int cmd, int value) throws FirmwareNotFoundException {
         checkFirmwareInstalled();
 
-        List<String> out = Shell.SU.run("nexutil -s" + cmd + " -l4 -i -v" + value);
+        List<String> out = Shell.SU.run(nexutilPath + " -s" + cmd + " -l4 -i -v" + value);
         return out.toString();
     }
 
@@ -151,7 +161,7 @@ public class Nexutil {
 
         String value = Base64.encodeToString(buf, Base64.NO_WRAP);
         Log.i("Nexutil", value);
-        List<String> out = Shell.SU.run("nexutil -s" + cmd + " -b -l" + buf.length + " -v\"" + value + "\"");
+        List<String> out = Shell.SU.run(nexutilPath + " -s" + cmd + " -b -l" + buf.length + " -v\"" + value + "\"");
         return out.toString();
     }
 
