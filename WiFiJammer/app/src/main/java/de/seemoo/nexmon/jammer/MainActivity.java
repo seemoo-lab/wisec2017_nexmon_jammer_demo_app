@@ -116,6 +116,23 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         return instance;
     }
 
+    private boolean checkFirmwareVersion() {
+        boolean ret = false;
+        try {
+            Nexutil nexutil = Nexutil.getInstance();
+            nexutil.setFirmwareInstalled(true);
+            String versionString = nexutil.getStringIoctl(Nexutil.NEX_GET_VERSION_STRING, 1000);
+            if (!versionString.contains("nexmon_jammer_ver")) {
+                nexutil.setFirmwareInstalled(false);
+            } else {
+                ret = true;
+            }
+        } catch (Nexutil.FirmwareNotFoundException e) {
+            // Should never get here
+        }
+        return ret;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,16 +143,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
         setContentView(R.layout.main);
 
-        try {
-            Nexutil nexutil = Nexutil.getInstance();
-            nexutil.setFirmwareInstalled(true);
-            String versionString = nexutil.getStringIoctl(Nexutil.NEX_GET_VERSION_STRING, 1000);
-            if (!versionString.contains("nexmon_jammer_ver")) {
-                nexutil.setFirmwareInstalled(false);
-            }
-        } catch (Nexutil.FirmwareNotFoundException e) {
-            // Should never get here
-        }
+        checkFirmwareVersion();
 
         if (savedInstanceState != null) {
 
@@ -798,10 +806,18 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         btnInstallJammingFirmware.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "installing jamming firmware", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Installing jamming firmware ...", Toast.LENGTH_SHORT).show();
 
-                AssetManager assetManager = getAssets();
-                Assets.copyFileFromAsset(assetManager, "fw_bcmdhd.bin", "/sdcard/fw_bcmdhd.jammer.bin");
+                Shell.SU.run("mount -o rw,remount /system");
+                Assets.copyFileFromAsset(getApplicationContext(), getAssets(), "fw_bcmdhd.bin", "/vendor/firmware/fw_bcmdhd.bin");
+                Shell.SU.run("mount -o ro,remount /system");
+                Shell.SU.run("ifconfig wlan0 down && ifconfig wlan0 up");
+
+                if(checkFirmwareVersion()) {
+                    Toast.makeText(getApplicationContext(), "Firmware successfully installed.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Firmware installation failed.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
