@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         System.out.println("Amplitudes: " + Arrays.toString(Variables.amps));
         System.out.println("Phases: " + Arrays.toString(Variables.phases));
         System.out.println("Frequencies: " + Arrays.toString(Variables.freqs));
-        Button startBtn = (Button) view;
+        final Button startBtn = (Button) view;
         switch (Variables.jammerStart) {
             case 0: // not started -> now starting
                 try {
@@ -616,7 +616,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                     Toast.makeText(getApplicationContext(), "Configuring and starting jammer, please wait ...", Toast.LENGTH_SHORT).show();
                     Variables.jammerStart = 1;
 
-                    startBtn.setText("stop");
+                    startBtn.setEnabled(false);
 
                     //Disable Interface
                     enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), false);
@@ -630,6 +630,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                             LEDControl.activateLED();
                             return null;
                         }
+
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            startBtn.setText("stop");
+                            startBtn.setEnabled(true);
+                        }
                     }.execute();
                 } catch (Nexutil.FirmwareNotFoundException e) {
                     getFirmwareDialog().show();
@@ -637,7 +643,9 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 break;
             case 1: // started -> now stopping
                 Variables.jammerStart = 0;
-                startBtn.setText("start");
+
+                startBtn.setEnabled(false);
+
                 //Enable Interface
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
                 enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
@@ -648,6 +656,12 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                         protected Void doInBackground(final Void... params) {
                             LEDControl.deactivateLED();
                             return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            startBtn.setText("start");
+                            startBtn.setEnabled(true);
                         }
                     }.execute();
                 }
