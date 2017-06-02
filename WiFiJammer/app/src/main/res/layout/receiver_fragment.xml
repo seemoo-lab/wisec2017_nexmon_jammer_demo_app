@@ -43,20 +43,20 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:scrollbars="vertical" >
 
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_marginRight="4sp">
 
             <TableLayout
                 android:id="@+id/streamDescriptionTable"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:divider="@drawable/table_divider"
-                android:orientation="horizontal"
-                android:showDividers="beginning|middle|end">
+                android:orientation="horizontal">
 
             </TableLayout>
 

@@ -7,6 +7,7 @@ import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
  */
 
 public final class ColorsTuDarmstadt {
+    public static final int COLOR_0B = rgb("#B5B5B5");
     public static final int COLOR_1B = rgb("#005AA9");
     public static final int COLOR_2B = rgb("#0083CC");
     public static final int COLOR_3B = rgb("#009D81");
@@ -20,7 +21,7 @@ public final class ColorsTuDarmstadt {
     public static final int COLOR_11B = rgb("#721085");
 
     public static final int[] B_COLORS = {
-            COLOR_1B, COLOR_2B, COLOR_3B, COLOR_4B, COLOR_5B, COLOR_6B,
+            COLOR_0B, COLOR_1B, COLOR_2B, COLOR_3B, COLOR_4B, COLOR_5B, COLOR_6B,
             COLOR_7B, COLOR_8B, COLOR_9B, COLOR_10B, COLOR_11B
     };
 }

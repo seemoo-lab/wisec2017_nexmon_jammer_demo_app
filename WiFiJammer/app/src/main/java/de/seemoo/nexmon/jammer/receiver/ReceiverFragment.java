@@ -53,6 +53,8 @@ import de.seemoo.nexmon.jammer.R;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
 import eu.chainfire.libsuperuser.Shell;
 
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
+
 /**
  * Created by Stathis on 05-May-17.
  */
@@ -279,20 +281,25 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     tv = (TextView) tableRow.findViewById(R.id.nameValue);
                     tv.setText("Stream " + i);
 
-                    tv = (TextView) tableRow.findViewById(R.id.portValue);
+                    tv = (TextView) tableRow.findViewById(R.id.nodeValue);
                     tv.setText(params[0]);
 
-                    tv = (TextView) tableRow.findViewById(R.id.encodingValue);
+                    tv = (TextView) tableRow.findViewById(R.id.portValue);
                     tv.setText(params[1]);
 
-                    tv = (TextView) tableRow.findViewById(R.id.bandwidthValue);
+                    tv = (TextView) tableRow.findViewById(R.id.encodingValue);
                     tv.setText(params[2]);
 
-                    tv = (TextView) tableRow.findViewById(R.id.rateValue);
+                    tv = (TextView) tableRow.findViewById(R.id.bandwidthValue);
                     tv.setText(params[3]);
 
-                    tv = (TextView) tableRow.findViewById(R.id.ldpcValue);
+                    tv = (TextView) tableRow.findViewById(R.id.rateValue);
                     tv.setText(params[4]);
+
+                    tv = (TextView) tableRow.findViewById(R.id.ldpcValue);
+                    tv.setText(params[5]);
+
+                    tableRow.setBackgroundColor(i % 2 == 0 ? rgb("#DCDCDC") : rgb("#ffffff"));
 
                     //Add row to the table
                     streamDescriptionTable.addView(tableRow);
@@ -552,6 +559,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
         int rate;
         boolean ldpc;
         String hash;
+        String node;
 
 
         public Packet(byte buffer[]) {
@@ -567,7 +575,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             this.bandwidth = buf.get();
             this.rate = (int) buf.getShort() & 0xffff;
             this.ldpc = ((int) buf.get() & 0xf) == 1;
-            this.hash = port + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
+            this.node = "ffff";
+            this.hash = node + "-" + port + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
 
         }
 
