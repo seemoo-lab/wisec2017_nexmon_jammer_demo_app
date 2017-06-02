@@ -920,7 +920,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         type_spinner.setAdapter(dataAdapter);
 
         Variables.jammingSignalRepetitions = 10;
-        Variables.jammingPort = 3333;
+        Variables.jammingPort = 3939;
         Variables.jammerType = Variables.JammingType.SIMPLE_REACTIVE_JAMMER;
 
         // set dialog message
@@ -1251,19 +1251,23 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
 
                 seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_7);
                 if (seekBar != null && sc_minus_7 < maxSize) {
-                    seekBar.setProgress(power);
+                    seekBar.setProgress(power/2);
                 }
                 seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_7);
                 if (seekBar != null && sc_plus_7 < maxSize) {
-                    seekBar.setProgress(power);
+                    seekBar.setProgress(power/2);
                 }
                 seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_minus_21);
                 if (seekBar != null && sc_minus_21 < maxSize) {
-                    seekBar.setProgress(power);
+                    seekBar.setProgress(power/2);
+                }
+                seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Phases_seekBar_" + sc_minus_21);
+                if (seekBar != null && sc_minus_21 < maxSize) {
+                    seekBar.setProgress(-180);
                 }
                 seekBar = (SeekBar) findViewById(R.id.main).findViewWithTag("Amplitudes_seekBar_" + sc_plus_21);
                 if (seekBar != null && sc_plus_21 < maxSize) {
-                    seekBar.setProgress(power);
+                    seekBar.setProgress(power/2);
                 }
                 break;
             case 40:
