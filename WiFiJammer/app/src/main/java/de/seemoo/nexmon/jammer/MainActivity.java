@@ -919,7 +919,7 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
         // attaching data adapter to spinner
         type_spinner.setAdapter(dataAdapter);
 
-        Variables.jammingSignalRepetitions = 200;
+        Variables.jammingSignalRepetitions = 10;
         Variables.jammingPort = 3333;
         Variables.jammerType = Variables.JammingType.SIMPLE_REACTIVE_JAMMER;
 

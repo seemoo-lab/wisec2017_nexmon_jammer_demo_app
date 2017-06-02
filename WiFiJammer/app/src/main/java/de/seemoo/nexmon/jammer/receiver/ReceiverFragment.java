@@ -537,6 +537,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
     /*
     struct jamming_receiver_header {
     uint32 timestamp;
+    uint16 node;
     uint16 port;
     bool fcs_error;
     uint16 length;
@@ -568,6 +569,8 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
             this.timestamp_mac = (long) buf.getInt() & 0xffffffffL;
             this.timestamp_android = System.nanoTime();
+            //this.node = String.format("%04x", (int) buf.getShort() & 0xffff);
+            this.node = "ffff";
             this.port = (int) buf.getShort() & 0xffff;
             this.fcs_error = ((int) buf.get() & 0xf) == 1;
             this.length = (int) buf.getShort() & 0xffff;
@@ -575,7 +578,6 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
             this.bandwidth = buf.get();
             this.rate = (int) buf.getShort() & 0xffff;
             this.ldpc = ((int) buf.get() & 0xf) == 1;
-            this.node = "ffff";
             this.hash = node + "-" + port + "-" + encoding + "-" + bandwidth + "-" + rate + "-" + ldpc;
 
         }
