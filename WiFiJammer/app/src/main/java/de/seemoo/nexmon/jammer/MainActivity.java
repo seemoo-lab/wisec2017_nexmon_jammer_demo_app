@@ -644,28 +644,33 @@ public class MainActivity extends AppCompatActivity implements SeekBarFragment.F
                 }
                 break;
             case 1: // started -> now stopping
-                Variables.jammerStart = 0;
+                try {
+                    Nexutil.getInstance().setIoctl(505);
+                    Variables.jammerStart = 0;
 
-                startBtn.setEnabled(false);
+                    startBtn.setEnabled(false);
 
-                //Enable Interface
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
-                enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
-                if (Nexutil.getInstance().isFirmwareInstalled()) {
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(final Void... params) {
-                            LEDControl.deactivateLED();
-                            return null;
-                        }
+                    //Enable Interface
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.frames), true);
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.my_toolbar), true);
+                    enableDisableViewGroup((ViewGroup) findViewById(R.id.nav_view), true);
+                    if (Nexutil.getInstance().isFirmwareInstalled()) {
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(final Void... params) {
+                                LEDControl.deactivateLED();
+                                return null;
+                            }
 
-                        @Override
-                        protected void onPostExecute(Void result) {
-                            startBtn.setText("start");
-                            startBtn.setEnabled(true);
-                        }
-                    }.execute();
+                            @Override
+                            protected void onPostExecute(Void result) {
+                                startBtn.setText("start");
+                                startBtn.setEnabled(true);
+                            }
+                        }.execute();
+                    }
+                } catch (Nexutil.FirmwareNotFoundException e) {
+                    getFirmwareDialog().show();
                 }
                 break;
             default:
