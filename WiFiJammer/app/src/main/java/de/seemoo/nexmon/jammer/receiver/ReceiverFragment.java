@@ -562,8 +562,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
             this.timestamp_mac = (long) buf.getInt() & 0xffffffffL;
             this.timestamp_android = System.nanoTime();
-            //this.node = String.format("%04x", (int) buf.getShort() & 0xffff);
-            this.node = "ffff";
+            this.node = String.format("%04x", (int) buf.getShort() & 0xffff);
             this.port = (int) buf.getShort() & 0xffff;
             this.fcs_error = ((int) buf.get() & 0xf) == 1;
             this.length = (int) buf.getShort() & 0xffff;
