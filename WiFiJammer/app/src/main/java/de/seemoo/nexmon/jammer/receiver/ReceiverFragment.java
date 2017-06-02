@@ -1,7 +1,6 @@
 package de.seemoo.nexmon.jammer.receiver;
 
 import android.app.Fragment;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -15,7 +14,6 @@ import android.webkit.WebView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -29,11 +27,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -42,16 +36,15 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import de.seemoo.nexmon.jammer.MainActivity;
-import de.seemoo.nexmon.jammer.global.ColorsTuDarmstadt;
 import de.seemoo.nexmon.jammer.R;
+import de.seemoo.nexmon.jammer.global.ColorsTuDarmstadt;
 import de.seemoo.nexmon.jammer.utils.Nexutil;
-import eu.chainfire.libsuperuser.Shell;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
@@ -63,7 +56,7 @@ import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 //MAC, IP Address, new graph button
 public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
-    public HashMap<String, float[]> data = new HashMap<>();
+    public ConcurrentHashMap<String, float[]> data = new ConcurrentHashMap<>();
     ViewGroup container;
     AlertDialog helpDialog;
     Menu menu;
@@ -155,7 +148,7 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
 
                 mChart.clear();
                 initializePlot();
-                data = new HashMap<>();
+                data = new ConcurrentHashMap<>();
                 hashes = new ArrayList<>();
                 packetSet = new TreeSet<>();
 
