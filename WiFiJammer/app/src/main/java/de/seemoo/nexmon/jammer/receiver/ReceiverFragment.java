@@ -281,7 +281,20 @@ public class ReceiverFragment extends Fragment implements IAxisValueFormatter {
                     tv.setText(params[1]);
 
                     tv = (TextView) tableRow.findViewById(R.id.encodingValue);
-                    tv.setText(params[2]);
+                    switch (params[2]) {
+                        case "1":
+                            tv.setText("11b");
+                            break;
+                        case "2":
+                            tv.setText("11a/g");
+                            break;
+                        case "3":
+                            tv.setText("11n");
+                            break;
+                        case "4":
+                            tv.setText("11ac");
+                            break;
+                    }
 
                     tv = (TextView) tableRow.findViewById(R.id.bandwidthValue);
                     tv.setText(params[3]);
