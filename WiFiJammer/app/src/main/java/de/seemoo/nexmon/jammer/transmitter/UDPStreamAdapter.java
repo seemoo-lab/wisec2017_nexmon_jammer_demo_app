@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,7 +35,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
     private ArrayList<UDPStream> dataSet;
 
     public UDPStreamAdapter(ArrayList<UDPStream> data, Context context, TransmitterFragment frag) {
-        super(context, R.layout.transmiter_list_item, data);
+        super(context, R.layout.transmitter_list_item, data);
         this.dataSet = data;
         this.mContext = context;
         this.fragment = frag;
@@ -119,7 +118,7 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
             viewHolder = new ViewHolder();
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.transmiter_list_item, parent, false);
+            convertView = inflater.inflate(R.layout.transmitter_list_item, parent, false);
             viewHolder.parentView = parent;
             viewHolder.txtId = (TextView) convertView.findViewById(R.id.streamId);
             viewHolder.txtPort = (TextView) convertView.findViewById(R.id.portValue);
@@ -155,10 +154,17 @@ public class UDPStreamAdapter extends ArrayAdapter<UDPStream> implements View.On
                 convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
                 break;
             case IEEE80211n:
+                convertView.findViewById(R.id.band_text).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.bandValue).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.bandUnit).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.ldpcText).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.ldpcValue).setVisibility(View.VISIBLE);
                 ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
                 ((TextView) convertView.findViewById(R.id.rateUnit)).setText("index");
                 break;
             case IEEE80211ac:
+                convertView.findViewById(R.id.band_text).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.bandValue).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.ldpcText).setVisibility(View.GONE);
                 convertView.findViewById(R.id.ldpcValue).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.rate_text)).setText("MCS");
