@@ -3,10 +3,8 @@ package de.seemoo.nexmon.jammer.transmitter;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -19,9 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -38,7 +34,6 @@ import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import de.seemoo.nexmon.jammer.aboutus.LicenseDialog;
 import de.seemoo.nexmon.jammer.R;
 
 /**
@@ -75,7 +70,7 @@ public class TransmitterFragment extends Fragment implements AdapterView.OnItemS
         setHasOptionsMenu(true);
         createNewUDPStreamDialog();
         createAlertDialogs();
-        return inflater.inflate(R.layout.transmiter_fragment, container, false);
+        return inflater.inflate(R.layout.transmitter_fragment, container, false);
     }
 
     @Override
