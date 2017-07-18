@@ -55,4 +55,4 @@ firmware to only jam Wi-Fi frames which contain the MAC addresses "NEXMON" and "
 ## Multi-Mechanisms Adaptation for the Future Internet (MAKI)
 <a href="http://www.maki.tu-darmstadt.de/">![MAKI logo](https://github.com/seemoo-lab/nexmon/raw/master/gfx/maki.png)</a>
 ## University of Brescia
-<a href="http://netweb.ing.unibs.it/">![MAKI logo](https://github.com/seemoo-lab/nexmon/raw/master/gfx/brescia.png)</a>
+<a href="http://netweb.ing.unibs.it/">![University of Brescia logo](https://github.com/seemoo-lab/nexmon/raw/master/gfx/brescia.png)</a>
