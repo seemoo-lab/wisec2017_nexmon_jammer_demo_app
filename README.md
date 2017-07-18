@@ -3,7 +3,7 @@
 # WiSec 2017 Nexmon Jammer App
 
 On the 10th ACM Conference on Security and Privacy in Wireless and Mobile Networks (WiSec 2017) 
-we publish a demo on "Demonstrating Reactive Smartphone-Based Jamming" based on the jammer 
+we published a demo on "Demonstrating Reactive Smartphone-Based Jamming" based on the jammer 
 developed for our publication "Massive Reactive Smartphone-Based Jamming using Arbitrary Waveforms
 and Adaptive Power Control". This repository contains source code required to rebuild the app shown
 during our demonstartion. Additionally, it allows fellow researches to base their own
